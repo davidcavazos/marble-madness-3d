@@ -9,9 +9,9 @@ using namespace std;
 int main(int argc, char** argv) {
     cout << argc << *argv << endl;
 
-    DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY, 640, 400);
+    Device* device = DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY, 640, 400);
 
-    DeviceManager::shutdownSystem();
+    device->shutdown();
 
     return EXIT_SUCCESS;
 }

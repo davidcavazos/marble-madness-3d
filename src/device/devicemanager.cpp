@@ -20,16 +20,38 @@
 
 #include "device/devicemanager.hpp"
 
-DeviceSystem* DeviceManager::ms_system = 0;
+#include <iostream>
+#include <cassert>
 
-DeviceSystem* DeviceManager::createSystem(const device_t type, const int width, const int height) {
-    ms_system = ms_factory.instance().createProduct(type);
-    ms_system->initialize(width, height);
+#include "device/devicesdlopengl.hpp"
+
+using namespace std;
+
+Device* DeviceManager::ms_system = 0;
+
+Device* DeviceManager::createSystem(const device_t type, const int width, const int height) {
+    if (ms_system == 0) {
+        switch (type) {
+        case DEVICE_SDL_OPENGL_LEGACY:
+            ms_system = new DeviceSDLOpenGL;
+            break;
+        default:
+            cerr << "Invalid device type, returning null device" << endl;
+        }
+        assert(ms_system != 0);
+        ms_system->initialize(width, height);
+    }
+    else
+        cerr << "Warning: device already exists, cannot create" << endl;
     return ms_system;
 }
 
 void DeviceManager::shutdownSystem() {
-    ms_system->shutdown();
-    ms_factory.instance().destroyProduct(ms_system);
-    ms_factory.destroy();
+    if (ms_system != 0) {
+        ms_system->shutdown();
+        delete ms_system;
+        ms_system = 0;
+    }
+    else
+        cerr << "Warning: no existing device, cannot shutdown" << endl;
 }

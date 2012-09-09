@@ -18,19 +18,20 @@
 */
 
 
-#ifndef DEVICEMANAGER_HPP
-#define DEVICEMANAGER_HPP
+#ifndef DEVICE_HPP
+#define DEVICE_HPP
 
-#include "singleton.hpp"
-#include "device/device.hpp"
-
-class DeviceManager {
-public:
-    static Device* createSystem(const device_t type, const int width, const int height);
-    static void shutdownSystem();
-
-private:
-    static Device* ms_system;
+enum device_t {
+    DEVICE_SDL_OPENGL_LEGACY,
+    DEVICE_SDL_OPENGL_CORE
 };
 
-#endif // DEVICEMANAGER_HPP
+class Device {
+public:
+    virtual ~Device() {}
+
+    virtual bool initialize(const int width, const int height) = 0;
+    virtual void shutdown() = 0;
+};
+
+#endif // DEVICE_HPP

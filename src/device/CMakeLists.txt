@@ -2,10 +2,9 @@ set(LIBRARY_NAME device-manager)
 
 # Target
 set(SRC_FILES
-    devicesystem.cpp
-    devicefactory.cpp
+    device.cpp
     devicemanager.cpp
-    sdlopengldevice.cpp
+    devicesdlopengl.cpp
 )
 
 add_library(${LIBRARY_NAME} SHARED ${SRC_FILES})

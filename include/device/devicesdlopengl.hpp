@@ -18,19 +18,15 @@
 */
 
 
-#ifndef DEVICEMANAGER_HPP
-#define DEVICEMANAGER_HPP
+#ifndef DEVICESDLOPENGL_HPP
+#define DEVICESDLOPENGL_HPP
 
-#include "singleton.hpp"
 #include "device/device.hpp"
 
-class DeviceManager {
-public:
-    static Device* createSystem(const device_t type, const int width, const int height);
-    static void shutdownSystem();
-
+class DeviceSDLOpenGL : public Device {
 private:
-    static Device* ms_system;
+    bool initialize(const int width, const int height);
+    void shutdown();
 };
 
-#endif // DEVICEMANAGER_HPP
+#endif // DEVICESDLOPENGL_HPP

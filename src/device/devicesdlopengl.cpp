@@ -18,19 +18,24 @@
 */
 
 
-#include "device/devicefactory.hpp"
+#include "device/devicesdlopengl.hpp"
 
 #include <iostream>
-#include "device/sdlopengldevice.hpp"
+#include <SDL/SDL.h>
 
 using namespace std;
 
-DeviceSystem* DeviceFactory::newProduct(const device_t deviceType) {
-    switch (deviceType) {
-    case DEVICE_SDL_OPENGL_LEGACY:
-        return new SdlOpenGlDevice;
-    default:
-        cout << "Invalid device type, returning null device" << endl;
-    }
-    return 0;
+bool DeviceSDLOpenGL::initialize(const int width, const int height) {
+    cout << "Creating SDL OpenGL legacy device" << endl;
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+        return false;
+    SDL_Surface* display = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_OPENGL);
+    if (display == 0)
+        return false;
+    return true;
+}
+
+void DeviceSDLOpenGL::shutdown() {
+    cout << "SDL OpenGL legacy device quit" << endl;
+    SDL_Quit();
 }

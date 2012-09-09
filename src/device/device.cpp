@@ -18,15 +18,4 @@
 */
 
 
-#ifndef DEVICEFACTORY_HPP
-#define DEVICEFACTORY_HPP
-
-#include "factory.hpp"
-#include "device/devicesystem.hpp"
-
-class DeviceFactory : public Factory<DeviceSystem, device_t> {
-private:
-    DeviceSystem* newProduct(const device_t deviceType);
-};
-
-#endif // DEVICEFACTORY_HPP
+#include "device/device.hpp"
