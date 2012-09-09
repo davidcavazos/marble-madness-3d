@@ -6,7 +6,6 @@ set(SRC_FILES
 )
 set(LIBRARIES
     device-manager
-#     input-manager
 )
 
 add_executable(${EXE_NAME} ${SRC_FILES})
@@ -15,4 +14,3 @@ add_executable(${EXE_NAME} ${SRC_FILES})
 target_link_libraries(${EXE_NAME} ${LIBRARIES})
 
 add_subdirectory(device)
-# add_subdirectory(input)
