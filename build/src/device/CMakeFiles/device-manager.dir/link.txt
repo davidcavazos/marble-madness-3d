@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -Wall -Wextra -Weffc++ -g   -shared -Wl,-soname,libdevice-manager.so -o libdevice-manager.so CMakeFiles/device-manager.dir/devicesystem.cpp.o CMakeFiles/device-manager.dir/devicefactory.cpp.o CMakeFiles/device-manager.dir/devicemanager.cpp.o CMakeFiles/device-manager.dir/sdlopengldevice.cpp.o -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread 
