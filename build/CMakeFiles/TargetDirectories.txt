@@ -1,0 +1,2 @@
+/home/mono/projects/marble-madness-3d/build/src/device/CMakeFiles/device-manager.dir
+/home/mono/projects/marble-madness-3d/build/src/CMakeFiles/marble-madness-3d.dir

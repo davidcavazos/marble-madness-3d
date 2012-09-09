@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -Wextra -Weffc++ -g    CMakeFiles/marble-madness-3d.dir/main.cpp.o  -o marble-madness-3d -rdynamic device/libdevice-manager.so -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread -Wl,-rpath,/home/mono/projects/marble-madness-3d/build/src/device 

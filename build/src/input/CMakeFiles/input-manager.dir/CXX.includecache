@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/input/inputmanager.hpp
+input/input.hpp
+../include/input/input/input.hpp
+manager.hpp
+../include/input/manager.hpp
+
+../include/input/sdlinput.hpp
+system.hpp
+../include/input/system.hpp
+
+../include/system.hpp
+
+/home/mono/projects/marble-madness-3d/src/input/inputmanager.cpp
+input/inputmanager.hpp
+/home/mono/projects/marble-madness-3d/src/input/input/inputmanager.hpp
+
+/home/mono/projects/marble-madness-3d/src/input/sdlinput.cpp
+input/sdlinput.hpp
+/home/mono/projects/marble-madness-3d/src/input/input/sdlinput.hpp
+iostream
+-
+SDL/SDL.h
+-
+

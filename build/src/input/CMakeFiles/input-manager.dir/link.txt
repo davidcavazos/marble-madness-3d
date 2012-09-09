@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -Wall -Wextra -Weffc++ -g   -shared -Wl,-soname,libinput-manager.so -o libinput-manager.so CMakeFiles/input-manager.dir/inputfactory.cpp.o CMakeFiles/input-manager.dir/inputmanager.cpp.o CMakeFiles/input-manager.dir/sdlinput.cpp.o -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread 

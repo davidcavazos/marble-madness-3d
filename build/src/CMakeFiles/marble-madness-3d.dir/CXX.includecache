@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/device/devicefactory.hpp
+factory.hpp
+../include/device/factory.hpp
+device/devicesystem.hpp
+../include/device/device/devicesystem.hpp
+
+../include/device/devicemanager.hpp
+singleton.hpp
+../include/device/singleton.hpp
+device/devicefactory.hpp
+../include/device/device/devicefactory.hpp
+device/devicesystem.hpp
+../include/device/device/devicesystem.hpp
+
+../include/device/devicesystem.hpp
+
+../include/factory.hpp
+boost/unordered_set.hpp
+-
+
+../include/singleton.hpp
+iostream
+-
+cassert
+-
+
+/home/mono/projects/marble-madness-3d/src/main.cpp
+iostream
+-
+iostream
+-
+cstdlib
+-
+device/devicemanager.hpp
+/home/mono/projects/marble-madness-3d/src/device/devicemanager.hpp
+
