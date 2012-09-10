@@ -21,14 +21,13 @@
 #ifndef INPUTSDL_HPP
 #define INPUTSDL_HPP
 
-#include <SDL/SDL_keyboard.h>
-#include <SDL/SDL_mouse.h>
-// #include <SDL/SDL_joystick.h>
+#include <SDL/SDL_events.h>
 
 class InputSDL {
 public:
-    static void onKeyPress(const SDL_keysym& key);
-    static void onKeyRelease(const SDL_keysym& key);
+    static void onKeyEvent(const SDL_KeyboardEvent& key);
+    static void onMouseButtonEvent(const SDL_MouseButtonEvent& mouseButton);
+    static void onMouseMotionEvent(const SDL_MouseMotionEvent& mouseMotion);
 };
 
 #endif // INPUTSDL_HPP

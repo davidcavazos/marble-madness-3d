@@ -67,10 +67,15 @@ void DeviceSDLOpenGL::processEvents(bool& isRunning) {
             isRunning = false;
             break;
         case SDL_KEYDOWN:
-            switch (event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-                isRunning = false;
-            }
+        case SDL_KEYUP:
+            InputSDL::onKeyEvent(event.key);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+            InputSDL::onMouseButtonEvent(event.button);
+            break;
+        case SDL_MOUSEMOTION:
+            InputSDL::onMouseMotionEvent(event.motion);
             break;
         }
     }

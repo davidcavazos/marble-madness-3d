@@ -20,8 +20,29 @@
 
 #include "inputsdl.hpp"
 
-void InputSDL::onKeyPress(const SDL_keysym& key) {
+#include <SDL/SDL_events.h>
+
+void InputSDL::onKeyEvent(const SDL_KeyboardEvent& key) {
+    switch (key.type) {
+
+    case SDL_KEYDOWN:
+        switch (key.keysym.sym) {
+        case SDLK_ESCAPE: {
+            SDL_Event quit;
+            quit.type = SDL_QUIT;
+            SDL_PushEvent(&quit); }
+            break;
+        }
+        break;
+
+    case SDL_KEYUP:
+        break;
+
+    }
 }
 
-void InputSDL::onKeyRelease(const SDL_keysym& key) {
+void InputSDL::onMouseButtonEvent(const SDL_MouseButtonEvent& mouseButton) {
+}
+
+void InputSDL::onMouseMotionEvent(const SDL_MouseMotionEvent& mouseMotion) {
 }
