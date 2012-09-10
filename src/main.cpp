@@ -4,14 +4,21 @@
 #include <cstdlib>
 #include "device/devicemanager.hpp"
 
+#include <SDL/SDL.h>
+
 using namespace std;
 
-int main(int argc, char** argv) {
-    cout << argc << *argv << endl;
+int main(int, char**) {
+    Device* device = DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY);
+    device->setTitle("Marble Madness 3D");
+    device->setResolution(800, 500);
 
-    Device* device = DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY, 640, 400);
+    bool isRunning = true;
+    while (isRunning) {
+        device->processEvents(isRunning);
+    }
 
-    device->shutdown();
+    DeviceManager::shutdownSystem();
 
     return EXIT_SUCCESS;
 }

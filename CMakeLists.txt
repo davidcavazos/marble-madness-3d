@@ -7,8 +7,5 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 #     set(CMAKE_EXE_LINKER_FLAGS "-lSDL")
 endif()
 
-include_directories(
-    include
-    include/device-manager
-)
+include_directories(include)
 add_subdirectory(src)

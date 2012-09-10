@@ -18,14 +18,10 @@
 */
 
 
-#include "device.hpp"
+#include "inputsdl.hpp"
 
-const size_t DEFAULT_SCREEN_WIDTH = 640;
-const size_t DEFAULT_SCREEN_HEIGHT = 480;
-const size_t DEFAULT_SCREEN_DEPTH = 32;
+void InputSDL::onKeyPress(const SDL_keysym& key) {
+}
 
-Device::Device() :
-    m_width(DEFAULT_SCREEN_WIDTH),
-    m_height(DEFAULT_SCREEN_HEIGHT),
-    m_depth(DEFAULT_SCREEN_DEPTH)
-{}
+void InputSDL::onKeyRelease(const SDL_keysym& key) {
+}

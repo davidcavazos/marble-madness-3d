@@ -4,6 +4,7 @@ set(LIBRARY_NAME device-manager)
 set(SRC_FILES
     device.cpp
     devicemanager.cpp
+    inputsdl.cpp
     devicesdlopengl.cpp
 )
 
@@ -13,5 +14,5 @@ add_library(${LIBRARY_NAME} SHARED ${SRC_FILES})
 find_package(Boost REQUIRED)
 find_package(SDL REQUIRED)
 
-include_directories(${Boost_INCLUDE_DIRS} ${SDL_INCLUDE_DIR})
+include_directories(../../include/device ${Boost_INCLUDE_DIRS} ${SDL_INCLUDE_DIR})
 target_link_libraries(${LIBRARY_NAME} ${SDL_LIBRARY})

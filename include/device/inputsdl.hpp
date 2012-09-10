@@ -18,14 +18,17 @@
 */
 
 
-#include "device.hpp"
+#ifndef INPUTSDL_HPP
+#define INPUTSDL_HPP
 
-const size_t DEFAULT_SCREEN_WIDTH = 640;
-const size_t DEFAULT_SCREEN_HEIGHT = 480;
-const size_t DEFAULT_SCREEN_DEPTH = 32;
+#include <SDL/SDL_keyboard.h>
+#include <SDL/SDL_mouse.h>
+// #include <SDL/SDL_joystick.h>
 
-Device::Device() :
-    m_width(DEFAULT_SCREEN_WIDTH),
-    m_height(DEFAULT_SCREEN_HEIGHT),
-    m_depth(DEFAULT_SCREEN_DEPTH)
-{}
+class InputSDL {
+public:
+    static void onKeyPress(const SDL_keysym& key);
+    static void onKeyRelease(const SDL_keysym& key);
+};
+
+#endif // INPUTSDL_HPP

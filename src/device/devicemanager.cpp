@@ -18,18 +18,18 @@
 */
 
 
-#include "device/devicemanager.hpp"
+#include "devicemanager.hpp"
 
 #include <iostream>
 #include <cassert>
 
-#include "device/devicesdlopengl.hpp"
+#include "devicesdlopengl.hpp"
 
 using namespace std;
 
 Device* DeviceManager::ms_system = 0;
 
-Device* DeviceManager::createSystem(const device_t type, const int width, const int height) {
+Device* DeviceManager::createSystem(const device_t type) {
     if (ms_system == 0) {
         switch (type) {
         case DEVICE_SDL_OPENGL_LEGACY:
@@ -39,7 +39,7 @@ Device* DeviceManager::createSystem(const device_t type, const int width, const 
             cerr << "Invalid device type, returning null device" << endl;
         }
         assert(ms_system != 0);
-        ms_system->initialize(width, height);
+        ms_system->initialize();
     }
     else
         cerr << "Warning: device already exists, cannot create" << endl;

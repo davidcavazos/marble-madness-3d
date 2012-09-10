@@ -21,16 +21,33 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
+#include <string>
+
 enum device_t {
     DEVICE_SDL_OPENGL_LEGACY,
     DEVICE_SDL_OPENGL_CORE
 };
 
+class DeviceManager;
+
 class Device {
+friend class DeviceManager;
 public:
+    Device();
     virtual ~Device() {}
 
-    virtual bool initialize(const int width, const int height) = 0;
+    virtual size_t videoMemKB() = 0;
+    virtual void setTitle(const std::string& title) = 0;
+    virtual void setFullscreen(const bool useFullscreen = true) = 0;
+    virtual void setResolution(const size_t width, const size_t height) = 0;
+    virtual void processEvents(bool& isRunning) = 0;
+
+protected:
+    size_t m_width;
+    size_t m_height;
+    size_t m_depth;
+
+    virtual void initialize() = 0;
     virtual void shutdown() = 0;
 };
 

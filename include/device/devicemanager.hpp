@@ -22,11 +22,11 @@
 #define DEVICEMANAGER_HPP
 
 #include "singleton.hpp"
-#include "device/device.hpp"
+#include "device.hpp"
 
 class DeviceManager {
 public:
-    static Device* createSystem(const device_t type, const int width, const int height);
+    static Device* createSystem(const device_t type);
     static void shutdownSystem();
 
 private:

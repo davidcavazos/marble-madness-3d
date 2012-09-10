@@ -1,0 +1,6 @@
+General
+    Add exceptions (through a macro in case they are not supported)
+
+Device
+    Add application icon
+    Add option to resize window

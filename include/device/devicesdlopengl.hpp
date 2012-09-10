@@ -21,11 +21,22 @@
 #ifndef DEVICESDLOPENGL_HPP
 #define DEVICESDLOPENGL_HPP
 
-#include "device/device.hpp"
+#include "device.hpp"
+
+struct SDL_Surface;
 
 class DeviceSDLOpenGL : public Device {
+public:
+    void setTitle(const std::string& title);
+    void setFullscreen(const bool useFullscreen);
+    void setResolution(const size_t width, const size_t height);
+    size_t videoMemKB();
+    void processEvents(bool& isRunning);
+
 private:
-    bool initialize(const int width, const int height);
+    static SDL_Surface* m_screen;
+
+    void initialize();
     void shutdown();
 };
 
