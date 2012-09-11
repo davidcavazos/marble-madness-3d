@@ -4,3 +4,39 @@ General
 Device
     Add application icon
     Add option to resize window
+
+
+Game states:
+Welcome menu (with press start)
+Main menu (new game, high scores, credits, exit)
+Write name
+Level1-5
+Lose
+Win
+GameOver
+High scores
+Credits
+
+Level file format:
+list of used entities
+description of the heightmap
+scene graph with all entities
+
+Entity file format:
+list of all assets with file paths
+list of all components
+
+Design:
+// Init all managers
+FileManager()
+ResourceManager(fileManager)
+DeviceManager(SDL_OPENGL) // window, input system, render driver (OpenGL)
+RenderManager(device) // list with renderable entities and render implementation
+GuiManager(renderer, resources)
+AudioManager(resources)
+PhysicsManager()
+SceneManager()
+
+// On a new state
+each state will be saved in a "level" xml file
+load necessary assets if not loaded
