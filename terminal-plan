@@ -1,0 +1,55 @@
+Notes:
+objects must have different ID and different names
+object $name and #id are interchangeable
+should be able to select an object by double clicking on it with the mouse
+
+Objects:
+Game
+GameState
+Timer
+Entity
+
+Keys
+ESC:    hide terminal
+RETURN: run command
+TAB:    autocomplete
+UP:     previous history command
+DOWN:   next history command
+LEFT:   move cursor to left
+RIGHT:  move cursor to right
+BKSPC:  deletes previous character from cursor
+DEL:    deletes next character from cursor
+HOME:   moves cursor to line start
+END:    moves cursor to line end
+Ctrl+c: kill command ?
+
+Syntax:
+selected-object> #id command parameters
+selected-object> $object command parameters
+
+$object will be looked for and all commands will use the id (faster)
+Note: if $object or #id is omitted, use selected-object
+
+Special commands:
+runscript filename      // runs the file with some commands
+select object           // select object
+select parent           // select parent object
+set attribute value     // sets the object's attribute to a value
+get attribute           // prints the object's attribute
+custom-command          // executes a command unique to the object
+
+Examples:
+player> get components
+player> $enemy1 get children
+player> set position 0 0 0
+player> set rotationx 15
+player> select enemy1
+enemy1> get health
+enemy1> root set gravity 0 -9.81 0
+enemy1> select player
+player> moveleft
+player> $enemy1 moveright
+player> #123 movedown
+
+Add in future:
+if, while
