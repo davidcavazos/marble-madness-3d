@@ -1,6 +1,6 @@
 /*
  *    <one line to give the library's name and an idea of what it does.>
- *    Copyright (C) 2012  David Cavazos <email>
+ *    Copyright (C) 2012  David Cavazos <davido262@gmail.com>
  *
  *    This library is free software; you can redistribute it and/or
  *    modify it under the terms of the GNU Lesser General Public

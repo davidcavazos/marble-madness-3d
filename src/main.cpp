@@ -3,8 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "device/devicemanager.hpp"
-
-#include <SDL/SDL.h>
+#include "terminal/terminal.hpp"
 
 using namespace std;
 
