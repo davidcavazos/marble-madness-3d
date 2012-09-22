@@ -4,8 +4,8 @@ set(LIBRARY_NAME device-manager)
 set(SRC_FILES
     device.cpp
     devicemanager.cpp
-    inputsdl.cpp
     devicesdlopengl.cpp
+    inputmanager.cpp
 )
 
 add_library(${LIBRARY_NAME} SHARED ${SRC_FILES})

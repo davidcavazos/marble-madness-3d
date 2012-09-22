@@ -8,6 +8,7 @@ set(SRC_FILES
 set(LIBRARIES
     terminal
     device-manager
+    scene-manager
 )
 
 add_executable(${EXE_NAME} ${SRC_FILES})

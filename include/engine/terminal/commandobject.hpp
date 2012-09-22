@@ -27,11 +27,20 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
+class Command;
+
 class CommandObject {
 
 public:
+    friend std::ostream& operator<<(std::ostream& out, const CommandObject& rhs);
+
     CommandObject(const std::string& objectName);
     virtual ~CommandObject();
+    bool operator<(const CommandObject& rhs) const;
+    bool operator>(const CommandObject& rhs) const;
+
+    size_t getIdObject() const;
+    const std::string& getObjectName() const;
 
     bool isCommandFound(const size_t idCommand) const;
     bool isAttributeFound(const size_t idAttribute) const;
@@ -40,11 +49,10 @@ public:
 
 protected:
     std::string m_objectName;
+    size_t m_idObject;
     typedef boost::function<void (const std::string&)> slot_t;
     typedef std::map<size_t, slot_t> cmd_table_t;
 
-
-    virtual void registerCommands() = 0;
     size_t registerCommand(const std::string& cmd, const slot_t& slot);
     size_t registerAttribute(const std::string& attrName, const slot_t& slot);
 
@@ -54,6 +62,16 @@ private:
 
     void setAttribute(const std::string& arg);
 };
+
+
+
+inline size_t CommandObject::getIdObject() const {
+    return m_idObject;
+}
+
+inline const std::string& CommandObject::getObjectName() const {
+    return m_objectName;
+}
 
 inline bool CommandObject::isCommandFound(const size_t idCommand) const {
     cmd_table_t::const_iterator it = m_commands.find(idCommand);

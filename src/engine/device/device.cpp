@@ -24,6 +24,8 @@ const size_t DEFAULT_SCREEN_WIDTH = 640;
 const size_t DEFAULT_SCREEN_HEIGHT = 480;
 const size_t DEFAULT_SCREEN_DEPTH = 32;
 
+InputManager Device::ms_inputManager = InputManager();
+
 Device::Device() :
     m_width(DEFAULT_SCREEN_WIDTH),
     m_height(DEFAULT_SCREEN_HEIGHT),

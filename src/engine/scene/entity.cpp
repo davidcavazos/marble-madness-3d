@@ -20,3 +20,42 @@
 
 #include "engine/scene/entity.hpp"
 
+using namespace std;
+
+const size_t INDENT_SIZE = 2;
+
+Entity::Entity(const string& objectName):
+    CommandObject(objectName),
+    m_children()
+{}
+
+Entity::~Entity() {
+    set<Entity*>::iterator it;
+    for (it = m_children.begin(); it != m_children.end(); ++it)
+        delete *it;
+}
+
+Entity* Entity::addChild(const string& childName) {
+    Entity* child = new Entity(childName);
+    m_children.insert(child);
+    return child;
+}
+
+void Entity::removeChild(Entity* const child) {
+    set<Entity*>::iterator it = m_children.find(child);
+    if (it != m_children.end()) {
+        delete *it;
+        m_children.erase(it);
+    }
+}
+
+string Entity::treeToString(const size_t indent) const {
+    stringstream ss;
+    for (size_t i = 0; i < indent; ++i)
+        ss << " ";
+    ss << m_objectName << endl;
+    set<Entity*>::iterator it;
+    for (it = m_children.begin(); it != m_children.end(); ++it)
+        ss << (*it)->treeToString(indent + INDENT_SIZE);
+    return ss.str();
+}

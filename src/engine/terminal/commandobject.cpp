@@ -21,22 +21,35 @@
 #include "engine/terminal/commandobject.hpp"
 
 #include <iostream>
+#include <iomanip>
 #include "engine/terminal/terminal.hpp"
 
 using namespace std;
+
+const size_t MAX_EXPECTED_ID_DIGITS = 4;
 
 const string SET_COMMAND = "set";
 
 CommandObject::CommandObject(const string& objectName) :
     m_objectName(objectName),
+    m_idObject(Terminal::registerObject(m_objectName, this)),
     m_commands(),
     m_attributes()
 {
-    Terminal::registerObject(m_objectName, this);
+//     cout << "Creating " << m_objectName << endl;
 }
 
 CommandObject::~CommandObject() {
     Terminal::unregisterObject(m_objectName);
+//     cout << "Destroying " << m_objectName << endl;
+}
+
+bool CommandObject::operator<(const CommandObject& rhs) const {
+    return m_idObject < rhs.m_idObject;
+}
+
+bool CommandObject::operator>(const CommandObject& rhs) const {
+    return m_idObject > rhs.m_idObject;
 }
 
 bool CommandObject::runObjectCommand(const size_t idCommand, const std::string& arguments) {
@@ -76,4 +89,12 @@ void CommandObject::setAttribute(const string& arg) {
         if (it != m_attributes.end())
             (it->second)(arg.substr(ss.tellg()));
     }
+}
+
+ostream& operator<<(ostream& out, const CommandObject& rhs) {
+    out << setw(MAX_EXPECTED_ID_DIGITS) << rhs.m_idObject << " " << rhs.m_objectName << "\t";
+    std::map<size_t, boost::function<void (const std::string&)> >::const_iterator it;
+    for (it = rhs.m_commands.begin(); it != rhs.m_commands.end(); ++it)
+        out << it->first << " ";
+    return out;
 }

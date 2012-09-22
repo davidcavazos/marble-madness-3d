@@ -21,9 +21,12 @@
 #include "engine/terminal/tokentable.hpp"
 
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 
 using namespace std;
+
+const size_t MAX_EXPECTED_ID_DIGITS = 4;
 
 TokenTable::TokenTable() :
     m_tokenMap(),
@@ -50,8 +53,8 @@ void TokenTable::unregisterToken(const string& token) {
     }
 }
 
-bool TokenTable::findId(size_t& id, const string& token) {
-    map<string, size_t>::iterator it = m_tokenMap.find(token);
+bool TokenTable::findId(size_t& id, const string& token) const {
+    map<string, size_t>::const_iterator it = m_tokenMap.find(token);
     if (it != m_tokenMap.end()) {
         id = it->second;
         return true;
@@ -61,15 +64,25 @@ bool TokenTable::findId(size_t& id, const string& token) {
     return false;
 }
 
+string TokenTable::findName(const size_t id) const {
+    map<string, size_t>::const_iterator it;
+    for (it = m_tokenMap.begin(); it != m_tokenMap.end(); ++it) {
+        if (it->second == id) {
+            return it->first;
+        }
+    }
+    return "";
+}
+
 vector<string> TokenTable::generateList(const bool shouldIncludeId) const {
     vector<string> tokenList(m_tokenMap.size());
     size_t i = 0;
     map<string, size_t>::const_iterator it;
     for (it = m_tokenMap.begin(); it != m_tokenMap.end(); ++it) {
         stringstream ss;
-        ss << it->first;
         if (shouldIncludeId)
-            ss << " #" << it->second;
+            ss << setw(MAX_EXPECTED_ID_DIGITS) << it->second << " ";
+        ss << it->first;
         tokenList[i] = ss.str();
         ++i;
     }

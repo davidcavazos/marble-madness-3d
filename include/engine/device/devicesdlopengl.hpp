@@ -32,6 +32,7 @@ public:
     void setResolution(const size_t width, const size_t height);
     size_t videoMemKB();
     void processEvents(bool& isRunning);
+    void getPointerInfo(int& x, int& y);
 
 private:
     static SDL_Surface* m_screen;

@@ -23,7 +23,6 @@
 #include <iostream>
 #include <cassert>
 #include <SDL/SDL.h>
-#include "engine/device/inputsdl.hpp"
 
 using namespace std;
 
@@ -67,18 +66,31 @@ void DeviceSDLOpenGL::processEvents(bool& isRunning) {
             isRunning = false;
             break;
         case SDL_KEYDOWN:
+            ms_inputManager.onKeyDown(event.key.keysym.sym);
+            break;
         case SDL_KEYUP:
-            InputSDL::onKeyEvent(event.key);
+            ms_inputManager.onKeyUp(event.key.keysym.sym);
             break;
         case SDL_MOUSEBUTTONDOWN:
+            ms_inputManager.onMouseButtonDown(event.button.button);
+            break;
         case SDL_MOUSEBUTTONUP:
-            InputSDL::onMouseButtonEvent(event.button);
+            ms_inputManager.onMouseButtonUp(event.button.button);
             break;
-        case SDL_MOUSEMOTION:
-            InputSDL::onMouseMotionEvent(event.motion);
-            break;
+        case SDL_MOUSEMOTION: {
+            mouse_motion_t motion;
+            motion.x = event.motion.x;
+            motion.y = event.motion.y;
+            motion.xrel = event.motion.xrel;
+            motion.yrel = event.motion.yrel;
+            ms_inputManager.onMouseMotion(motion);
+            break; }
         }
     }
+}
+
+void DeviceSDLOpenGL::getPointerInfo(int& x, int& y) {
+    SDL_GetMouseState(&x, &y);
 }
 
 void DeviceSDLOpenGL::initialize() {

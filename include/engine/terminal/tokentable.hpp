@@ -32,7 +32,8 @@ public:
 
     size_t registerToken(const std::string& token);
     void unregisterToken(const std::string& token);
-    bool findId(size_t& id, const std::string& token);
+    bool findId(size_t& id, const std::string& token) const;
+    std::string findName(const size_t id) const;
     std::vector<std::string> generateList(const bool shouldIncludeId = false) const;
     std::vector<std::string> autocompleteList(const std::string& token) const;
 

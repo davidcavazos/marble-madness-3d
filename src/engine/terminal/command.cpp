@@ -32,6 +32,11 @@ Command::Command(const size_t idObject, const size_t idCommand, const std::strin
     m_arguments(arguments)
 {}
 
+void Command::appendToArguments(const string& argsAppended) {
+    m_arguments.append(" ");
+    m_arguments.append(argsAppended);
+}
+
 bool Command::parseCommand(const string& expression) {
     string object;
     string command;
@@ -62,7 +67,9 @@ bool Command::run() const {
 }
 
 ostream& operator<<(ostream& out, const Command& rhs) {
-    out << rhs.m_idObject << " " << rhs.m_idCommand << " " << rhs.m_arguments;
+//     out << rhs.m_idObject << " " << rhs.m_idCommand << " " << rhs.m_arguments;
+    out << Terminal::getObjectName(rhs.m_idObject) << " " <<
+            Terminal::findCommandName(rhs.m_idCommand) << " " << rhs.m_arguments;
     return out;
 }
 

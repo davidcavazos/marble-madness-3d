@@ -27,8 +27,6 @@
 
 using namespace std;
 
-const size_t VECTOR_CHUNK_SIZE = 100;
-
 TokenTable Terminal::ms_objectsTable = TokenTable();
 TokenTable Terminal::ms_commandsTable = TokenTable();
 TokenTable Terminal::ms_attributesTable = TokenTable();
@@ -134,16 +132,15 @@ vector<string> Terminal::generateAutocompleteList(const std::string& expression)
 
 size_t Terminal::registerObject(const std::string& objectName, CommandObject* obj) {
     size_t id = ms_objectsTable.registerToken(objectName);
-    if (id <= ms_objectPointersTable.size())
-        ms_objectPointersTable.resize(id + VECTOR_CHUNK_SIZE);
-    ms_objectPointersTable[id] = obj;
+    ms_objectPointersTable.insert(pair<size_t, CommandObject*>(id, obj));
     return id;
 }
 
 void Terminal::unregisterObject(const std::string& objectName) {
     size_t id;
-    if (ms_objectsTable.findId(id, objectName)) {
-        ms_objectPointersTable[id] = 0;
+    ms_objectsTable.findId(id, objectName);
+    obj_ptr_table_t::iterator it = ms_objectPointersTable.find(id);
+    if (it != ms_objectPointersTable.end()) {
         ms_objectsTable.unregisterToken(objectName);
         for (size_t i = 0; i < ms_commandsQueue.size(); ++i) {
             if (ms_commandsQueue[i].getIdObject() == id) {
@@ -151,6 +148,7 @@ void Terminal::unregisterObject(const std::string& objectName) {
                 --i;
             }
         }
+        ms_objectPointersTable.erase(it);
     }
 }
 
@@ -161,7 +159,7 @@ vector<string> Terminal::generateAutocompleteObjectList(const string& object) {
 vector<string> Terminal::generateAutocompleteCommandList(const size_t idObject, const string& command) {
     vector<string> list, completeList;
     size_t idCommand;
-    CommandObject* obj = ms_objectPointersTable[idObject];
+    CommandObject* obj = ms_objectPointersTable.find(idObject)->second;
     completeList = ms_commandsTable.autocompleteList(command);
     for (size_t i = 0; i < completeList.size(); ++i) {
         if (ms_commandsTable.findId(idCommand, completeList[i])) {
@@ -175,7 +173,7 @@ vector<string> Terminal::generateAutocompleteCommandList(const size_t idObject, 
 vector< string > Terminal::generateAutocompleteAttributeList(const size_t idObject, const string& attr) {
     vector<string> list, completeList;
     size_t idAttr;
-    CommandObject* obj = ms_objectPointersTable[idObject];
+    CommandObject* obj = ms_objectPointersTable.find(idObject)->second;
     completeList = ms_attributesTable.autocompleteList(attr);
     for (size_t i = 0; i < completeList.size(); ++i) {
         if (ms_attributesTable.findId(idAttr, completeList[i])) {
@@ -184,4 +182,21 @@ vector< string > Terminal::generateAutocompleteAttributeList(const size_t idObje
         }
     }
     return list;
+}
+
+string Terminal::listsToString() {
+    stringstream ss;
+
+    ss << "Objects:" << endl;
+    obj_ptr_table_t::iterator it;
+    for (it = ms_objectPointersTable.begin(); it != ms_objectPointersTable.end(); ++it)
+        ss << "    " << *it->second << endl;
+    ss << endl;
+
+    ss << "Commands:" << endl;
+    vector<string> list = generateCommandsList(true);
+    for (size_t i = 0; i < list.size(); ++i)
+        ss << "    " << list[i] << endl;
+//     ss << endl;
+    return ss.str();
 }

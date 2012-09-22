@@ -25,23 +25,30 @@
 #include <istream>
 #include <string>
 
+class Terminal;
+
 class Command {
 public:
-    Command(const size_t idObject, const size_t idCommand, const std::string& arguments = "");
+    friend Terminal;
     friend std::ostream& operator<<(std::ostream& out, const Command& rhs);
     friend std::istream& operator>>(std::istream& in, Command& rhs);
+
+    Command(const size_t idObject, const size_t idCommand, const std::string& arguments = "");
 
     size_t getIdObject() const;
     size_t getIdCommand() const;
     const std::string& getArguments() const;
+    void setArguments(const std::string& arguments);
 
+    void appendToArguments(const std::string& argsAppended);
     bool parseCommand(const std::string& expression);
-    bool run() const;
 
 private:
     size_t m_idObject;
     size_t m_idCommand;
     std::string m_arguments;
+
+    bool run() const;
 };
 
 
@@ -56,6 +63,10 @@ inline size_t Command::getIdCommand() const {
 
 inline const std::string& Command::getArguments() const {
     return m_arguments;
+}
+
+inline void Command::setArguments(const std::string& arguments) {
+    m_arguments = arguments;
 }
 
 #endif // COMMAND_HPP

@@ -21,15 +21,23 @@
 #include "game.hpp"
 
 #include <iostream>
+#include <SDL/SDL_events.h>
 #include "engine/device/devicemanager.hpp"
 #include "engine/terminal/terminal.hpp"
+#include "engine/scene/scenemanager.hpp"
 
 using namespace std;
 
-Game::Game(const string& objectName):
+Game::Game(const string& objectName, const string& rootNodeName):
     CommandObject(objectName),
-    m_isRunning(false)
+    m_isRunning(false),
+    m_sceneManager(rootNodeName)
 {
+    cout << "TODO:" << endl;
+    cout << "+ Make input manager into a vector, only one can be active at a time (XML)" << endl;
+    cout << "+ Read/write scene from XML" << endl;
+    cout << endl;
+
     registerCommands();
     Device* device = DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY);
     device->setTitle("Marble Madness 3D");
@@ -42,21 +50,35 @@ Game::~Game() {
 
 void Game::loadScene() {
     cout << "Loading scene" << endl;
+    Entity* root = m_sceneManager.getRootPtr();
+    root->addChild("player");
+    Entity* enemy1 = root->addChild("enemy1");
+    Entity* gun1 = enemy1->addChild("gun1");
+    gun1->addChild("scope");
+    Entity* enemy2 = root->addChild("enemy2");
+    enemy2->addChild("gun2");
+    root->addChild("enemy3");
+
+    cout << Terminal::listsToString() << endl;
+
+    cout << m_sceneManager.sceneGraphToString() << endl;
 }
 
 void Game::bindControls() {
     cout << "Binding controls" << endl;
+    Device* device = DeviceManager::getDevicePtr();
+    device->getInputManager().bindInput(INPUT_KEY_DOWN, "game quit", SDLK_ESCAPE);
 }
 
 void Game::runGameLoop() {
     cout << "Entering game loop" << endl;
-    Device* device = DeviceManager::getDevice();
+    Device* device = DeviceManager::getDevicePtr();
     m_isRunning = true;
     while (m_isRunning) {
-        string cmd;
-        cout << "terminal# ";
-        getline(cin, cmd);
-        Terminal::pushCommand(cmd);
+//         string cmd;
+//         cout << "terminal# ";
+//         getline(cin, cmd);
+//         Terminal::pushCommand(cmd);
 
         device->processEvents(m_isRunning);
         Terminal::processCommandsQueue();

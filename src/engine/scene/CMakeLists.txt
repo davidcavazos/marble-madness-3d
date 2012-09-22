@@ -4,6 +4,7 @@ set(LIBRARY_NAME scene-manager)
 set(SRC_FILES
     entity.cpp
     component.cpp
+    scenemanager.cpp
 )
 
 add_library(${LIBRARY_NAME} SHARED ${SRC_FILES})

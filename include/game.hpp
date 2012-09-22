@@ -21,13 +21,13 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "engine/terminal/commandobject.hpp"
+#include "engine/scene/scenemanager.hpp"
 
 class Device;
 
 class Game: public CommandObject {
 public:
-    Game(const std::string& objectName);
+    Game(const std::string& objectName, const std::string& rootNodeName);
     ~Game();
 
     void loadScene();
@@ -36,6 +36,7 @@ public:
 
 private:
     bool m_isRunning;
+    SceneManager m_sceneManager;
 
     void registerCommands();
     void quit(const std::string&);

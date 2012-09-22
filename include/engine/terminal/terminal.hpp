@@ -21,13 +21,13 @@
 #ifndef TERMINAL_HPP
 #define TERMINAL_HPP
 
+#include <ostream>
 #include <string>
 #include <vector>
 #include <deque>
 #include "tokentable.hpp"
 #include "command.hpp"
-
-class CommandObject;
+#include "commandobject.hpp"
 
 class Terminal {
 public:
@@ -35,6 +35,8 @@ public:
     friend CommandObject;
 
     static bool getObject(const size_t id, CommandObject*& object);
+    static const std::string getObjectName(const size_t idObject);
+    static std::string findCommandName(const size_t idCommand);
 
     static void pushCommand(const Command& cmd);
     static void pushCommand(const std::string& cmdStr);
@@ -43,9 +45,10 @@ public:
     static std::vector<std::string> generateCommandsList(const bool shouldIncludeId = false);
     static std::vector<std::string> generateAttributesList(const bool shouldIncludeId = false);
     static std::vector<std::string> generateAutocompleteList(const std::string& expression);
+    static std::string listsToString();
 
 private:
-    typedef std::vector<CommandObject*> obj_ptr_table_t;
+    typedef std::map<size_t, CommandObject*> obj_ptr_table_t;
 
     static TokenTable ms_objectsTable;
     static TokenTable ms_commandsTable;
@@ -69,6 +72,15 @@ inline bool Terminal::getObject(const size_t id, CommandObject*& object) {
             return true;
     }
     return false;
+}
+
+inline const std::string Terminal::getObjectName(const size_t idObject) {
+//     return ms_objectsTable.findName(idObject);
+    return ms_objectPointersTable[idObject]->getObjectName();
+}
+
+inline std::string Terminal::findCommandName(const size_t idCommand) {
+    return ms_commandsTable.findName(idCommand);
 }
 
 #endif // TERMINAL_HPP

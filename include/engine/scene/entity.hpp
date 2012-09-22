@@ -21,7 +21,20 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-class Entity {
+#include <set>
+#include "engine/terminal/commandobject.hpp"
+
+class Entity: public CommandObject {
+public:
+    Entity(const std::string& objectName);
+    ~Entity();
+
+    Entity* addChild(const std::string& childName);
+    void removeChild(Entity* const child);
+    std::string treeToString(const size_t indent) const;
+
+private:
+    std::set<Entity*> m_children;
 };
 
 #endif // ENTITY_HPP

@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int, char**) {
-    Game game("game");
+    Game game("game", "root");
     game.loadScene();
     game.bindControls();
     game.runGameLoop();

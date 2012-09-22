@@ -22,6 +22,7 @@
 #define DEVICE_HPP
 
 #include <string>
+#include "engine/device/inputmanager.hpp"
 
 enum device_t {
     DEVICE_SDL_OPENGL_LEGACY,
@@ -36,19 +37,29 @@ public:
     Device();
     virtual ~Device() {}
 
+    InputManager& getInputManager();
+
     virtual size_t videoMemKB() = 0;
     virtual void setTitle(const std::string& title) = 0;
     virtual void setFullscreen(const bool useFullscreen = true) = 0;
     virtual void setResolution(const size_t width, const size_t height) = 0;
     virtual void processEvents(bool& isRunning) = 0;
+    virtual void getPointerInfo(int& x, int& y) = 0;
 
 protected:
     size_t m_width;
     size_t m_height;
     size_t m_depth;
+    static InputManager ms_inputManager;
 
     virtual void initialize() = 0;
     virtual void shutdown() = 0;
 };
+
+
+
+inline InputManager& Device::getInputManager() {
+    return ms_inputManager;
+}
 
 #endif // DEVICE_HPP

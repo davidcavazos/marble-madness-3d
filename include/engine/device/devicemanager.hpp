@@ -26,7 +26,8 @@
 
 class DeviceManager {
 public:
-    static Device* getDevice();
+    static Device* getDevicePtr();
+    static Device& getDevice();
 
     static Device* createSystem(const device_t type);
     static void shutdownSystem();
@@ -36,8 +37,13 @@ private:
 };
 
 
-Device* DeviceManager::getDevice() {
+
+Device* DeviceManager::getDevicePtr() {
     return ms_system;
+}
+
+Device& DeviceManager::getDevice() {
+    return *ms_system;
 }
 
 #endif // DEVICEMANAGER_HPP
