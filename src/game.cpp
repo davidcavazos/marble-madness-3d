@@ -21,6 +21,7 @@
 #include "game.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <SDL/SDL_events.h>
 #include "engine/device/devicemanager.hpp"
 #include "engine/terminal/terminal.hpp"
@@ -38,7 +39,10 @@ Game::Game(const string& objectName, const string& rootNodeName):
     cout << "+ Read/write scene from XML" << endl;
     cout << endl;
 
-    registerCommands();
+    registerCommand("quit", boost::bind(&Game::quit, this, _1));
+    registerCommand("run", boost::bind(&Game::runCommand, this, _1));
+    registerCommand("print-entity", boost::bind(&Game::printEntity, this, _1));
+
     Device* device = DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY);
     device->setTitle("Marble Madness 3D");
     device->setResolution(800, 500);
@@ -51,13 +55,14 @@ Game::~Game() {
 void Game::loadScene() {
     cout << "Loading scene" << endl;
     Entity* root = m_sceneManager.getRootPtr();
-    root->addChild("player");
     Entity* enemy1 = root->addChild("enemy1");
     Entity* gun1 = enemy1->addChild("gun1");
     gun1->addChild("scope");
     Entity* enemy2 = root->addChild("enemy2");
     enemy2->addChild("gun2");
     root->addChild("enemy3");
+
+    Entity* player = root->addChild("player");
 
     cout << Terminal::listsToString() << endl;
 
@@ -67,7 +72,9 @@ void Game::loadScene() {
 void Game::bindControls() {
     cout << "Binding controls" << endl;
     Device* device = DeviceManager::getDevicePtr();
-    device->getInputManager().bindInput(INPUT_KEY_DOWN, "game quit", SDLK_ESCAPE);
+    device->getInputManager().bindInput(INPUT_KEY_UP, "game quit", SDLK_ESCAPE);
+    device->getInputManager().bindInput(INPUT_KEY_UP, "game run terminal-line.cmd", SDLK_SPACE);
+    device->getInputManager().bindInput(INPUT_KEY_UP, "game print-entity player", SDLK_p);
 }
 
 void Game::runGameLoop() {
@@ -75,20 +82,31 @@ void Game::runGameLoop() {
     Device* device = DeviceManager::getDevicePtr();
     m_isRunning = true;
     while (m_isRunning) {
-//         string cmd;
-//         cout << "terminal# ";
-//         getline(cin, cmd);
-//         Terminal::pushCommand(cmd);
-
         device->processEvents(m_isRunning);
         Terminal::processCommandsQueue();
     }
 }
 
-void Game::registerCommands() {
-    registerCommand("quit", boost::bind(&Game::quit, this, _1));
-}
-
 void Game::quit(const string&) {
     m_isRunning = false;
+}
+
+void Game::runCommand(const string& arg) {
+    string cmd;
+
+    fstream file(arg.c_str(), ios::in);
+    while (file.good()) {
+        getline(file, cmd);
+        if (!cmd.empty()) {
+            cout << "> " << cmd << endl;
+            Terminal::pushCommand(cmd);
+        }
+    }
+    file.close();
+}
+
+void Game::printEntity(const string& arg) {
+    Entity* entity;
+    if (m_sceneManager.findEntity(arg, entity))
+        cout << *entity << endl;
 }

@@ -38,8 +38,9 @@ private:
     bool m_isRunning;
     SceneManager m_sceneManager;
 
-    void registerCommands();
     void quit(const std::string&);
+    void runCommand(const std::string& arg);
+    void printEntity(const std::string& arg);
 };
 
 #endif // GAME_HPP
