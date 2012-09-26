@@ -73,7 +73,7 @@ void Game::bindControls() {
     cout << "Binding controls" << endl;
     Device* device = DeviceManager::getDevicePtr();
     device->getInputManager().bindInput(INPUT_KEY_UP, "game quit", SDLK_ESCAPE);
-    device->getInputManager().bindInput(INPUT_KEY_UP, "game run terminal-line.cmd", SDLK_SPACE);
+    device->getInputManager().bindInput(INPUT_KEY_UP, "game run commands.txt", SDLK_SPACE);
     device->getInputManager().bindInput(INPUT_KEY_UP, "game print-entity player", SDLK_p);
 }
 

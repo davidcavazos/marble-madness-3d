@@ -22,5 +22,5 @@ add_library(${LIBRARY_NAME} SHARED ${SRC_FILES})
 find_package(Boost REQUIRED)
 find_package(SDL REQUIRED)
 
-include_directories(${Boost_INCLUDE_DIRS} ${SDL_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${SDL_INCLUDE_DIR}/SDL)
 target_link_libraries(${LIBRARY_NAME} ${SDL_LIBRARY})
