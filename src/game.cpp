@@ -23,9 +23,9 @@
 #include <iostream>
 #include <fstream>
 #include <SDL_events.h>
-#include "engine/device/devicemanager.hpp"
-#include "engine/terminal/terminal.hpp"
-#include "engine/scene/scenemanager.hpp"
+#include "engine/devicemanager.hpp"
+#include "engine/terminal.hpp"
+#include "engine/scenemanager.hpp"
 
 using namespace std;
 

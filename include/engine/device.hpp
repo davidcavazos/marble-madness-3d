@@ -22,7 +22,7 @@
 #define DEVICE_HPP
 
 #include <string>
-#include "engine/device/inputmanager.hpp"
+#include "inputmanager.hpp"
 
 enum device_t {
     DEVICE_SDL_OPENGL_LEGACY,

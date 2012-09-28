@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/device/device.hpp"
+#include "engine/device.hpp"
 
 const size_t DEFAULT_SCREEN_WIDTH = 640;
 const size_t DEFAULT_SCREEN_HEIGHT = 480;

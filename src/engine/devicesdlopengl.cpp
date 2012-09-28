@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/device/devicesdlopengl.hpp"
+#include "engine/devicesdlopengl.hpp"
 
 #include <iostream>
 #include <cassert>

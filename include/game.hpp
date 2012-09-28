@@ -21,7 +21,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "engine/scene/scenemanager.hpp"
+#include "engine/scenemanager.hpp"
 
 class Device;
 

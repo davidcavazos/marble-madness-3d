@@ -18,5 +18,5 @@
 */
 
 
-#include "engine/scene/component.hpp"
+#include "engine/component.hpp"
 

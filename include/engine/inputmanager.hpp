@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "engine/terminal/command.hpp"
+#include "command.hpp"
 
 typedef enum {
     INPUT_KEY_DOWN,

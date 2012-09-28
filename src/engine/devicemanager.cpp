@@ -18,12 +18,12 @@
 */
 
 
-#include "engine/device/devicemanager.hpp"
+#include "engine/devicemanager.hpp"
 
 #include <iostream>
 #include <cassert>
 
-#include "engine/device/devicesdlopengl.hpp"
+#include "engine/devicesdlopengl.hpp"
 
 using namespace std;
 

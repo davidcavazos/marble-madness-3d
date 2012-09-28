@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/terminal/tokentable.hpp"
+#include "engine/tokentable.hpp"
 
 #include <iostream>
 #include <iomanip>
