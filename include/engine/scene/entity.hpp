@@ -32,7 +32,7 @@ class Entity: public CommandObject {
 public:
     friend std::ostream& operator<<(std::ostream& out, const Entity& rhs);
 
-    Entity(const std::string& objectName);
+    Entity(const Entity* m_parent, const std::string& objectName);
     ~Entity();
 
     void attachComponent(Component* const component);
@@ -42,8 +42,9 @@ public:
     std::string treeToString(const size_t indent) const;
 
 private:
-    std::vector<Component*> m_components;
+    const Entity& m_parent;
     std::set<Entity*> m_children;
+    std::vector<Component*> m_components;
     double m_positionX;
     double m_positionY;
 

@@ -27,10 +27,11 @@ using namespace std;
 
 const size_t INDENT_SIZE = 2;
 
-Entity::Entity(const string& objectName):
+Entity::Entity(const Entity* parent, const string& objectName):
     CommandObject(objectName),
-    m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
+    m_parent(*parent),
     m_children(),
+    m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
     m_positionX(0.0),
     m_positionY(0.0)
 {
@@ -50,7 +51,7 @@ void Entity::detachComponent(Component* const component) {
 }
 
 Entity* Entity::addChild(const string& childName) {
-    Entity* child = new Entity(childName);
+    Entity* child = new Entity(this, childName);
     m_children.insert(child);
     SceneManager::ms_entities.insert(pair<string, Entity*>(childName, child));
     return child;

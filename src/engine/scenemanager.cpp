@@ -25,7 +25,7 @@ using namespace std;
 map<string, Entity*> SceneManager::ms_entities = map<string, Entity*>();
 
 SceneManager::SceneManager(const string& rootNodeName):
-    m_root(rootNodeName)
+    m_root(0, rootNodeName)
 {}
 
 bool SceneManager::findEntity(const string& name, Entity*& entity) {
