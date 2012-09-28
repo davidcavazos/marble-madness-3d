@@ -18,11 +18,11 @@
 */
 
 
-#include "engine/inputmanager.hpp"
+#include "engine/kernel/inputmanager.hpp"
 
 #include <iostream>
 #include <sstream>
-#include "engine/terminal.hpp"
+#include "engine/kernel/terminal.hpp"
 
 using namespace std;
 

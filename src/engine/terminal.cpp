@@ -18,11 +18,11 @@
 */
 
 
-#include "engine/terminal.hpp"
+#include "engine/kernel/terminal.hpp"
 
 #include <iostream>
 #include <sstream>
-#include "engine/commandobject.hpp"
+#include "engine/kernel/commandobject.hpp"
 
 using namespace std;
 

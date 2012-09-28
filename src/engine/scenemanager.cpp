@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/scenemanager.hpp"
+#include "engine/kernel/scenemanager.hpp"
 
 using namespace std;
 

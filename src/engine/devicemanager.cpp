@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/devicemanager.hpp"
+#include "engine/kernel/devicemanager.hpp"
 
 #include <iostream>
 

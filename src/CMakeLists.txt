@@ -6,7 +6,7 @@ set(SRC_FILES
     main.cpp
 )
 set(LIBRARIES
-    engine
+    kernel
 )
 
 add_executable(${EXE_NAME} ${SRC_FILES})

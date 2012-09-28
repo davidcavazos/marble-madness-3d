@@ -18,10 +18,10 @@
 */
 
 
-#include "engine/entity.hpp"
+#include "engine/kernel/entity.hpp"
 
-#include "engine/scenemanager.hpp"
-#include "engine/component.hpp"
+#include "engine/kernel/scenemanager.hpp"
+#include "engine/kernel/component.hpp"
 
 using namespace std;
 

@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/device.hpp"
+#include "engine/kernel/device.hpp"
 
 #include <iostream>
 #include <cassert>

@@ -18,5 +18,5 @@
 */
 
 
-#include "engine/component.hpp"
+#include "engine/kernel/component.hpp"
 
