@@ -21,36 +21,26 @@
 #include "engine/devicemanager.hpp"
 
 #include <iostream>
-#include <cassert>
-
-#include "engine/devicesdlopengl.hpp"
 
 using namespace std;
 
-Device* DeviceManager::ms_system = 0;
+Device* DeviceManager::ms_manager = 0;
 
-Device* DeviceManager::createSystem(const device_t type) {
-    if (ms_system == 0) {
-        switch (type) {
-        case DEVICE_SDL_OPENGL_LEGACY:
-            ms_system = new DeviceSDLOpenGL;
-            break;
-        default:
-            cerr << "Invalid device type, returning null device" << endl;
-        }
-        assert(ms_system != 0);
-        ms_system->initialize();
+Device* DeviceManager::create() {
+    if (ms_manager == 0) {
+        ms_manager = new Device;
+        ms_manager->initialize();
     }
     else
         cerr << "Warning: device already exists, cannot create" << endl;
-    return ms_system;
+    return ms_manager;
 }
 
-void DeviceManager::shutdownSystem() {
-    if (ms_system != 0) {
-        ms_system->shutdown();
-        delete ms_system;
-        ms_system = 0;
+void DeviceManager::shutdown() {
+    if (ms_manager != 0) {
+        ms_manager->shutdown();
+        delete ms_manager;
+        ms_manager = 0;
     }
     else
         cerr << "Warning: no existing device, cannot shutdown" << endl;

@@ -43,13 +43,13 @@ Game::Game(const string& objectName, const string& rootNodeName):
     registerCommand("run", boost::bind(&Game::runCommand, this, _1));
     registerCommand("print-entity", boost::bind(&Game::printEntity, this, _1));
 
-    Device* device = DeviceManager::createSystem(DEVICE_SDL_OPENGL_LEGACY);
+    Device* device = DeviceManager::create();
     device->setTitle("Marble Madness 3D");
     device->setResolution(800, 500);
 }
 
 Game::~Game() {
-    DeviceManager::shutdownSystem();
+    DeviceManager::shutdown();
 }
 
 void Game::loadScene() {
@@ -71,7 +71,7 @@ void Game::loadScene() {
 
 void Game::bindControls() {
     cout << "Binding controls" << endl;
-    Device* device = DeviceManager::getDevicePtr();
+    Device* device = DeviceManager::getManagerPtr();
     device->getInputManager().bindInput(INPUT_KEY_UP, "game quit", SDLK_ESCAPE);
     device->getInputManager().bindInput(INPUT_KEY_UP, "game run commands.txt", SDLK_SPACE);
     device->getInputManager().bindInput(INPUT_KEY_UP, "game print-entity player", SDLK_p);
@@ -79,7 +79,7 @@ void Game::bindControls() {
 
 void Game::runGameLoop() {
     cout << "Entering game loop" << endl;
-    Device* device = DeviceManager::getDevicePtr();
+    Device* device = DeviceManager::getManagerPtr();
     m_isRunning = true;
     while (m_isRunning) {
         device->processEvents(m_isRunning);

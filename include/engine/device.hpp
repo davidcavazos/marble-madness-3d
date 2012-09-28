@@ -24,36 +24,33 @@
 #include <string>
 #include "inputmanager.hpp"
 
-enum device_t {
-    DEVICE_SDL_OPENGL_LEGACY,
-    DEVICE_SDL_OPENGL_CORE
-};
-
 class DeviceManager;
+struct SDL_Surface;
 
 class Device {
-friend class DeviceManager;
 public:
+    friend class DeviceManager;
+
     Device();
-    virtual ~Device() {}
 
     InputManager& getInputManager();
 
-    virtual size_t videoMemKB() = 0;
-    virtual void setTitle(const std::string& title) = 0;
-    virtual void setFullscreen(const bool useFullscreen = true) = 0;
-    virtual void setResolution(const size_t width, const size_t height) = 0;
-    virtual void processEvents(bool& isRunning) = 0;
-    virtual void getPointerInfo(int& x, int& y) = 0;
+    size_t videoMemKB();
+    void setTitle(const std::string& title);
+    void setFullscreen(const bool useFullscreen = true);
+    void setResolution(const size_t width, const size_t height);
+    void processEvents(bool& isRunning);
+    void getPointerInfo(int& x, int& y);
 
 protected:
     size_t m_width;
     size_t m_height;
     size_t m_depth;
     static InputManager ms_inputManager;
+    static SDL_Surface* m_screen;
 
-    virtual void initialize() = 0;
-    virtual void shutdown() = 0;
+    void initialize();
+    void shutdown();
 };
 
 

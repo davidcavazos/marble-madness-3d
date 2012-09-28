@@ -8,7 +8,6 @@ set(SRC_FILES
 
     device.cpp
     devicemanager.cpp
-    devicesdlopengl.cpp
     inputmanager.cpp
 
     entity.cpp
