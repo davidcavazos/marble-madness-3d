@@ -26,6 +26,7 @@
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/terminal.hpp"
 #include "engine/kernel/scenemanager.hpp"
+#include "engine/renderer/renderablemesh.hpp"
 
 using namespace std;
 
@@ -63,7 +64,8 @@ void Game::loadScene() {
     root->addChild("enemy3");
 
     Entity* player = root->addChild("player");
-    Component* mesh = new Component;
+    RenderableMesh* mesh = new RenderableMesh;
+    player->attachComponent(mesh);
 
     cout << Terminal::listsToString() << endl;
 
