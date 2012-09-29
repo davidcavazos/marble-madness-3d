@@ -34,6 +34,8 @@ public:
     Entity(const Entity* m_parent, const std::string& objectName);
     ~Entity();
 
+    void setPosition(const double x, const double y, const double z);
+
     void attachComponent(Component* const component);
     void detachComponent(Component* const component);
     Entity* addChild(const std::string& childName);
@@ -46,8 +48,17 @@ private:
     std::vector<Component*> m_components;
     double m_positionX;
     double m_positionY;
+    double m_positionZ;
 
     void position(const std::string& arg);
 };
+
+
+
+inline void Entity::setPosition(const double x, const double y, const double z) {
+    m_positionX = x;
+    m_positionY = y;
+    m_positionZ = z;
+}
 
 #endif // ENTITY_HPP

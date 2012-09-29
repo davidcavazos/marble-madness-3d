@@ -82,10 +82,10 @@ string Entity::treeToString(const size_t indent) const {
 
 void Entity::position(const string& arg) {
     stringstream ss(arg);
-    ss >> m_positionX >> m_positionY;
+    ss >> m_positionX >> m_positionY >> m_positionZ;
 }
 
 ostream& operator<<(ostream& out, const Entity& rhs) {
-    out << "pos(" << rhs.m_positionX << ", " << rhs.m_positionY << ")";
+    out << "pos(" << rhs.m_positionX << ", " << rhs.m_positionY << ", " << rhs.m_positionZ << ")";
     return out;
 }

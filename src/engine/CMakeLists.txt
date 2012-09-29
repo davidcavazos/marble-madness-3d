@@ -17,6 +17,7 @@ set(KERNEL_SRC_FILES
 )
 
 set(RENDER_SRC_FILES
+    renderer/camera.cpp
     renderer/renderablemesh.cpp
     renderer/rendersystem.cpp
     renderer/rendermanager.cpp

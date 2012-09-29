@@ -20,3 +20,9 @@
 
 #include "engine/renderer/renderablemesh.hpp"
 
+RenderableMesh::RenderableMesh():
+    Component(),
+    m_vertices(),
+    m_normals(),
+    m_indices()
+{}

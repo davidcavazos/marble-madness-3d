@@ -21,9 +21,17 @@
 #ifndef RENDERABLEMESH_HPP
 #define RENDERABLEMESH_HPP
 
+#include <vector>
 #include "engine/kernel/component.hpp"
 
 class RenderableMesh: public Component {
+public:
+    RenderableMesh();
+
+private:
+    std::vector<float> m_vertices;
+    std::vector<float> m_normals;
+    std::vector<unsigned char> m_indices;
 };
 
 #endif // RENDERABLEMESH_HPP

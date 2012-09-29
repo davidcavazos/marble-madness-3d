@@ -27,6 +27,7 @@
 #include "engine/kernel/terminal.hpp"
 #include "engine/kernel/scenemanager.hpp"
 #include "engine/renderer/renderablemesh.hpp"
+#include "engine/renderer/camera.hpp"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ Game::Game(const string& objectName, const string& rootNodeName):
     cout << "TODO:" << endl;
     cout << "+ Make input manager into a vector, only one can be active at a time (XML)" << endl;
     cout << "+ Read/write scene from XML" << endl;
+    cout << "+ Possibility of multiple cameras" << endl;
+    cout << "+ Binding keys (or other inputs) with a command" << endl;
     cout << endl;
 
     registerCommand("quit", boost::bind(&Game::quit, this, _1));
@@ -56,16 +59,23 @@ Game::~Game() {
 void Game::loadScene() {
     cout << "Loading scene" << endl;
     Entity* root = m_sceneManager.getRootPtr();
+
+    Entity* camera = root->addChild("camera");
+    Camera* camComponent = new Camera;
+    camera->attachComponent(camComponent);
+//     camera->setPosition(0.0, 0.0, -5.0);
+
+    Entity* cube = root->addChild("cube");
+    RenderableMesh* mesh = new RenderableMesh;
+    cube->attachComponent(mesh);
+    cube->setPosition(0.0, 0.0, 10.0);
+
     Entity* enemy1 = root->addChild("enemy1");
     Entity* gun1 = enemy1->addChild("gun1");
     gun1->addChild("scope");
     Entity* enemy2 = root->addChild("enemy2");
     enemy2->addChild("gun2");
     root->addChild("enemy3");
-
-    Entity* player = root->addChild("player");
-    RenderableMesh* mesh = new RenderableMesh;
-    player->attachComponent(mesh);
 
     cout << Terminal::listsToString() << endl;
 
@@ -77,7 +87,6 @@ void Game::bindControls() {
     Device* device = DeviceManager::getManagerPtr();
     device->getInputManager().bindInput(INPUT_KEY_UP, "game quit", SDLK_ESCAPE);
     device->getInputManager().bindInput(INPUT_KEY_UP, "game run commands.txt", SDLK_SPACE);
-    device->getInputManager().bindInput(INPUT_KEY_UP, "game print-entity player", SDLK_p);
 }
 
 void Game::runGameLoop() {
