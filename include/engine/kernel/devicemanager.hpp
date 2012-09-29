@@ -21,28 +21,28 @@
 #ifndef DEVICEMANAGER_HPP
 #define DEVICEMANAGER_HPP
 
-#include "device.hpp"
+class Device;
 
 class DeviceManager {
 public:
-    static Device* getManagerPtr();
-    static Device& getManager();
+    static Device* getDevicePtr();
+    static Device& getDevice();
 
     static Device* create();
     static void shutdown();
 
 private:
-    static Device* ms_manager;
+    static Device* ms_device;
 };
 
 
 
-inline Device* DeviceManager::getManagerPtr() {
-    return ms_manager;
+inline Device* DeviceManager::getDevicePtr() {
+    return ms_device;
 }
 
-inline Device& DeviceManager::getManager() {
-    return *getManagerPtr();
+inline Device& DeviceManager::getDevice() {
+    return *getDevicePtr();
 }
 
 #endif // DEVICEMANAGER_HPP

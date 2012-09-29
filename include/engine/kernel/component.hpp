@@ -21,7 +21,10 @@
 #ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
+#include <string>
+
 typedef enum {
+    COMPONENT_CAMERA,
     COMPONENT_RENDERABLE_MESH,
     COMPONENT_PHYSICS,
     TOTAL_COMPONENTS_CONTAINER_SIZE // Do not use as a component, gives size to component container
@@ -29,8 +32,27 @@ typedef enum {
 
 class Component {
 public:
-    Component() {}
+    Component(const component_t type);
     virtual ~Component() {}
+
+    component_t getType() const;
+    const std::string& getDescription() const;
+
+protected:
+    const component_t m_type;
+    std::string m_description;
 };
+
+std::ostream& operator<<(std::ostream& out, const Component& rhs);
+
+
+
+inline component_t Component::getType() const {
+    return m_type;
+}
+
+inline const std::string& Component::getDescription() const {
+    return m_description;
+}
 
 #endif // COMPONENT_HPP

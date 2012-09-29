@@ -31,16 +31,15 @@ class Device {
 public:
     friend class DeviceManager;
 
-    Device();
-
     InputManager& getInputManager();
 
+    void swapBuffers();
     size_t videoMemKB();
     void setTitle(const std::string& title);
     void setFullscreen(const bool useFullscreen = true);
     void setResolution(const size_t width, const size_t height);
     void processEvents(bool& isRunning);
-    void getPointerInfo(int& x, int& y);
+    void getCursorInfo(int& x, int& y);
 
 protected:
     size_t m_width;
@@ -49,8 +48,10 @@ protected:
     static InputManager ms_inputManager;
     static SDL_Surface* m_screen;
 
+    Device();
+
     void initialize();
-    void shutdown();
+    void deinitialize();
 };
 
 

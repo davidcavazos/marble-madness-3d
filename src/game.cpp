@@ -23,9 +23,12 @@
 #include <iostream>
 #include <fstream>
 #include <SDL_events.h>
+#include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/terminal.hpp"
 #include "engine/kernel/scenemanager.hpp"
+#include "engine/renderer/rendermanager.hpp"
+#include "engine/renderer/renderer.hpp"
 #include "engine/renderer/renderablemesh.hpp"
 #include "engine/renderer/camera.hpp"
 
@@ -37,10 +40,12 @@ Game::Game(const string& objectName, const string& rootNodeName):
     m_sceneManager(rootNodeName)
 {
     cout << "TODO:" << endl;
+    cout << "+ Recognize first character # as comment in terminal" << endl;
     cout << "+ Make input manager into a vector, only one can be active at a time (XML)" << endl;
     cout << "+ Read/write scene from XML" << endl;
     cout << "+ Possibility of multiple cameras" << endl;
     cout << "+ Binding keys (or other inputs) with a command" << endl;
+    cout << "+ Implement OpenGL Core" << endl;
     cout << endl;
 
     registerCommand("quit", boost::bind(&Game::quit, this, _1));
@@ -53,6 +58,7 @@ Game::Game(const string& objectName, const string& rootNodeName):
 }
 
 Game::~Game() {
+    RenderManager::shutdown();
     DeviceManager::shutdown();
 }
 
@@ -60,13 +66,14 @@ void Game::loadScene() {
     cout << "Loading scene" << endl;
     Entity* root = m_sceneManager.getRootPtr();
 
+    Camera* camComponent = new Camera(CAMERA_PROJECTION);
     Entity* camera = root->addChild("camera");
-    Camera* camComponent = new Camera;
     camera->attachComponent(camComponent);
 //     camera->setPosition(0.0, 0.0, -5.0);
 
-    Entity* cube = root->addChild("cube");
     RenderableMesh* mesh = new RenderableMesh;
+    mesh->generateCube(1.0, 1.0, 1.0);
+    Entity* cube = root->addChild("cube");
     cube->attachComponent(mesh);
     cube->setPosition(0.0, 0.0, 10.0);
 
@@ -80,21 +87,27 @@ void Game::loadScene() {
     cout << Terminal::listsToString() << endl;
 
     cout << m_sceneManager.sceneGraphToString() << endl;
+
+    cout << RenderManager::listsToString() << endl;
 }
 
 void Game::bindControls() {
     cout << "Binding controls" << endl;
-    Device* device = DeviceManager::getManagerPtr();
+    Device* device = DeviceManager::getDevicePtr();
     device->getInputManager().bindInput(INPUT_KEY_UP, "game quit", SDLK_ESCAPE);
     device->getInputManager().bindInput(INPUT_KEY_UP, "game run commands.txt", SDLK_SPACE);
 }
 
 void Game::runGameLoop() {
+    cout << "Creating renderer" << endl;
+    Renderer* renderer = RenderManager::create();
     cout << "Entering game loop" << endl;
-    Device* device = DeviceManager::getManagerPtr();
+    Device* device = DeviceManager::getDevicePtr();
     m_isRunning = true;
     while (m_isRunning) {
         device->processEvents(m_isRunning);
+        RenderManager::renderFrame();
+        device->swapBuffers();
         Terminal::processCommandsQueue();
     }
 }

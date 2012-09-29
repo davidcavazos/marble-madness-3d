@@ -20,3 +20,59 @@
 
 #include "engine/renderer/rendermanager.hpp"
 
+#include <iostream>
+#include <sstream>
+#include "engine/renderer/renderer.hpp"
+#include "engine/renderer/camera.hpp"
+#include <engine/renderer/renderablemesh.hpp>
+
+using namespace std;
+
+Renderer* RenderManager::ms_renderer = 0;
+Camera* RenderManager::ms_activeCamera = 0;
+set<Camera*> RenderManager::ms_cameras = set<Camera*>();
+set<RenderableMesh*> RenderManager::ms_meshes = set<RenderableMesh*>();
+
+Renderer* RenderManager::create() {
+    if (ms_renderer == 0) {
+        ms_renderer = new Renderer;
+        ms_renderer->initialize();
+    }
+    else
+        cerr << "Warning: renderer already exists, cannot create" << endl;
+    return ms_renderer;
+}
+
+void RenderManager::shutdown() {
+    if (ms_renderer != 0) {
+        ms_renderer->deinitialize();
+        delete ms_renderer;
+        ms_renderer = 0;
+    }
+    else
+        cerr << "Warning: no existing renderer, cannot shutdown" << endl;
+}
+
+void RenderManager::renderFrame() {
+    ms_renderer->draw();
+}
+
+string RenderManager::listsToString() {
+    stringstream ss;
+    ss << "Renderer Cameras List:" << endl;
+    set<Camera*>::const_iterator itCam;
+    for (itCam = ms_cameras.begin(); itCam != ms_cameras.end(); ++itCam) {
+        ss << "  " << (*itCam)->getDescription();
+        if (*itCam == ms_activeCamera)
+            ss << " *";
+        ss << endl;
+    }
+    ss << endl;
+
+    ss << "Renderer Meshes List:" << endl;
+    set<RenderableMesh*>::const_iterator itMesh;
+    for (itMesh = ms_meshes.begin(); itMesh != ms_meshes.end(); ++itMesh)
+        ss << "  " << (*itMesh)->getDescription() << endl;
+
+    return ss.str();
+}

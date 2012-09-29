@@ -18,5 +18,22 @@
 */
 
 
-#include "engine/renderer/rendersystem.hpp"
+#ifndef RENDERER_HPP
+#define RENDERER_HPP
 
+class RenderManager;
+
+class Renderer {
+public:
+    friend class RenderManager;
+
+private:
+    Renderer();
+
+    void initialize();
+    void deinitialize();
+    void draw();
+    void updateProjectionMatrix();
+};
+
+#endif // RENDERER_HPP

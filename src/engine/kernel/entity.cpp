@@ -33,7 +33,8 @@ Entity::Entity(const Entity* parent, const string& objectName):
     m_children(),
     m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
     m_positionX(0.0),
-    m_positionY(0.0)
+    m_positionY(0.0),
+    m_positionZ(0.0)
 {
     registerAttribute("position", boost::bind(&Entity::position, this, _1));
 }
@@ -42,12 +43,17 @@ Entity::~Entity() {
     set<Entity*>::iterator it;
     for (it = m_children.begin(); it != m_children.end(); ++it)
         delete *it;
+    for (size_t i = 0; i < m_components.size(); ++i)
+        delete m_components[i];
 }
 
 void Entity::attachComponent(Component* const component) {
+    m_components[component->getType()] = component;
 }
 
 void Entity::detachComponent(Component* const component) {
+    delete m_components[component->getType()];
+    m_components[component->getType()] = 0;
 }
 
 Entity* Entity::addChild(const string& childName) {
@@ -86,6 +92,10 @@ void Entity::position(const string& arg) {
 }
 
 ostream& operator<<(ostream& out, const Entity& rhs) {
-    out << "pos(" << rhs.m_positionX << ", " << rhs.m_positionY << ", " << rhs.m_positionZ << ")";
+    out << "pos(" << rhs.m_positionX << ", " << rhs.m_positionY << ", " << rhs.m_positionZ << ")" << endl;
+    for (size_t i = 0; i < rhs.m_components.size(); ++i) {
+        if (rhs.m_components[i] != 0)
+            out << "    " << *rhs.m_components[i] << endl;
+    }
     return out;
 }

@@ -21,26 +21,27 @@
 #include "engine/kernel/devicemanager.hpp"
 
 #include <iostream>
+#include "engine/kernel/device.hpp"
 
 using namespace std;
 
-Device* DeviceManager::ms_manager = 0;
+Device* DeviceManager::ms_device = 0;
 
 Device* DeviceManager::create() {
-    if (ms_manager == 0) {
-        ms_manager = new Device;
-        ms_manager->initialize();
+    if (ms_device == 0) {
+        ms_device = new Device;
+        ms_device->initialize();
     }
     else
         cerr << "Warning: device already exists, cannot create" << endl;
-    return ms_manager;
+    return ms_device;
 }
 
 void DeviceManager::shutdown() {
-    if (ms_manager != 0) {
-        ms_manager->shutdown();
-        delete ms_manager;
-        ms_manager = 0;
+    if (ms_device != 0) {
+        ms_device->deinitialize();
+        delete ms_device;
+        ms_device = 0;
     }
     else
         cerr << "Warning: no existing device, cannot shutdown" << endl;

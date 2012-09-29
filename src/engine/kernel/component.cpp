@@ -20,3 +20,29 @@
 
 #include "engine/kernel/component.hpp"
 
+#include <ostream>
+
+using namespace std;
+
+Component::Component(const component_t type):
+    m_type(type),
+    m_description()
+{}
+
+ostream& operator<<(ostream& out, const Component& rhs) {
+    switch (rhs.getType()) {
+    case COMPONENT_CAMERA:
+        out << "CAMERA";
+        break;
+    case COMPONENT_RENDERABLE_MESH:
+        out << "RENDERABLE_MESH";
+        break;
+    case COMPONENT_PHYSICS:
+        out << "PHYSICS";
+        break;
+    default:
+        out << "INVALID";
+    }
+    out << " " << rhs.getDescription();
+    return out;
+}

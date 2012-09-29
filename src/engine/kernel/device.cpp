@@ -36,11 +36,9 @@ const Uint32 SDL_VIDEO_FLAGS = SDL_HWSURFACE | SDL_ANYFORMAT | SDL_OPENGL;
 InputManager Device::ms_inputManager = InputManager();
 SDL_Surface* Device::m_screen = 0;
 
-Device::Device() :
-    m_width(DEFAULT_SCREEN_WIDTH),
-    m_height(DEFAULT_SCREEN_HEIGHT),
-    m_depth(DEFAULT_SCREEN_DEPTH)
-{}
+void Device::swapBuffers() {
+    SDL_GL_SwapBuffers();
+}
 
 size_t Device::videoMemKB() {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
@@ -100,9 +98,15 @@ void Device::processEvents(bool& isRunning) {
     }
 }
 
-void Device::getPointerInfo(int& x, int& y) {
+void Device::getCursorInfo(int& x, int& y) {
     SDL_GetMouseState(&x, &y);
 }
+
+Device::Device() :
+    m_width(DEFAULT_SCREEN_WIDTH),
+    m_height(DEFAULT_SCREEN_HEIGHT),
+    m_depth(DEFAULT_SCREEN_DEPTH)
+{}
 
 void Device::initialize() {
     cout << "Creating SDL-OpenGL device" << endl;
@@ -118,7 +122,7 @@ void Device::initialize() {
     assert(m_screen != 0);
 }
 
-void Device::shutdown() {
+void Device::deinitialize() {
     cout << "SDL-OpenGL device quit" << endl;
     SDL_Quit();
 }

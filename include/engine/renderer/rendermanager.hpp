@@ -21,7 +21,42 @@
 #ifndef RENDERMANAGER_HPP
 #define RENDERMANAGER_HPP
 
+#include <string>
+#include <set>
+
+class Renderer;
+class Camera;
+class RenderableMesh;
+
 class RenderManager {
+public:
+    friend class Renderer;
+    friend class Camera;
+    friend class RenderableMesh;
+
+    static Renderer* getRendererPtr();
+    static Renderer& getRenderer();
+
+    static Renderer* create();
+    static void shutdown();
+    static void renderFrame();
+    static std::string listsToString();
+
+private:
+    static Renderer* ms_renderer;
+    static Camera* ms_activeCamera;
+    static std::set<Camera*> ms_cameras;
+    static std::set<RenderableMesh*> ms_meshes;
 };
+
+
+
+inline Renderer* RenderManager::getRendererPtr() {
+    return ms_renderer;
+}
+
+inline Renderer& RenderManager::getRenderer() {
+    return *getRendererPtr();
+}
 
 #endif // RENDERMANAGER_HPP
