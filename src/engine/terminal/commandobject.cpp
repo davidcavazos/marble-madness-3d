@@ -92,7 +92,7 @@ void CommandObject::setAttribute(const string& arg) {
 }
 
 ostream& operator<<(ostream& out, const CommandObject& rhs) {
-    out << setw(MAX_EXPECTED_ID_DIGITS) << rhs.m_idObject << " " << rhs.m_objectName << "\t";
+    out << setw(MAX_EXPECTED_ID_DIGITS) << rhs.m_idObject << " " << rhs.m_objectName << "   ";
     std::map<size_t, boost::function<void (const std::string&)> >::const_iterator it;
     for (it = rhs.m_commands.begin(); it != rhs.m_commands.end(); ++it)
         out << it->first << " ";

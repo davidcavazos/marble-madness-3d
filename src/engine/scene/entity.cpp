@@ -20,14 +20,22 @@
 
 #include "engine/scene/entity.hpp"
 
+#include "engine/scene/scenemanager.hpp"
+#include "engine/scene/component.hpp"
+
 using namespace std;
 
 const size_t INDENT_SIZE = 2;
 
 Entity::Entity(const string& objectName):
     CommandObject(objectName),
-    m_children()
-{}
+    m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
+    m_children(),
+    m_positionX(0.0),
+    m_positionY(0.0)
+{
+    registerAttribute("position", boost::bind(&Entity::position, this, _1));
+}
 
 Entity::~Entity() {
     set<Entity*>::iterator it;
@@ -35,13 +43,24 @@ Entity::~Entity() {
         delete *it;
 }
 
+void Entity::attachComponent(Component* const component) {
+}
+
+void Entity::detachComponent(Component* const component) {
+}
+
 Entity* Entity::addChild(const string& childName) {
     Entity* child = new Entity(childName);
     m_children.insert(child);
+    SceneManager::ms_entities.insert(pair<string, Entity*>(childName, child));
     return child;
 }
 
 void Entity::removeChild(Entity* const child) {
+    map<string, Entity*>::iterator smIt = SceneManager::ms_entities.find(child->getObjectName());
+    if (smIt != SceneManager::ms_entities.end())
+        SceneManager::ms_entities.erase(smIt);
+
     set<Entity*>::iterator it = m_children.find(child);
     if (it != m_children.end()) {
         delete *it;
@@ -58,4 +77,14 @@ string Entity::treeToString(const size_t indent) const {
     for (it = m_children.begin(); it != m_children.end(); ++it)
         ss << (*it)->treeToString(indent + INDENT_SIZE);
     return ss.str();
+}
+
+void Entity::position(const string& arg) {
+    stringstream ss(arg);
+    ss >> m_positionX >> m_positionY;
+}
+
+ostream& operator<<(ostream& out, const Entity& rhs) {
+    out << "pos(" << rhs.m_positionX << ", " << rhs.m_positionY << ")";
+    return out;
 }

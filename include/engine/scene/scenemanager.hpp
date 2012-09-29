@@ -18,36 +18,36 @@
 */
 
 
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#ifndef SCENEMANAGER_HPP
+#define SCENEMANAGER_HPP
 
-#include <ostream>
-#include <vector>
-#include <set>
-#include "engine/terminal/commandobject.hpp"
+#include <string>
+#include "engine/scene/entity.hpp"
 
-class Component;
-
-class Entity: public CommandObject {
+class SceneManager {
 public:
-    friend std::ostream& operator<<(std::ostream& out, const Entity& rhs);
+    friend Entity;
 
-    Entity(const std::string& objectName);
-    ~Entity();
+    SceneManager(const std::string& rootNodeName);
+    Entity& getRoot();
+    Entity* getRootPtr();
 
-    void attachComponent(Component* const component);
-    void detachComponent(Component* const component);
-    Entity* addChild(const std::string& childName);
-    void removeChild(Entity* const child);
-    std::string treeToString(const size_t indent) const;
+    bool findEntity(const std::string& name, Entity*& entity);
+    std::string sceneGraphToString();
 
 private:
-    std::vector<Component*> m_components;
-    std::set<Entity*> m_children;
-    double m_positionX;
-    double m_positionY;
-
-    void position(const std::string& arg);
+    Entity m_root;
+    static std::map<std::string, Entity*> ms_entities;
 };
 
-#endif // ENTITY_HPP
+
+
+inline Entity& SceneManager::getRoot() {
+    return m_root;
+}
+
+inline Entity* SceneManager::getRootPtr() {
+    return &m_root;
+}
+
+#endif // SCENEMANAGER_HPP

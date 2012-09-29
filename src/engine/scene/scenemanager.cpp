@@ -18,36 +18,28 @@
 */
 
 
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#include "engine/scene/scenemanager.hpp"
 
-#include <ostream>
-#include <vector>
-#include <set>
-#include "engine/terminal/commandobject.hpp"
+using namespace std;
 
-class Component;
+map<string, Entity*> SceneManager::ms_entities = map<string, Entity*>();
 
-class Entity: public CommandObject {
-public:
-    friend std::ostream& operator<<(std::ostream& out, const Entity& rhs);
+SceneManager::SceneManager(const string& rootNodeName):
+    m_root(rootNodeName)
+{}
 
-    Entity(const std::string& objectName);
-    ~Entity();
+bool SceneManager::findEntity(const string& name, Entity*& entity) {
+    map<string, Entity*>::iterator it = ms_entities.find(name);
+    if (it != ms_entities.end()) {
+        entity = it->second;
+        return true;
+    }
+    return false;
+}
 
-    void attachComponent(Component* const component);
-    void detachComponent(Component* const component);
-    Entity* addChild(const std::string& childName);
-    void removeChild(Entity* const child);
-    std::string treeToString(const size_t indent) const;
-
-private:
-    std::vector<Component*> m_components;
-    std::set<Entity*> m_children;
-    double m_positionX;
-    double m_positionY;
-
-    void position(const std::string& arg);
-};
-
-#endif // ENTITY_HPP
+string SceneManager::sceneGraphToString() {
+    stringstream ss;
+    ss << "Scene Graph:" << endl;
+    ss << m_root.treeToString(0);
+    return ss.str();
+}
