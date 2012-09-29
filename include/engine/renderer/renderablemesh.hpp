@@ -21,7 +21,9 @@
 #ifndef RENDERABLEMESH_HPP
 #define RENDERABLEMESH_HPP
 
-class RenderableMesh {
+#include "engine/kernel/component.hpp"
+
+class RenderableMesh: public Component {
 };
 
 #endif // RENDERABLEMESH_HPP
