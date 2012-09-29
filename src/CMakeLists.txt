@@ -7,6 +7,7 @@ set(SRC_FILES
 )
 set(LIBRARIES
     kernel
+    renderer
 )
 
 add_executable(${EXE_NAME} ${SRC_FILES})

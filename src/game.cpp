@@ -63,6 +63,7 @@ void Game::loadScene() {
     root->addChild("enemy3");
 
     Entity* player = root->addChild("player");
+    Component* mesh = new Component;
 
     cout << Terminal::listsToString() << endl;
 
