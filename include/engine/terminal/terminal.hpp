@@ -31,8 +31,8 @@
 
 class Terminal {
 public:
-    friend Command;
-    friend CommandObject;
+    friend class Command;
+    friend class CommandObject;
 
     static bool getObject(const size_t id, CommandObject*& object);
     static const std::string getObjectName(const size_t idObject);

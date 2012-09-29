@@ -26,7 +26,7 @@
 
 class SceneManager {
 public:
-    friend Entity;
+    friend class Entity;
 
     SceneManager(const std::string& rootNodeName);
     Entity& getRoot();

@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <SDL/SDL_events.h>
+#include <SDL_events.h>
 #include "engine/device/devicemanager.hpp"
 #include "engine/terminal/terminal.hpp"
 #include "engine/scene/scenemanager.hpp"

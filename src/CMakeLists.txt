@@ -6,9 +6,7 @@ set(SRC_FILES
     main.cpp
 )
 set(LIBRARIES
-    terminal
-    device-manager
-    scene-manager
+    engine
 )
 
 add_executable(${EXE_NAME} ${SRC_FILES})

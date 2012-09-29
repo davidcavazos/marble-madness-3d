@@ -29,7 +29,7 @@ class Terminal;
 
 class Command {
 public:
-    friend Terminal;
+    friend class Terminal;
     friend std::ostream& operator<<(std::ostream& out, const Command& rhs);
     friend std::istream& operator>>(std::istream& in, Command& rhs);
 
