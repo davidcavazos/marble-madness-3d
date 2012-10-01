@@ -3,15 +3,7 @@ marble-madness-3d
 
 Remake of Marble Madness in 3D
 
-Dependencies in Arch Linux:
-pacman -S boost sdl
-
-Currently in its initial development.
-Only opens an SDL window, close it with ESC.
-Very primitive input system implemented.
-
-
-Controls:
+Controls: (not implemented yet, but this is the plan)
 w:      move up
 a:      move left
 s:      move down
@@ -20,83 +12,101 @@ p:      pause
 SPACE:  move faster while pressed
 ESC:    menu
 
-Object {
-    list commands
-    void registerCommand(string command, void function(void));
-}
+**** Installation ****
+NOTE: the following are the only OSs I have compiled the project
 
-Game : Object {
-    void togglePause();
-    void showMenu();
-}
+>> Arch Linux
+1. Make sure development software is installed
+# pacman -S gcc make cmake git
 
-GameState : Object {
-    void loadWelcomeMenu();
-    void loadMainMenu();
-    void loadLevel1();
-    void loadLevel2();
-    void loadLevel3();
-    void loadLevel4();
-    void loadLevel5();
-    void loadWinScreen();
-    void loadLoseScreen();
-    void loadGameOverScreen();
-    void loadHighScoresScreen();
-    void loadCreditsScreen();
-}
+2. Install the dependencies
+# pacman -S boost sdl mesa
 
-Timer : Object {
-    void reset();
-    void start();
-    void stop();
-}
+3. Download from GitHub repository
+Navigate to the folder the source code will be downloaded
+$ git clone git://github.com/davido262/marble-madness-3d.git
 
-Entity : Object {
-    string name;
-    uint id;
-    Entity* parent
-    list components
-    list children
-}
-
-abstract Actor : Entity {
-    void moveUp();
-    void moveLeft();
-    void moveDown();
-    void moveRight();
-}
-
-Marble : Actor {
-    void setMoveSpeedFast();
-    void setMoveSpeedNormal();
-    void breakToPieces();
-    void dissolveInAcid();
-}
-
-GreenSlug : Actor {
-    void jump();
-}
-
-AcidPool : Actor {
-}
-
-Bird : Actor {
-}
-
-abstract Trap {
-    void activate();
-    void deactivate();
-}
-
-VacuumCleaner : Trap {
-}
-
-Bopper : Trap {
-}
+4. Compile and install project
+Navigate to the folder where the build will be compiled (preferably outside the source)
+$ ccmake git-source-folder -G "Unix Makefiles"
+Press [c] to configure
+Press [g] to generate and exit
+$ make
+Run the executable under src/
 
 
+>> openSUSE
+1. Make sure development software is installed
+From YaST check the following: gcc-g++ make cmake-gui git
 
-Game entities:
+2. Install the dependencies
+From YaST check the following: boost-devel sdl-devel Mesa-devel
+
+3. Download from GitHub repository
+Navigate to the folder the source code will be downloaded
+$ git clone git://github.com/davido262/marble-madness-3d.git
+
+4. Compile and install project
+Navigate to the folder where the build will be compiled (preferably outside the source)
+$ ccmake git-source-folder -G "Unix Makefiles"
+Press [c] to configure
+Press [g] to generate and exit
+$ make
+Run the executable under src/
+
+
+>> Windows XP
+1. Make sure development software is installed
+2. Install the dependencies
+3. Download from GitHub repository
+4. Compile and install project
+
+
+**** Commands ****
+NOTE: not all commands and/or objects are implemented yet
+
+entity
+    set position
+    set position-{x,y,z}
+    set rotation
+    set rotation-{x,y,z}
+    set scale
+    set scale-{x,y,z}
+    move-{x,y,z}
+    rotate-{x,y,z}
+    scale-{x,y,z}
+
+player (entity)
+
+camera (entity)
+
+game
+    set score
+    add-to-score
+    toggle-pause
+    show-menu
+
+gamestate
+    load-welcome-menu
+    load-main-menu
+    load-level-1
+    load-level-2
+    load-level-3
+    load-level-4
+    load-level-5
+    load-win-screen
+    load-lose-screen
+    load-game-over-screen
+    load-high-scores-screen
+    load-credits-screen
+
+timer
+    reset
+    start
+    stop
+
+**** Game entities ****
+NOTE: this is not final
 
 Marble
     player
@@ -136,4 +146,5 @@ GUI
     time
     race name
 
+for more information on the game:
 http://www.neoseeker.com/resourcelink.html?rlid=114160&rid=106293
