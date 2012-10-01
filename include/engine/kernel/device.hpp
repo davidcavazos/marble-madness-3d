@@ -22,6 +22,7 @@
 #define DEVICE_HPP
 
 #include <string>
+#include <set>
 #include "inputmanager.hpp"
 
 class DeviceManager;
@@ -32,12 +33,18 @@ public:
     friend class DeviceManager;
 
     InputManager& getInputManager();
+    double getDeltaTime() const;
+    double getFps() const;
 
+    void onFrameStart();
+    void onFrameEnd();
     void swapBuffers();
     size_t videoMemKB();
     void setTitle(const std::string& title);
     void setFullscreen(const bool useFullscreen = true);
     void setResolution(const size_t width, const size_t height);
+    size_t getWinWidth() const;
+    size_t getWinHeight() const;
     void processEvents(bool& isRunning);
     void getCursorInfo(int& x, int& y);
 
@@ -45,8 +52,13 @@ protected:
     size_t m_width;
     size_t m_height;
     size_t m_depth;
+    std::set<size_t> m_keysPressed;
+    std::set<size_t> m_mouseButtonsPressed;
     static InputManager ms_inputManager;
-    static SDL_Surface* m_screen;
+    static SDL_Surface* ms_screen;
+    double m_startTime;
+    double m_deltaTime;
+    double m_fps;
 
     Device();
 
@@ -58,6 +70,14 @@ protected:
 
 inline InputManager& Device::getInputManager() {
     return ms_inputManager;
+}
+
+inline double Device::getDeltaTime() const {
+    return m_deltaTime;
+}
+
+inline double Device::getFps() const {
+    return m_fps;
 }
 
 #endif // DEVICE_HPP

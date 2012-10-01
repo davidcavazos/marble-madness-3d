@@ -26,7 +26,7 @@
 
 class RenderableMesh: public Component {
 public:
-    RenderableMesh();
+    RenderableMesh(Entity* const entity);
     ~RenderableMesh();
 
     const std::vector<float>& getVertices();

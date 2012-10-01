@@ -41,6 +41,7 @@ private:
     void quit(const std::string&);
     void runCommand(const std::string& arg);
     void printEntity(const std::string& arg);
+    void onMouseMotion(const std::string&);
 };
 
 #endif // GAME_HPP

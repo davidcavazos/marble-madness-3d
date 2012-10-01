@@ -23,6 +23,7 @@
 
 #include <ostream>
 #include <istream>
+#include <sstream>
 #include <string>
 
 class Terminal;
@@ -33,11 +34,15 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Command& rhs);
     friend std::istream& operator>>(std::istream& in, Command& rhs);
 
+    Command(const std::string& expression);
     Command(const size_t idObject, const size_t idCommand, const std::string& arguments = "");
 
     size_t getIdObject() const;
     size_t getIdCommand() const;
     const std::string& getArguments() const;
+    template <typename T>
+    void setArguments(const T& arguments);
+    void setArguments(const char* const arguments);
     void setArguments(const std::string& arguments);
 
     void appendToArguments(const std::string& argsAppended);
@@ -63,6 +68,17 @@ inline size_t Command::getIdCommand() const {
 
 inline const std::string& Command::getArguments() const {
     return m_arguments;
+}
+
+template <typename T>
+void Command::setArguments(const T& arguments) {
+    std::ostringstream ss;
+    ss << arguments;
+    m_arguments = ss.str();
+}
+
+inline void Command::setArguments(const char* const arguments) {
+    m_arguments = std::string(arguments);
 }
 
 inline void Command::setArguments(const std::string& arguments) {

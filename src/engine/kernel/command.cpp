@@ -26,6 +26,14 @@
 
 using namespace std;
 
+Command::Command(const string& expression):
+    m_idObject(0),
+    m_idCommand(0),
+    m_arguments()
+{
+    parseCommand(expression);
+}
+
 Command::Command(const size_t idObject, const size_t idCommand, const std::string& arguments) :
     m_idObject(idObject),
     m_idCommand(idCommand),

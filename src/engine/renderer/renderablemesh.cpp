@@ -27,8 +27,8 @@ using namespace std;
 
 const string CUBE_DESCRIPTION = "$cube";
 
-RenderableMesh::RenderableMesh():
-    Component(COMPONENT_RENDERABLE_MESH),
+RenderableMesh::RenderableMesh(Entity* const entity):
+    Component(COMPONENT_RENDERABLE_MESH, entity),
     m_isInitialized(false),
     m_vertices(),
     m_normals(),
@@ -71,7 +71,7 @@ void RenderableMesh::generateCube(const double lengthX, const double lengthY, co
     m_vertices.push_back(-x); m_vertices.push_back( y); m_vertices.push_back( z);
     m_vertices.push_back(-x); m_vertices.push_back( y); m_vertices.push_back(-z);
     m_vertices.push_back(-x); m_vertices.push_back(-y); m_vertices.push_back(-z);
-    m_vertices.push_back(-x); m_vertices.push_back(-y); m_vertices.push_back(-z);
+    m_vertices.push_back(-x); m_vertices.push_back(-y); m_vertices.push_back( z);
     // Bottom
     m_vertices.push_back(-x); m_vertices.push_back(-y); m_vertices.push_back(-z);
     m_vertices.push_back( x); m_vertices.push_back(-y); m_vertices.push_back(-z);

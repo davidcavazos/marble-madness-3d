@@ -20,6 +20,7 @@
 
 #include "engine/kernel/entity.hpp"
 
+#include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/scenemanager.hpp"
 #include "engine/kernel/component.hpp"
 
@@ -37,6 +38,9 @@ Entity::Entity(const Entity* parent, const string& objectName):
     m_positionZ(0.0)
 {
     registerAttribute("position", boost::bind(&Entity::position, this, _1));
+    registerCommand("move-x", boost::bind(&Entity::moveX, this, _1));
+    registerCommand("move-y", boost::bind(&Entity::moveY, this, _1));
+    registerCommand("move-z", boost::bind(&Entity::moveZ, this, _1));
 }
 
 Entity::~Entity() {
@@ -45,15 +49,6 @@ Entity::~Entity() {
         delete *it;
     for (size_t i = 0; i < m_components.size(); ++i)
         delete m_components[i];
-}
-
-void Entity::attachComponent(Component* const component) {
-    m_components[component->getType()] = component;
-}
-
-void Entity::detachComponent(Component* const component) {
-    delete m_components[component->getType()];
-    m_components[component->getType()] = 0;
 }
 
 Entity* Entity::addChild(const string& childName) {
@@ -89,6 +84,27 @@ string Entity::treeToString(const size_t indent) const {
 void Entity::position(const string& arg) {
     stringstream ss(arg);
     ss >> m_positionX >> m_positionY >> m_positionZ;
+}
+
+void Entity::moveX(const std::string& arg) {
+    double dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_positionX += dist * DeviceManager::getDeltaTime();
+}
+
+void Entity::moveY(const std::string& arg) {
+    double dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_positionY += dist * DeviceManager::getDeltaTime();
+}
+
+void Entity::moveZ(const std::string& arg) {
+    double dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_positionZ += dist * DeviceManager::getDeltaTime();
 }
 
 ostream& operator<<(ostream& out, const Entity& rhs) {

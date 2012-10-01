@@ -28,10 +28,12 @@
 #include "command.hpp"
 
 typedef enum {
-    INPUT_KEY_DOWN,
-    INPUT_KEY_UP,
-    INPUT_MOUSE_BUTTON_DOWN,
-    INPUT_MOUSE_BUTTON_UP,
+    INPUT_KEY_PRESS,
+    INPUT_KEY_RELEASE,
+    INPUT_KEY_PRESSED,
+    INPUT_MOUSE_BUTTON_PRESS,
+    INPUT_MOUSE_BUTTON_RELEASE,
+    INPUT_MOUSE_BUTTON_PRESSED,
     INPUT_MOUSE_MOTION
 } input_t;
 
@@ -51,18 +53,22 @@ public:
 
     void bindInput(const input_t type, const std::string& command, const size_t code = 0);
     void clearAllBindings();
-    void onKeyDown(const size_t code);
-    void onKeyUp(const size_t code);
-    void onMouseButtonDown(const size_t code);
-    void onMouseButtonUp(const size_t code);
+    void onKeyPress(const size_t code);
+    void onKeyRelease(const size_t code);
+    void onKeyPressed(const size_t code);
+    void onMouseButtonPress(const size_t code);
+    void onMouseButtonRelease(const size_t code);
+    void onMouseButtonPressed(const size_t code);
     void onMouseMotion(const mouse_motion_t& motion);
 
 private:
     typedef std::map<size_t, Command> input_map_t;
-    input_map_t m_keyDownMap;
-    input_map_t m_keyUpMap;
-    input_map_t m_mouseButtonDownMap;
-    input_map_t m_mouseButtonUpMap;
+    input_map_t m_keyPressMap;
+    input_map_t m_keyReleaseMap;
+    input_map_t m_keyPressedMap;
+    input_map_t m_mouseButtonPressMap;
+    input_map_t m_mouseButtonReleaseMap;
+    input_map_t m_mouseButtonPressedMap;
     std::vector<Command> m_mouseMotionList;
     mouse_motion_t m_lastMouseMotion;
 };

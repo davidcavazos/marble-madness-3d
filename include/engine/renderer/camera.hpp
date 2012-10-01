@@ -37,7 +37,7 @@ typedef struct {
 
 class Camera: public Component {
 public:
-    Camera(const camera_t type);
+    Camera(Entity* const entity, const camera_t type);
     ~Camera();
 
     camera_t getType() const;

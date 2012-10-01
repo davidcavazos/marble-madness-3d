@@ -21,7 +21,9 @@
 #include "engine/kernel/device.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <cassert>
+#include <ctime>
 #include <SDL.h>
 
 using namespace std;
@@ -34,7 +36,16 @@ const Uint32 SDL_INIT_FLAGS = SDL_INIT_VIDEO;// | SDL_INIT_JOYSTICK;
 const Uint32 SDL_VIDEO_FLAGS = SDL_HWSURFACE | SDL_ANYFORMAT | SDL_OPENGL;
 
 InputManager Device::ms_inputManager = InputManager();
-SDL_Surface* Device::m_screen = 0;
+SDL_Surface* Device::ms_screen = 0;
+
+void Device::onFrameStart() {
+    m_startTime = SDL_GetTicks() * 0.001;
+}
+
+void Device::onFrameEnd() {
+    m_deltaTime = SDL_GetTicks() * 0.001 - m_startTime;
+    m_fps = 1.0 / m_deltaTime;
+}
 
 void Device::swapBuffers() {
     SDL_GL_SwapBuffers();
@@ -45,57 +56,74 @@ size_t Device::videoMemKB() {
     return info->video_mem;
 }
 
-void Device::setTitle(const std::string& title) {
+void Device::setTitle(const string& title) {
     SDL_WM_SetCaption(title.c_str(), title.c_str());
 }
 
 void Device::setFullscreen(const bool useFullscreen) {
-    m_screen = SDL_GetVideoSurface();
-    Uint32 flags = m_screen->flags;
+    ms_screen = SDL_GetVideoSurface();
+    Uint32 flags = ms_screen->flags;
     Uint32 fullscreenBit = useFullscreen? SDL_FULLSCREEN : 0;
-    m_screen = SDL_SetVideoMode(0, 0, 0, flags | fullscreenBit);
-    if (m_screen == 0)
-        m_screen = SDL_SetVideoMode(0, 0, 0, flags);
-    if (m_screen == 0)
+    ms_screen = SDL_SetVideoMode(0, 0, 0, flags | fullscreenBit);
+    if (ms_screen == 0)
+        ms_screen = SDL_SetVideoMode(0, 0, 0, flags);
+    if (ms_screen == 0)
         exit(1);
 }
 
 void Device::setResolution(const size_t width, const size_t height) {
     Uint32 flags = SDL_GetVideoSurface()->flags;
-    m_screen = SDL_SetVideoMode(width, height, 0, flags);
-    m_width = static_cast<size_t>(m_screen->w);
-    m_height = static_cast<size_t>(m_screen->h);
+    ms_screen = SDL_SetVideoMode(width, height, 0, flags);
+    m_width = static_cast<size_t>(ms_screen->w);
+    m_height = static_cast<size_t>(ms_screen->h);
+}
+
+size_t Device::getWinWidth() const {
+    return ms_screen->w;
+}
+
+size_t Device::getWinHeight() const {
+    return ms_screen->h;
 }
 
 void Device::processEvents(bool& isRunning) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-            case SDL_QUIT:
-                isRunning = false;
-                break;
-            case SDL_KEYDOWN:
-                ms_inputManager.onKeyDown(event.key.keysym.sym);
-                break;
-            case SDL_KEYUP:
-                ms_inputManager.onKeyUp(event.key.keysym.sym);
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                ms_inputManager.onMouseButtonDown(event.button.button);
-                break;
-            case SDL_MOUSEBUTTONUP:
-                ms_inputManager.onMouseButtonUp(event.button.button);
-                break;
-            case SDL_MOUSEMOTION: {
-                mouse_motion_t motion;
-                motion.x = event.motion.x;
-                motion.y = event.motion.y;
-                motion.xrel = event.motion.xrel;
-                motion.yrel = event.motion.yrel;
-                ms_inputManager.onMouseMotion(motion);
-                break; }
+        case SDL_QUIT:
+            isRunning = false;
+            break;
+        case SDL_KEYDOWN:
+            ms_inputManager.onKeyPress(event.key.keysym.sym);
+            m_keysPressed.insert(event.key.keysym.sym);
+            break;
+        case SDL_KEYUP:
+            ms_inputManager.onKeyRelease(event.key.keysym.sym);
+            m_keysPressed.erase(event.key.keysym.sym);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            ms_inputManager.onMouseButtonPress(event.button.button);
+            m_mouseButtonsPressed.insert(event.button.button);
+            break;
+        case SDL_MOUSEBUTTONUP:
+            ms_inputManager.onMouseButtonRelease(event.button.button);
+            m_mouseButtonsPressed.erase(event.button.button);
+            break;
+        case SDL_MOUSEMOTION: {
+            mouse_motion_t motion;
+            motion.x = event.motion.x;
+            motion.y = event.motion.y;
+            motion.xrel = event.motion.xrel;
+            motion.yrel = event.motion.yrel;
+            ms_inputManager.onMouseMotion(motion);
+            break; }
         }
     }
+    set<size_t>::iterator it;
+    for (it = m_keysPressed.begin(); it != m_keysPressed.end(); ++it)
+        ms_inputManager.onKeyPressed(*it);
+    for (it = m_mouseButtonsPressed.begin(); it != m_mouseButtonsPressed.end(); ++it)
+        ms_inputManager.onMouseButtonPressed(*it);
 }
 
 void Device::getCursorInfo(int& x, int& y) {
@@ -105,7 +133,12 @@ void Device::getCursorInfo(int& x, int& y) {
 Device::Device() :
     m_width(DEFAULT_SCREEN_WIDTH),
     m_height(DEFAULT_SCREEN_HEIGHT),
-    m_depth(DEFAULT_SCREEN_DEPTH)
+    m_depth(DEFAULT_SCREEN_DEPTH),
+    m_keysPressed(),
+    m_mouseButtonsPressed(),
+    m_startTime(0.0),
+    m_deltaTime(0.0),
+    m_fps(0.0)
 {}
 
 void Device::initialize() {
@@ -118,8 +151,8 @@ void Device::initialize() {
     m_height = info->current_h;
     m_depth = info->vfmt->BitsPerPixel;
 
-    m_screen = SDL_SetVideoMode(m_width, m_height, m_depth, SDL_VIDEO_FLAGS);
-    assert(m_screen != 0);
+    ms_screen = SDL_SetVideoMode(m_width, m_height, m_depth, SDL_VIDEO_FLAGS);
+    assert(ms_screen != 0);
 }
 
 void Device::deinitialize() {

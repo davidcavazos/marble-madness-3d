@@ -22,7 +22,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <SDL_events.h>
+#include <iomanip>
+#include <SDL.h>
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/terminal.hpp"
@@ -51,6 +52,7 @@ Game::Game(const string& objectName, const string& rootNodeName):
     registerCommand("quit", boost::bind(&Game::quit, this, _1));
     registerCommand("run", boost::bind(&Game::runCommand, this, _1));
     registerCommand("print-entity", boost::bind(&Game::printEntity, this, _1));
+    registerCommand("on-mouse-motion", boost::bind(&Game::onMouseMotion, this, _1));
 
     Device* device = DeviceManager::create();
     device->setTitle("Marble Madness 3D");
@@ -66,16 +68,15 @@ void Game::loadScene() {
     cout << "Loading scene" << endl;
     Entity* root = m_sceneManager.getRootPtr();
 
-    Camera* camComponent = new Camera(CAMERA_PROJECTION);
     Entity* camera = root->addChild("camera");
-    camera->attachComponent(camComponent);
-//     camera->setPosition(0.0, 0.0, -5.0);
+    Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
+    camComponent->setPerspectiveFOV(45.0);
+    camera->setPosition(0.0, 0.0, 5.0);
 
-    RenderableMesh* mesh = new RenderableMesh;
-    mesh->generateCube(1.0, 1.0, 1.0);
     Entity* cube = root->addChild("cube");
-    cube->attachComponent(mesh);
-    cube->setPosition(0.0, 0.0, 10.0);
+    cube->setPosition(0.0, 0.0, 0.0);
+    RenderableMesh* mesh = new RenderableMesh(cube);
+    mesh->generateCube(1.0, 1.0, 1.0);
 
     Entity* enemy1 = root->addChild("enemy1");
     Entity* gun1 = enemy1->addChild("gun1");
@@ -94,21 +95,43 @@ void Game::loadScene() {
 void Game::bindControls() {
     cout << "Binding controls" << endl;
     Device* device = DeviceManager::getDevicePtr();
-    device->getInputManager().bindInput(INPUT_KEY_UP, "game quit", SDLK_ESCAPE);
-    device->getInputManager().bindInput(INPUT_KEY_UP, "game run commands.txt", SDLK_SPACE);
+    device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game quit", SDLK_ESCAPE);
+    device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
+    device->getInputManager().bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z 2", SDLK_s);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x 2", SDLK_d);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x -2", SDLK_a);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y 2", SDLK_SPACE);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y -2", SDLK_LSHIFT);
 }
 
 void Game::runGameLoop() {
+    Uint32 startTime;
+    Uint32 deltaTime;
+
+    Device* device = DeviceManager::getDevicePtr();
     cout << "Creating renderer" << endl;
     Renderer* renderer = RenderManager::create();
     cout << "Entering game loop" << endl;
-    Device* device = DeviceManager::getDevicePtr();
     m_isRunning = true;
     while (m_isRunning) {
+        startTime = SDL_GetTicks();
+        device->onFrameStart();
+
         device->processEvents(m_isRunning);
-        RenderManager::renderFrame();
-        device->swapBuffers();
         Terminal::processCommandsQueue();
+
+        deltaTime = SDL_GetTicks() - startTime;
+        stringstream ss;
+        ss << "Marble Madness 3D - " << setw(3) << deltaTime << " ms (16-40 ideal) - ";
+
+        renderer->draw();
+        device->swapBuffers();
+
+        device->onFrameEnd();
+        ss << fixed << setprecision(1) << device->getFps() << " fps";
+        device->setTitle(ss.str());
     }
 }
 
@@ -134,4 +157,17 @@ void Game::printEntity(const string& arg) {
     Entity* entity;
     if (m_sceneManager.findEntity(arg, entity))
         cout << *entity << endl;
+}
+
+void Game::onMouseMotion(const string&) {
+    static Command moveXCmd("camera move-x");
+    static Command moveYCmd("camera move-y");
+
+    mouse_motion_t motion = DeviceManager::getDevice().getInputManager().getLastMouseMotion();
+
+    moveXCmd.setArguments(-motion.xrel);
+    Terminal::pushCommand(moveXCmd);
+
+    moveYCmd.setArguments(motion.yrel);
+    Terminal::pushCommand(moveYCmd);
 }

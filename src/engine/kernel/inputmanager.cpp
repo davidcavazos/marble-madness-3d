@@ -27,10 +27,12 @@
 using namespace std;
 
 InputManager::InputManager():
-    m_keyDownMap(),
-    m_keyUpMap(),
-    m_mouseButtonDownMap(),
-    m_mouseButtonUpMap(),
+    m_keyPressMap(),
+    m_keyReleaseMap(),
+    m_keyPressedMap(),
+    m_mouseButtonPressMap(),
+    m_mouseButtonReleaseMap(),
+    m_mouseButtonPressedMap(),
     m_mouseMotionList(),
     m_lastMouseMotion()
 {}
@@ -40,17 +42,23 @@ void InputManager::bindInput(const input_t type, const string& command, const si
     if (cmd.parseCommand(command)) {
         pair<size_t, Command> binding(code, cmd);
         switch (type) {
-        case INPUT_KEY_DOWN:
-            m_keyDownMap.insert(binding);
+        case INPUT_KEY_PRESS:
+            m_keyPressMap.insert(binding);
             break;
-        case INPUT_KEY_UP:
-            m_keyUpMap.insert(binding);
+        case INPUT_KEY_RELEASE:
+            m_keyReleaseMap.insert(binding);
             break;
-        case INPUT_MOUSE_BUTTON_DOWN:
-            m_mouseButtonDownMap.insert(binding);
+        case INPUT_KEY_PRESSED:
+            m_keyPressedMap.insert(binding);
             break;
-        case INPUT_MOUSE_BUTTON_UP:
-            m_mouseButtonUpMap.insert(binding);
+        case INPUT_MOUSE_BUTTON_PRESS:
+            m_mouseButtonPressMap.insert(binding);
+            break;
+        case INPUT_MOUSE_BUTTON_RELEASE:
+            m_mouseButtonReleaseMap.insert(binding);
+            break;
+        case INPUT_MOUSE_BUTTON_PRESSED:
+            m_mouseButtonPressedMap.insert(binding);
             break;
         case INPUT_MOUSE_MOTION:
             m_mouseMotionList.push_back(cmd);
@@ -62,34 +70,48 @@ void InputManager::bindInput(const input_t type, const string& command, const si
 }
 
 void InputManager::clearAllBindings() {
-    m_keyDownMap.clear();
-    m_keyUpMap.clear();
-    m_mouseButtonDownMap.clear();
-    m_mouseButtonUpMap.clear();
+    m_keyPressMap.clear();
+    m_keyReleaseMap.clear();
+    m_keyPressedMap.clear();
+    m_mouseButtonPressMap.clear();
+    m_mouseButtonReleaseMap.clear();
+    m_mouseButtonPressedMap.clear();
     m_mouseMotionList.clear();
 }
 
-void InputManager::onKeyDown(const size_t code) {
-    input_map_t::iterator it = m_keyDownMap.find(code);
-    if (it != m_keyDownMap.end())
+void InputManager::onKeyPress(const size_t code) {
+    input_map_t::iterator it = m_keyPressMap.find(code);
+    if (it != m_keyPressMap.end())
         Terminal::pushCommand(it->second);
 }
 
-void InputManager::onKeyUp(const size_t code) {
-    input_map_t::iterator it = m_keyUpMap.find(code);
-    if (it != m_keyUpMap.end())
+void InputManager::onKeyRelease(const size_t code) {
+    input_map_t::iterator it = m_keyReleaseMap.find(code);
+    if (it != m_keyReleaseMap.end())
         Terminal::pushCommand(it->second);
 }
 
-void InputManager::onMouseButtonDown(const size_t code) {
-    input_map_t::iterator it = m_mouseButtonDownMap.find(code);
-    if (it != m_mouseButtonDownMap.end())
+void InputManager::onKeyPressed(const size_t code) {
+    input_map_t::iterator it = m_keyPressedMap.find(code);
+    if (it != m_keyPressedMap.end())
         Terminal::pushCommand(it->second);
 }
 
-void InputManager::onMouseButtonUp(const size_t code) {
-    input_map_t::iterator it = m_mouseButtonUpMap.find(code);
-    if (it != m_mouseButtonUpMap.end())
+void InputManager::onMouseButtonPress(const size_t code) {
+    input_map_t::iterator it = m_mouseButtonPressMap.find(code);
+    if (it != m_mouseButtonPressMap.end())
+        Terminal::pushCommand(it->second);
+}
+
+void InputManager::onMouseButtonRelease(const size_t code) {
+    input_map_t::iterator it = m_mouseButtonReleaseMap.find(code);
+    if (it != m_mouseButtonReleaseMap.end())
+        Terminal::pushCommand(it->second);
+}
+
+void InputManager::onMouseButtonPressed(const size_t code) {
+    input_map_t::iterator it = m_mouseButtonPressedMap.find(code);
+    if (it != m_mouseButtonPressedMap.end())
         Terminal::pushCommand(it->second);
 }
 
@@ -106,20 +128,28 @@ void InputManager::onMouseMotion(const mouse_motion_t& motion) {
 ostream& operator<<(ostream& out, const InputManager& rhs) {
     map<size_t, Command>::const_iterator it;
 
-    out << "Key Down Map:" << endl;
-    for (it = rhs.m_keyDownMap.begin(); it != rhs.m_keyDownMap.end(); ++it)
+    out << "Key Press Map:" << endl;
+    for (it = rhs.m_keyPressMap.begin(); it != rhs.m_keyPressMap.end(); ++it)
         out << "\t" << it->first << "\t" << it->second << endl;
 
-    out << "Key Up Map:" << endl;
-    for (it = rhs.m_keyUpMap.begin(); it != rhs.m_keyUpMap.end(); ++it)
+    out << "Key Release Map:" << endl;
+    for (it = rhs.m_keyReleaseMap.begin(); it != rhs.m_keyReleaseMap.end(); ++it)
         out << "\t" << it->first << "\t" << it->second << endl;
 
-    out << "Mouse Button Down Map:" << endl;
-    for (it = rhs.m_mouseButtonDownMap.begin(); it != rhs.m_mouseButtonDownMap.end(); ++it)
+    out << "Key Pressed Map:" << endl;
+    for (it = rhs.m_keyPressedMap.begin(); it != rhs.m_keyPressedMap.end(); ++it)
         out << "\t" << it->first << "\t" << it->second << endl;
 
-    out << "Mouse Button Up Map:" << endl;
-    for (it = rhs.m_mouseButtonUpMap.begin(); it != rhs.m_mouseButtonUpMap.end(); ++it)
+    out << "Mouse Button Press Map:" << endl;
+    for (it = rhs.m_mouseButtonPressMap.begin(); it != rhs.m_mouseButtonPressMap.end(); ++it)
+        out << "\t" << it->first << "\t" << it->second << endl;
+
+    out << "Mouse Button Release Map:" << endl;
+    for (it = rhs.m_mouseButtonReleaseMap.begin(); it != rhs.m_mouseButtonReleaseMap.end(); ++it)
+        out << "\t" << it->first << "\t" << it->second << endl;
+
+    out << "Mouse Button Pressed Map:" << endl;
+    for (it = rhs.m_mouseButtonPressedMap.begin(); it != rhs.m_mouseButtonPressedMap.end(); ++it)
         out << "\t" << it->first << "\t" << it->second << endl;
 
     out << "Mouse Motion Map:" << endl;

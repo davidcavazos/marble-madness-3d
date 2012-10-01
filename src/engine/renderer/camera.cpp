@@ -30,8 +30,8 @@ const float DEFAULT_ORTHO_HEIGHT = 10.0f;
 const float DEFAULT_NEAR_DISTANCE = 1.0f;
 const float DEFAULT_FAR_DISTANCE = 1000.0f;
 
-Camera::Camera(const camera_t type):
-    Component(COMPONENT_CAMERA),
+Camera::Camera(Entity* const entity, const camera_t type):
+    Component(COMPONENT_CAMERA, entity),
     m_type(type),
     m_viewport(),
     m_aspectRatio(0.0f),

@@ -29,15 +29,17 @@
 
 class Entity: public CommandObject {
 public:
+    friend class Component;
     friend std::ostream& operator<<(std::ostream& out, const Entity& rhs);
 
     Entity(const Entity* m_parent, const std::string& objectName);
     ~Entity();
 
+    double getPositionX() const;
+    double getPositionY() const;
+    double getPositionZ() const;
     void setPosition(const double x, const double y, const double z);
 
-    void attachComponent(Component* const component);
-    void detachComponent(Component* const component);
     Entity* addChild(const std::string& childName);
     void removeChild(Entity* const child);
     std::string treeToString(const size_t indent) const;
@@ -51,9 +53,24 @@ private:
     double m_positionZ;
 
     void position(const std::string& arg);
+    void moveX(const std::string& arg);
+    void moveY(const std::string& arg);
+    void moveZ(const std::string& arg);
 };
 
 
+
+inline double Entity::getPositionX() const {
+    return m_positionX;
+}
+
+inline double Entity::getPositionY() const {
+    return m_positionY;
+}
+
+inline double Entity::getPositionZ() const {
+    return m_positionZ;
+}
 
 inline void Entity::setPosition(const double x, const double y, const double z) {
     m_positionX = x;

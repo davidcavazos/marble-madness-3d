@@ -53,10 +53,6 @@ void RenderManager::shutdown() {
         cerr << "Warning: no existing renderer, cannot shutdown" << endl;
 }
 
-void RenderManager::renderFrame() {
-    ms_renderer->draw();
-}
-
 string RenderManager::listsToString() {
     stringstream ss;
     ss << "Renderer Cameras List:" << endl;

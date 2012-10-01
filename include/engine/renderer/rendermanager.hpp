@@ -39,7 +39,6 @@ public:
 
     static Renderer* create();
     static void shutdown();
-    static void renderFrame();
     static std::string listsToString();
 
 private:

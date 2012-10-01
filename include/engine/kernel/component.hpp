@@ -23,6 +23,8 @@
 
 #include <string>
 
+class Entity;
+
 typedef enum {
     COMPONENT_CAMERA,
     COMPONENT_RENDERABLE_MESH,
@@ -32,13 +34,15 @@ typedef enum {
 
 class Component {
 public:
-    Component(const component_t type);
-    virtual ~Component() {}
+    Component(const component_t type, Entity* const entity);
+    virtual ~Component();
 
+    Entity& getEntity();
     component_t getType() const;
     const std::string& getDescription() const;
 
 protected:
+    Entity& m_entity;
     const component_t m_type;
     std::string m_description;
 };
@@ -46,6 +50,10 @@ protected:
 std::ostream& operator<<(std::ostream& out, const Component& rhs);
 
 
+
+inline Entity& Component::getEntity() {
+    return m_entity;
+}
 
 inline component_t Component::getType() const {
     return m_type;

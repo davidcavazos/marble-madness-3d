@@ -27,13 +27,13 @@ class Renderer {
 public:
     friend class RenderManager;
 
+    void draw();
+
 private:
     Renderer();
 
     void initialize();
     void deinitialize();
-    void draw();
-    void updateProjectionMatrix();
 };
 
 #endif // RENDERER_HPP

@@ -21,13 +21,21 @@
 #include "engine/kernel/component.hpp"
 
 #include <ostream>
+#include "engine/kernel/entity.hpp"
 
 using namespace std;
 
-Component::Component(const component_t type):
+Component::Component(const component_t type, Entity* const entity):
+    m_entity(*entity),
     m_type(type),
     m_description()
-{}
+{
+    m_entity.m_components[m_type] = this;
+}
+
+Component::~Component() {
+    m_entity.m_components[m_type] = 0;
+}
 
 ostream& operator<<(ostream& out, const Component& rhs) {
     switch (rhs.getType()) {
