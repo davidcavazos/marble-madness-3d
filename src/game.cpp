@@ -71,10 +71,11 @@ void Game::loadScene() {
     Entity* camera = root->addChild("camera");
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
-    camera->setPosition(0.0, 0.0, 5.0);
+    camera->getTransform().setPosition(0.0, 0.0, 5.0);
 
     Entity* cube = root->addChild("cube");
-    cube->setPosition(0.0, 0.0, 0.0);
+    cube->getTransform().setPosition(0.0, 0.0, 0.0);
+    cube->getTransform().setRotation(0.0f, 0.0f, 0.0f);
     RenderableMesh* mesh = new RenderableMesh(cube);
     mesh->generateCube(1.0, 1.0, 1.0);
 
@@ -111,11 +112,17 @@ void Game::runGameLoop() {
     Uint32 deltaTime;
 
     Device* device = DeviceManager::getDevicePtr();
+    device->trapCursor();
+    device->hideCursor();
     cout << "Creating renderer" << endl;
     Renderer* renderer = RenderManager::create();
     cout << "Entering game loop" << endl;
+
+    int screenCenterX = device->getWinWidth() / 2;
+    int screenCenterY = device->getWinHeight() / 2;
     m_isRunning = true;
     while (m_isRunning) {
+        device->setCursorPos(screenCenterX, screenCenterY);
         startTime = SDL_GetTicks();
         device->onFrameStart();
 
@@ -160,14 +167,12 @@ void Game::printEntity(const string& arg) {
 }
 
 void Game::onMouseMotion(const string&) {
-    static Command moveXCmd("camera move-x");
-    static Command moveYCmd("camera move-y");
+    static Command moveCmd("camera rotate-ypr");
 
     mouse_motion_t motion = DeviceManager::getDevice().getInputManager().getLastMouseMotion();
 
-    moveXCmd.setArguments(-motion.xrel);
-    Terminal::pushCommand(moveXCmd);
-
-    moveYCmd.setArguments(motion.yrel);
-    Terminal::pushCommand(moveYCmd);
+    stringstream ss;
+    ss << motion.xrel * 0.001 << " " << motion.yrel * 0.001;
+    moveCmd.setArguments(ss.str());
+    Terminal::pushCommand(moveCmd);
 }

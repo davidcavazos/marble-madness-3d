@@ -47,10 +47,10 @@ void DeviceManager::shutdown() {
         cerr << "Warning: no existing device, cannot shutdown" << endl;
 }
 
-double DeviceManager::getDeltaTime() {
+float DeviceManager::getDeltaTime() {
     return ms_device->m_deltaTime;
 }
 
-double DeviceManager::getFps() {
+float DeviceManager::getFps() {
     return ms_device->m_fps;
 }

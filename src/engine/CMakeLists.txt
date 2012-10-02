@@ -11,6 +11,7 @@ set(KERNEL_SRC_FILES
     kernel/inputmanager.cpp
     kernel/devicemanager.cpp
 
+    kernel/transform.cpp
     kernel/entity.cpp
     kernel/component.cpp
     kernel/scenemanager.cpp
@@ -30,12 +31,14 @@ add_library(${RENDER_LIBRARY_NAME} SHARED ${RENDER_SRC_FILES})
 find_package(Boost REQUIRED)
 find_package(SDL REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Bullet REQUIRED)
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
     ${SDL_INCLUDE_DIR}
     ${SDL_INCLUDE_DIR}/SDL
     ${OPENGL_INCLUDE_DIR}
+    ${BULLET_INCLUDE_DIRS}
 )
 
 target_link_libraries(${KERNEL_LIBRARY_NAME} ${SDL_LIBRARY})

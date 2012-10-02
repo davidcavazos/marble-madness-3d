@@ -26,6 +26,7 @@
 #include <set>
 #include "commandobject.hpp"
 #include "component.hpp"
+#include "transform.hpp"
 
 class Entity: public CommandObject {
 public:
@@ -35,10 +36,8 @@ public:
     Entity(const Entity* m_parent, const std::string& objectName);
     ~Entity();
 
-    double getPositionX() const;
-    double getPositionY() const;
-    double getPositionZ() const;
-    void setPosition(const double x, const double y, const double z);
+    const Transform& getTransform() const;
+    Transform& getTransform();
 
     Entity* addChild(const std::string& childName);
     void removeChild(Entity* const child);
@@ -48,34 +47,27 @@ private:
     const Entity& m_parent;
     std::set<Entity*> m_children;
     std::vector<Component*> m_components;
-    double m_positionX;
-    double m_positionY;
-    double m_positionZ;
+    Transform m_transform;
 
-    void position(const std::string& arg);
+    void setPosition(const std::string& arg);
+    void moveXYZ(const std::string& arg);
     void moveX(const std::string& arg);
     void moveY(const std::string& arg);
     void moveZ(const std::string& arg);
+    void rotateYPR(const std::string& arg);
+    void yaw(const std::string& arg);
+    void pitch(const std::string& arg);
+    void roll(const std::string& arg);
 };
 
 
 
-inline double Entity::getPositionX() const {
-    return m_positionX;
+inline const Transform& Entity::getTransform() const {
+    return m_transform;
 }
 
-inline double Entity::getPositionY() const {
-    return m_positionY;
-}
-
-inline double Entity::getPositionZ() const {
-    return m_positionZ;
-}
-
-inline void Entity::setPosition(const double x, const double y, const double z) {
-    m_positionX = x;
-    m_positionY = y;
-    m_positionZ = z;
+inline Transform& Entity::getTransform() {
+    return m_transform;
 }
 
 #endif // ENTITY_HPP

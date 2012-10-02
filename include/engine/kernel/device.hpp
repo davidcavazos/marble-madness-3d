@@ -33,8 +33,8 @@ public:
     friend class DeviceManager;
 
     InputManager& getInputManager();
-    double getDeltaTime() const;
-    double getFps() const;
+    float getDeltaTime() const;
+    float getFps() const;
 
     void onFrameStart();
     void onFrameEnd();
@@ -43,10 +43,13 @@ public:
     void setTitle(const std::string& title);
     void setFullscreen(const bool useFullscreen = true);
     void setResolution(const size_t width, const size_t height);
+    void trapCursor(const bool shouldTrapCursor = true);
+    void hideCursor(const bool shouldHideCursor = true);
     size_t getWinWidth() const;
     size_t getWinHeight() const;
     void processEvents(bool& isRunning);
-    void getCursorInfo(int& x, int& y);
+    void getCursorPos(int& x, int& y);
+    void setCursorPos(const int x, const int y);
 
 protected:
     size_t m_width;
@@ -56,9 +59,9 @@ protected:
     std::set<size_t> m_mouseButtonsPressed;
     static InputManager ms_inputManager;
     static SDL_Surface* ms_screen;
-    double m_startTime;
-    double m_deltaTime;
-    double m_fps;
+    float m_startTime;
+    float m_deltaTime;
+    float m_fps;
 
     Device();
 
@@ -72,11 +75,11 @@ inline InputManager& Device::getInputManager() {
     return ms_inputManager;
 }
 
-inline double Device::getDeltaTime() const {
+inline float Device::getDeltaTime() const {
     return m_deltaTime;
 }
 
-inline double Device::getFps() const {
+inline float Device::getFps() const {
     return m_fps;
 }
 

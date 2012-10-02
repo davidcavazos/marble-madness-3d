@@ -20,7 +20,7 @@ NOTE: the following are the only OSs I have compiled the project
 # pacman -S gcc make cmake git
 
 2. Install the dependencies
-# pacman -S boost sdl mesa
+# pacman -S boost sdl mesa bullet
 
 3. Download from GitHub repository
 Navigate to the folder the source code will be downloaded

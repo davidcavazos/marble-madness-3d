@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <GL/glu.h>
+#include "engine/kernel/common.hpp"
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/entity.hpp"
@@ -40,12 +41,15 @@ void Renderer::draw() {
     float lightPosition[] = {-2.0f, 2.0f, -3.0f, 1.0f};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-    Entity& camEnt = RenderManager::ms_activeCamera->getEntity();
-    glTranslatef(-camEnt.getPositionX(), -camEnt.getPositionY(), -camEnt.getPositionZ());
+    const Transform& camTrans = RenderManager::ms_activeCamera->getEntity().getTransform();
+    glRotatef(radToDeg(camTrans.calcPitch()), 1.0f, 0.0f, 0.0f);
+    glRotatef(radToDeg(camTrans.calcYaw()), 0.0f, 1.0f, 0.0f);
+    glRotatef(radToDeg(camTrans.calcRoll()), 0.0f, 0.0f, 1.0f);
+    glTranslatef(-camTrans.getPosition().getX(), -camTrans.getPosition().getY(), -camTrans.getPosition().getZ());
 
     set<RenderableMesh*>::const_iterator it;
     for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
-        Entity& entity = (*it)->getEntity();
+        const Transform& trans = (*it)->getEntity().getTransform();
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -53,7 +57,10 @@ void Renderer::draw() {
         glNormalPointer(GL_FLOAT, 0, &(*it)->getNormals()[0]);
 
         glPushMatrix();
-        glTranslatef(entity.getPositionX(), entity.getPositionY(), entity.getPositionZ());
+        glTranslatef(trans.getPosition().getX(), trans.getPosition().getY(), trans.getPosition().getZ());
+        glRotatef(radToDeg(trans.calcPitch()), 1.0f, 0.0f, 0.0f);
+        glRotatef(radToDeg(trans.calcYaw()), 0.0f, 1.0f, 0.0f);
+        glRotatef(radToDeg(trans.calcRoll()), 0.0f, 0.0f, 1.0f);
         glDrawElements(GL_TRIANGLES, (*it)->getIndices().size(), GL_UNSIGNED_BYTE, &(*it)->getIndices()[0]);
         glPopMatrix();
 
