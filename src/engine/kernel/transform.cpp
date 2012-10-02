@@ -20,46 +20,140 @@
 
 #include "engine/kernel/transform.hpp"
 
-Transform::Transform():
+#include <iostream>
+
+using namespace std;
+
+Transform::Transform(const Transform& parent):
+    m_parent(parent),
     m_position(0.0f, 0.0f, 0.0f),
-    m_rotation(quaternion_t::getIdentity()),
-    m_scale(1.0f, 1.0f, 1.0f)
+    m_rotation(quaternion_t::getIdentity())
 {}
 
-void Transform::rotate(const float yawRad, const float pitchRad, const float rollRad) {
-    m_rotation *= quaternion_t(yawRad, pitchRad, rollRad);
+void Transform::translate(const vector3_t distance, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_position += distance;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
 }
 
-void Transform::pitch(const float radians) {
-
+void Transform::translate(const float distX, const float distY, const float distZ, const transform_space_t relativeTo) {
+    translate(vector3_t(distX, distY, distZ), relativeTo);
 }
 
-void Transform::yaw(const float radians) {
-
+void Transform::translateX(const float distX, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_position.setX(m_position.getX() + distX);
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
 }
 
-void Transform::roll(const float radians) {
-
+void Transform::translateY(const float distY, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_position.setY(m_position.getY() + distY);
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
 }
 
-void Transform::scale(const vector3_t multiplier) {
-
+void Transform::translateZ(const float distZ, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_position.setZ(m_position.getZ() + distZ);
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
 }
 
-void Transform::scale(const float multX, const float multY, const float multZ) {
-
+void Transform::rotate(const quaternion_t& rotation, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_rotation *= rotation;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
 }
 
-void Transform::scaleX(const float multX) {
-
+void Transform::rotate(const float w, const float x, const float y, const float z, const transform_space_t relativeTo) {
+    rotate(quaternion_t(w, x, y, z), relativeTo);
 }
 
-void Transform::scaleY(const float multY) {
-
+void Transform::rotate(const float yawRad, const float pitchRad, const float rollRad, const transform_space_t relativeTo) {
+    yaw(yawRad, relativeTo);
+    pitch(pitchRad, relativeTo);
+    roll(rollRad, relativeTo);
 }
 
-void Transform::scaleZ(const float multZ) {
+void Transform::pitch(const float radians, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_rotation *= quaternion_t(vector3_t(1.0f, 0.0f, 0.0f), radians);
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
 
+void Transform::yaw(const float radians, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_rotation = quaternion_t(vector3_t(0.0f, 1.0f, 0.0f), radians) * m_rotation;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
+
+void Transform::roll(const float radians, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        break;
+    case TS_PARENT:
+        break;
+    case TS_GLOBAL:
+        m_rotation = quaternion_t(vector3_t(0.0f, 0.0f, 1.0f), radians) * m_rotation;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
 }
 
 float Transform::calcYaw() const {

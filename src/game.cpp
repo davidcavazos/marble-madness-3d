@@ -112,7 +112,7 @@ void Game::runGameLoop() {
     Uint32 deltaTime;
 
     Device* device = DeviceManager::getDevicePtr();
-    device->trapCursor();
+//     device->trapCursor();
     device->hideCursor();
     cout << "Creating renderer" << endl;
     Renderer* renderer = RenderManager::create();
@@ -167,12 +167,20 @@ void Game::printEntity(const string& arg) {
 }
 
 void Game::onMouseMotion(const string&) {
-    static Command moveCmd("camera rotate-ypr");
+    static Command moveXCmd("camera rotate-ypr");
+//     static Command moveYCmd("camera pitch");
 
     mouse_motion_t motion = DeviceManager::getDevice().getInputManager().getLastMouseMotion();
 
-    stringstream ss;
-    ss << motion.xrel * 0.001 << " " << motion.yrel * 0.001;
-    moveCmd.setArguments(ss.str());
-    Terminal::pushCommand(moveCmd);
+    float sensitivity = 0.05;
+    stringstream ssx;
+    ssx << -motion.xrel * sensitivity * DeviceManager::getDeltaTime();
+    ssx << " " << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+    moveXCmd.setArguments(ssx.str());
+    Terminal::pushCommand(moveXCmd);
+
+//     stringstream ssy;
+//     ssy << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+//     moveYCmd.setArguments(ssy.str());
+//     Terminal::pushCommand(moveYCmd);
 }

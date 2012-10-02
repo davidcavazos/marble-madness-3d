@@ -41,7 +41,7 @@ void Renderer::draw() {
     float lightPosition[] = {-2.0f, 2.0f, -3.0f, 1.0f};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-    const Transform& camTrans = RenderManager::ms_activeCamera->getEntity().getTransform();
+    Transform& camTrans = RenderManager::ms_activeCamera->getEntity().getTransform();
     glRotatef(radToDeg(camTrans.calcPitch()), 1.0f, 0.0f, 0.0f);
     glRotatef(radToDeg(camTrans.calcYaw()), 0.0f, 1.0f, 0.0f);
     glRotatef(radToDeg(camTrans.calcRoll()), 0.0f, 0.0f, 1.0f);
@@ -49,7 +49,7 @@ void Renderer::draw() {
 
     set<RenderableMesh*>::const_iterator it;
     for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
-        const Transform& trans = (*it)->getEntity().getTransform();
+        Transform& trans = (*it)->getEntity().getTransform();
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);

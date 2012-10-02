@@ -33,7 +33,7 @@ Entity::Entity(const Entity* parent, const string& objectName):
     m_parent(*parent),
     m_children(),
     m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
-    m_transform()
+    m_transform(m_parent.getTransform())
 {
     registerAttribute("position", boost::bind(&Entity::setPosition, this, _1));
     registerCommand("move-xyz", boost::bind(&Entity::moveXYZ, this, _1));
@@ -157,9 +157,9 @@ ostream& operator<<(ostream& out, const Entity& rhs) {
             rhs.m_transform.getRotation().getY() << ", " <<
             rhs.m_transform.getRotation().getZ() << ")" << endl;
 
-    out << "scale(" << rhs.m_transform.getScale().getX() << ", " <<
-            rhs.m_transform.getScale().getY() << ", " <<
-            rhs.m_transform.getScale().getZ() << ")" << endl;
+//     out << "scale(" << rhs.m_transform.getScale().getX() << ", " <<
+//             rhs.m_transform.getScale().getY() << ", " <<
+//             rhs.m_transform.getScale().getZ() << ")" << endl;
 
     for (size_t i = 0; i < rhs.m_components.size(); ++i) {
         if (rhs.m_components[i] != 0)
