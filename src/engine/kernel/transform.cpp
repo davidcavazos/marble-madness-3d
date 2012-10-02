@@ -30,10 +30,12 @@ Transform::Transform(const Transform& parent):
     m_rotation(quaternion_t::getIdentity())
 {}
 
-void Transform::translate(const vector3_t distance, const transform_space_t relativeTo) {
+void Transform::translate(const vector3_t& distance, const transform_space_t relativeTo) {
     switch (relativeTo) {
-    case TS_LOCAL:
-        break;
+    case TS_LOCAL: {
+        transform_t t;
+        m_position += m_rotation * distance;
+        break; }
     case TS_PARENT:
         break;
     case TS_GLOBAL:
@@ -49,45 +51,15 @@ void Transform::translate(const float distX, const float distY, const float dist
 }
 
 void Transform::translateX(const float distX, const transform_space_t relativeTo) {
-    switch (relativeTo) {
-    case TS_LOCAL:
-        break;
-    case TS_PARENT:
-        break;
-    case TS_GLOBAL:
-        m_position.setX(m_position.getX() + distX);
-        break;
-    default:
-        cerr << "Invalid transform_space_t: " << relativeTo << endl;
-    }
+    translate(vector3_t(distX, 0.0f, 0.0f), relativeTo);
 }
 
 void Transform::translateY(const float distY, const transform_space_t relativeTo) {
-    switch (relativeTo) {
-    case TS_LOCAL:
-        break;
-    case TS_PARENT:
-        break;
-    case TS_GLOBAL:
-        m_position.setY(m_position.getY() + distY);
-        break;
-    default:
-        cerr << "Invalid transform_space_t: " << relativeTo << endl;
-    }
+    translate(vector3_t(0.0f, distY, 0.0f), relativeTo);
 }
 
 void Transform::translateZ(const float distZ, const transform_space_t relativeTo) {
-    switch (relativeTo) {
-    case TS_LOCAL:
-        break;
-    case TS_PARENT:
-        break;
-    case TS_GLOBAL:
-        m_position.setZ(m_position.getZ() + distZ);
-        break;
-    default:
-        cerr << "Invalid transform_space_t: " << relativeTo << endl;
-    }
+    translate(vector3_t(0.0f, 0.0f, distZ), relativeTo);
 }
 
 void Transform::rotate(const quaternion_t& rotation, const transform_space_t relativeTo) {

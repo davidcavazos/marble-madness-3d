@@ -23,11 +23,11 @@
 
 #include <bullet/LinearMath/btVector3.h>
 #include <bullet/LinearMath/btQuaternion.h>
-// #include <bullet/LinearMath/btTransform.h>
+#include <bullet/LinearMath/btTransform.h>
 
 typedef btVector3 vector3_t;
 typedef btQuaternion quaternion_t;
-// typedef btTransform transform_t;
+typedef btTransform transform_t;
 
 typedef enum {
     TS_LOCAL,
@@ -49,7 +49,7 @@ public:
     void setRotation(const float w, const float x, const float y, const float z);
     void setRotation(const float yawRad, const float pitchRad, const float rollRad);
 
-    void translate(const vector3_t distance, const transform_space_t relativeTo = TS_LOCAL);
+    void translate(const vector3_t& distance, const transform_space_t relativeTo = TS_LOCAL);
     void translate(const float distX, const float distY, const float distZ, const transform_space_t relativeTo = TS_LOCAL);
     void translateX(const float distX, const transform_space_t relativeTo = TS_LOCAL);
     void translateY(const float distY, const transform_space_t relativeTo = TS_LOCAL);
