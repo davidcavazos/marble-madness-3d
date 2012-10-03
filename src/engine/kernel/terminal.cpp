@@ -70,6 +70,7 @@ void Terminal::pushCommand(const string& cmdStr) {
 
 void Terminal::processCommandsQueue() {
     while (!ms_commandsQueue.empty()) {
+//         cout << ms_commandsQueue.front() << endl;
         ms_commandsQueue.front().run();
         ms_commandsQueue.pop_front();
     }

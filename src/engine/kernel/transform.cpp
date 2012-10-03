@@ -35,7 +35,9 @@ void Transform::translate(const vector3_t& distance, const transform_space_t rel
     case TS_LOCAL: {
         transform_t t;
 //         m_position += m_rotation * distance;
-        m_position += distance;
+        t.setRotation(m_rotation);
+        t.setOrigin(distance);
+        m_position += t.getOrigin();
         break; }
     case TS_PARENT:
         break;

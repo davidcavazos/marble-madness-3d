@@ -167,20 +167,20 @@ void Game::printEntity(const string& arg) {
 }
 
 void Game::onMouseMotion(const string&) {
-    static Command moveXCmd("camera rotate-ypr");
-//     static Command moveYCmd("camera pitch");
+    static Command moveXCmd("camera yaw");
+    static Command moveYCmd("camera pitch");
 
     mouse_motion_t motion = DeviceManager::getDevice().getInputManager().getLastMouseMotion();
 
     float sensitivity = 0.05;
     stringstream ssx;
     ssx << -motion.xrel * sensitivity * DeviceManager::getDeltaTime();
-    ssx << " " << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+//     ssx << " " << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
     moveXCmd.setArguments(ssx.str());
     Terminal::pushCommand(moveXCmd);
 
-//     stringstream ssy;
-//     ssy << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
-//     moveYCmd.setArguments(ssy.str());
-//     Terminal::pushCommand(moveYCmd);
+    stringstream ssy;
+    ssy << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+    moveYCmd.setArguments(ssy.str());
+    Terminal::pushCommand(moveYCmd);
 }
