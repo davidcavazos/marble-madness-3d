@@ -59,12 +59,11 @@ public:
     void translateY(const float distY, const transform_space_t relativeTo = TS_LOCAL);
     void translateZ(const float distZ, const transform_space_t relativeTo = TS_LOCAL);
 
-    void rotate(const quaternion_t& rotation, const transform_space_t relativeTo = TS_LOCAL);
-    void rotate(const float w, const float x, const float y, const float z, const transform_space_t relativeTo = TS_LOCAL);
-    void rotate(const float yawRad, const float pitchRad, const float rollRad, const transform_space_t relativeTo = TS_LOCAL);
-    void pitch(const float radians, const transform_space_t relativeTo = TS_LOCAL);
-    void yaw(const float radians, const transform_space_t relativeTo = TS_LOCAL);
-    void roll(const float radians, const transform_space_t relativeTo = TS_LOCAL);
+    void rotate(const quaternion_t& rotation);
+    void rotate(const float w, const float x, const float y, const float z);
+    void pitch(const float radians);
+    void yaw(const float radians);
+    void roll(const float radians);
 
     vector3_t rotateVector(const vector3_t& v, const quaternion_t& rotation);
 
@@ -106,6 +105,44 @@ inline void Transform::setRotation(const float w, const float x, const float y, 
 
 inline void Transform::setRotation(const float yawRad, const float pitchRad, const float rollRad) {
     setRotation(quaternion_t(yawRad, pitchRad, rollRad));
+}
+
+
+
+inline void Transform::translate(const float distX, const float distY, const float distZ, const transform_space_t relativeTo) {
+    translate(vector3_t(distX, distY, distZ), relativeTo);
+}
+
+inline void Transform::translateX(const float distX, const transform_space_t relativeTo) {
+    translate(vector3_t(distX, 0.0f, 0.0f), relativeTo);
+}
+
+inline void Transform::translateY(const float distY, const transform_space_t relativeTo) {
+    translate(vector3_t(0.0f, distY, 0.0f), relativeTo);
+}
+
+inline void Transform::translateZ(const float distZ, const transform_space_t relativeTo) {
+    translate(vector3_t(0.0f, 0.0f, distZ), relativeTo);
+}
+
+inline void Transform::rotate(const quaternion_t& rotation) {
+    m_rotation *= rotation;
+}
+
+inline void Transform::rotate(const float w, const float x, const float y, const float z) {
+    rotate(quaternion_t(w, x, y, z));
+}
+
+inline void Transform::pitch(const float radians) {
+    rotate(quaternion_t(VECTOR_X_AXIS, radians));
+}
+
+inline void Transform::yaw(const float radians) {
+    rotate(quaternion_t(VECTOR_Y_AXIS, radians));
+}
+
+inline void Transform::roll(const float radians) {
+    rotate(quaternion_t(VECTOR_Z_AXIS, radians));
 }
 
 #endif // TRANSFORM_HPP

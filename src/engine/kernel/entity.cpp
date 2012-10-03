@@ -40,7 +40,14 @@ Entity::Entity(const Entity* parent, const string& objectName):
     registerCommand("move-x", boost::bind(&Entity::moveX, this, _1));
     registerCommand("move-y", boost::bind(&Entity::moveY, this, _1));
     registerCommand("move-z", boost::bind(&Entity::moveZ, this, _1));
-    registerCommand("rotate-ypr", boost::bind(&Entity::rotateYPR, this, _1));
+    registerCommand("move-xyz-parent", boost::bind(&Entity::moveXYZ_parent, this, _1));
+    registerCommand("move-x-parent", boost::bind(&Entity::moveX_parent, this, _1));
+    registerCommand("move-y-parent", boost::bind(&Entity::moveY_parent, this, _1));
+    registerCommand("move-z-parent", boost::bind(&Entity::moveZ_parent, this, _1));
+    registerCommand("move-xyz-global", boost::bind(&Entity::moveXYZ_global, this, _1));
+    registerCommand("move-x-global", boost::bind(&Entity::moveX_global, this, _1));
+    registerCommand("move-y-global", boost::bind(&Entity::moveY_global, this, _1));
+    registerCommand("move-z-global", boost::bind(&Entity::moveZ_global, this, _1));
     registerCommand("pitch", boost::bind(&Entity::pitch, this, _1));
     registerCommand("yaw", boost::bind(&Entity::yaw, this, _1));
     registerCommand("roll", boost::bind(&Entity::roll, this, _1));
@@ -119,11 +126,60 @@ void Entity::moveZ(const std::string& arg) {
     m_transform.translateZ(dist * DeviceManager::getDeltaTime());
 }
 
-void Entity::rotateYPR(const std::string& arg) {
-    float y, p, r;
+void Entity::moveXYZ_parent(const std::string& arg) {
+    float x, y, z;
     stringstream ss(arg);
-    ss >> y >> p >> r;
-    m_transform.rotate(y, p, r);
+    ss >> x >> y >> z;
+    m_transform.translate(x, y, z, TS_PARENT);
+}
+
+void Entity::moveX_parent(const std::string& arg) {
+    float dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_transform.translateX(dist * DeviceManager::getDeltaTime(), TS_PARENT);
+}
+
+void Entity::moveY_parent(const std::string& arg) {
+    float dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_transform.translateY(dist * DeviceManager::getDeltaTime(), TS_PARENT);
+}
+
+void Entity::moveZ_parent(const std::string& arg) {
+    float dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), TS_PARENT);
+}
+
+void Entity::moveXYZ_global(const std::string& arg) {
+    float x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    m_transform.translate(x, y, z, TS_GLOBAL);
+}
+
+void Entity::moveX_global(const std::string& arg) {
+    float dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_transform.translateX(dist * DeviceManager::getDeltaTime(), TS_GLOBAL);
+}
+
+void Entity::moveY_global(const std::string& arg) {
+    float dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_transform.translateY(dist * DeviceManager::getDeltaTime(), TS_GLOBAL);
+}
+
+void Entity::moveZ_global(const std::string& arg) {
+    float dist;
+    stringstream ss(arg);
+    ss >> dist;
+    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), TS_GLOBAL);
 }
 
 void Entity::yaw(const std::string& arg) {

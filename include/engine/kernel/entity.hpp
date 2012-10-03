@@ -54,7 +54,14 @@ private:
     void moveX(const std::string& arg);
     void moveY(const std::string& arg);
     void moveZ(const std::string& arg);
-    void rotateYPR(const std::string& arg);
+    void moveXYZ_parent(const std::string& arg);
+    void moveX_parent(const std::string& arg);
+    void moveY_parent(const std::string& arg);
+    void moveZ_parent(const std::string& arg);
+    void moveXYZ_global(const std::string& arg);
+    void moveX_global(const std::string& arg);
+    void moveY_global(const std::string& arg);
+    void moveZ_global(const std::string& arg);
     void yaw(const std::string& arg);
     void pitch(const std::string& arg);
     void roll(const std::string& arg);
