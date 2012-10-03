@@ -34,7 +34,8 @@ void Transform::translate(const vector3_t& distance, const transform_space_t rel
     switch (relativeTo) {
     case TS_LOCAL: {
         transform_t t;
-        m_position += m_rotation * distance;
+//         m_position += m_rotation * distance;
+        m_position += distance;
         break; }
     case TS_PARENT:
         break;
@@ -65,6 +66,7 @@ void Transform::translateZ(const float distZ, const transform_space_t relativeTo
 void Transform::rotate(const quaternion_t& rotation, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
+        m_rotation *= rotation;
         break;
     case TS_PARENT:
         break;
@@ -89,6 +91,7 @@ void Transform::rotate(const float yawRad, const float pitchRad, const float rol
 void Transform::pitch(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
+        m_rotation *= quaternion_t(vector3_t(1.0f, 0.0f, 0.0f), radians);
         break;
     case TS_PARENT:
         break;
@@ -103,6 +106,7 @@ void Transform::pitch(const float radians, const transform_space_t relativeTo) {
 void Transform::yaw(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
+        m_rotation = quaternion_t(vector3_t(0.0f, 1.0f, 0.0f), radians) * m_rotation;
         break;
     case TS_PARENT:
         break;
@@ -117,6 +121,7 @@ void Transform::yaw(const float radians, const transform_space_t relativeTo) {
 void Transform::roll(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
+        m_rotation = quaternion_t(vector3_t(0.0f, 0.0f, 1.0f), radians) * m_rotation;
         break;
     case TS_PARENT:
         break;
