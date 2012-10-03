@@ -24,25 +24,25 @@
 
 using namespace std;
 
+vector3_t Transform::VECTOR_X_AXIS = vector3_t(1.0f, 0.0f, 0.0f);
+vector3_t Transform::VECTOR_Y_AXIS = vector3_t(0.0f, 1.0f, 0.0f);
+vector3_t Transform::VECTOR_Z_AXIS = vector3_t(0.0f, 0.0f, 1.0f);
+
 Transform::Transform(const Transform& parent):
     m_parent(parent),
     m_position(0.0f, 0.0f, 0.0f),
     m_rotation(quaternion_t::getIdentity())
 {}
 
-void Transform::translate(const vector3_t& distance, const transform_space_t relativeTo) {
+void Transform::translate(const vector3_t& displacement, const transform_space_t relativeTo) {
     switch (relativeTo) {
-    case TS_LOCAL: {
-        transform_t t;
-//         m_position += m_rotation * distance;
-        t.setRotation(m_rotation);
-        t.setOrigin(distance);
-        m_position += t.getOrigin();
-        break; }
+    case TS_LOCAL:
+        m_position += rotateVector(displacement, m_rotation);
+        break;
     case TS_PARENT:
         break;
     case TS_GLOBAL:
-        m_position += distance;
+        m_position += displacement;
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
@@ -90,15 +90,26 @@ void Transform::rotate(const float yawRad, const float pitchRad, const float rol
     roll(rollRad, relativeTo);
 }
 
+vector3_t Transform::rotateVector(const vector3_t& v, const quaternion_t& rotation) {
+    // nVidia SDK implementation
+    vector3_t uv, uuv;
+    vector3_t qvec(-rotation.getX(), -rotation.getY(), -rotation.getZ());
+    uv = qvec.cross(v);
+    uuv = qvec.cross(uv);
+    uv *= (2.0f * rotation.getW());
+    uuv *= 2.0f;
+    return v + uv + uuv;
+}
+
 void Transform::pitch(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
-        m_rotation *= quaternion_t(vector3_t(1.0f, 0.0f, 0.0f), radians);
+        m_rotation *= quaternion_t(VECTOR_X_AXIS, radians);
         break;
     case TS_PARENT:
         break;
     case TS_GLOBAL:
-        m_rotation *= quaternion_t(vector3_t(1.0f, 0.0f, 0.0f), radians);
+        m_rotation *= quaternion_t(VECTOR_X_AXIS, radians);
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
@@ -108,12 +119,12 @@ void Transform::pitch(const float radians, const transform_space_t relativeTo) {
 void Transform::yaw(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
-        m_rotation = quaternion_t(vector3_t(0.0f, 1.0f, 0.0f), radians) * m_rotation;
+        m_rotation = quaternion_t(VECTOR_Y_AXIS, radians) * m_rotation;
         break;
     case TS_PARENT:
         break;
     case TS_GLOBAL:
-        m_rotation = quaternion_t(vector3_t(0.0f, 1.0f, 0.0f), radians) * m_rotation;
+        m_rotation = quaternion_t(VECTOR_Y_AXIS, radians) * m_rotation;
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
@@ -123,12 +134,12 @@ void Transform::yaw(const float radians, const transform_space_t relativeTo) {
 void Transform::roll(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
-        m_rotation = quaternion_t(vector3_t(0.0f, 0.0f, 1.0f), radians) * m_rotation;
+        m_rotation = quaternion_t(VECTOR_Z_AXIS, radians) * m_rotation;
         break;
     case TS_PARENT:
         break;
     case TS_GLOBAL:
-        m_rotation = quaternion_t(vector3_t(0.0f, 0.0f, 1.0f), radians) * m_rotation;
+        m_rotation = quaternion_t(VECTOR_Z_AXIS, radians) * m_rotation;
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;

@@ -99,6 +99,14 @@ void Game::bindControls() {
     device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game quit", SDLK_ESCAPE);
     device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
     device->getInputManager().bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
+
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera yaw 0.005", SDLK_RIGHT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera yaw -0.005", SDLK_LEFT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera pitch 0.005", SDLK_DOWN);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera pitch -0.005", SDLK_UP);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera roll 0.05", SDLK_q);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera roll -0.05", SDLK_e);
+
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z 2", SDLK_s);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x 2", SDLK_d);

@@ -37,6 +37,10 @@ typedef enum {
 
 class Transform {
 public:
+    static vector3_t VECTOR_X_AXIS;
+    static vector3_t VECTOR_Y_AXIS;
+    static vector3_t VECTOR_Z_AXIS;
+
     Transform(const Transform& parent);
 
     const vector3_t& getPosition() const;
@@ -49,7 +53,7 @@ public:
     void setRotation(const float w, const float x, const float y, const float z);
     void setRotation(const float yawRad, const float pitchRad, const float rollRad);
 
-    void translate(const vector3_t& distance, const transform_space_t relativeTo = TS_LOCAL);
+    void translate(const vector3_t& displacement, const transform_space_t relativeTo = TS_LOCAL);
     void translate(const float distX, const float distY, const float distZ, const transform_space_t relativeTo = TS_LOCAL);
     void translateX(const float distX, const transform_space_t relativeTo = TS_LOCAL);
     void translateY(const float distY, const transform_space_t relativeTo = TS_LOCAL);
@@ -61,6 +65,8 @@ public:
     void pitch(const float radians, const transform_space_t relativeTo = TS_LOCAL);
     void yaw(const float radians, const transform_space_t relativeTo = TS_LOCAL);
     void roll(const float radians, const transform_space_t relativeTo = TS_LOCAL);
+
+    vector3_t rotateVector(const vector3_t& v, const quaternion_t& rotation);
 
     float calcYaw() const;
     float calcPitch() const;
