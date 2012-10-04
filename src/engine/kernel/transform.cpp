@@ -79,10 +79,11 @@ void Transform::rotate(const quaternion_t& rotation, const transform_space_t rel
     itend = m_entity.m_children.end();
     for (it = m_entity.m_children.begin(); it != itend; ++it) {
         Transform& child = (*it)->m_transform;
-        vector3_t d = child.m_position - m_position;
-        child.m_position.setX(m_position.getX() + rotateVector(vector3_t(d.getX(), 0.0f, 0.0f), m_rotation).getX());
-        child.m_position.setY(m_position.getY() + rotateVector(vector3_t(d.getY(), 0.0f, 0.0f), m_rotation).getY());
-        child.m_position.setZ(m_position.getZ() + rotateVector(vector3_t(d.getZ(), 0.0f, 0.0f), m_rotation).getZ());
+        child.m_position = m_position + rotateVector(child.m_position - m_position, m_rotation);
+//         vector3_t d = child.m_position - m_position;
+//         child.m_position.setX(m_position.getX() + rotateVector(vector3_t(d.getX(), 0.0f, 0.0f), m_rotation).getX());
+//         child.m_position.setY(m_position.getY() + rotateVector(vector3_t(d.getY(), 0.0f, 0.0f), m_rotation).getY());
+//         child.m_position.setZ(m_position.getZ() + rotateVector(vector3_t(d.getZ(), 0.0f, 0.0f), m_rotation).getZ());
         child.m_rotation = m_rotation;
     }
 }
