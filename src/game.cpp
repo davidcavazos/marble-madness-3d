@@ -80,23 +80,31 @@ void Game::loadScene() {
     cout << "Loading scene" << endl;
     Entity* root = m_sceneManager.getRootPtr();
 
-    Entity* cube = root->addChild("cube");
-    cube->getTransform().setPosition(0.0f, 0.0f, 0.0f);
-    RenderableMesh* mesh = new RenderableMesh(cube);
-    srand(12345);
-    cube->getTransform().setRotation(rand(), rand(), rand());
-    mesh->generateCube(1.0f, 1.0f, 1.0f);
-
     Entity* floor = root->addChild("floor");
-    floor->getTransform().setPosition(0.0f, -1.0f, 0.0f);
+    floor->transform().setPosition(0.0f, -1.0f, 0.0f);
     RenderableMesh* floorMesh = new RenderableMesh(floor);
     floorMesh->generateCube(100.0f, 0.1f, 100.0f);
 
+    Entity* b1 = root->addChild("b1");
+    b1->transform().setPosition(5.0f, 0.0f, -10.0f);
+    RenderableMesh* b1Mesh = new RenderableMesh(b1);
+    b1Mesh->generateCube(3.0f, 13.0f, 3.0f);
+
     Entity* camera = root->addChild("camera");
-    camera->getTransform().setPosition(0.0f, 2.0f, 5.0f);
-    camera->getTransform().lookAt(cube->getTransform().getPosition());
+    camera->transform().setPosition(0.0f, 1.0f, 5.0f);
+//     camera->getTransform().lookAt(cube->getTransform().getPosition());
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
+
+    Entity* cube = root->addChild("cube");
+    cube->transform().setPosition(0.0f, 0.0f, 0.0f);
+    RenderableMesh* mesh = new RenderableMesh(cube);
+    mesh->generateCube(1.0f, 1.0f, 1.0f);
+
+    Entity* cube2 = cube->addChild("cube2");
+    cube2->transform().setPosition(1.0f, 0.5f, 0.0f);
+    RenderableMesh* mesh2 = new RenderableMesh(cube2);
+    mesh2->generateCube(0.8f, 0.8f, 0.8f);
 
     cout << Terminal::listsToString() << endl;
 
@@ -112,17 +120,19 @@ void Game::bindControls() {
     device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
     device->getInputManager().bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
 
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera yaw 0.005", SDLK_RIGHT);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera yaw -0.005", SDLK_LEFT);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera pitch 0.005", SDLK_DOWN);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera pitch -0.005", SDLK_UP);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera roll 0.05", SDLK_q);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera roll -0.05", SDLK_e);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw 0.005", SDLK_RIGHT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw -0.005", SDLK_LEFT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch 0.01", SDLK_DOWN);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch -0.01", SDLK_UP);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z -2", SDLK_i);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x -2", SDLK_j);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z 2", SDLK_k);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x 2", SDLK_l);
 
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z 2", SDLK_s);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x 2", SDLK_d);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x -2", SDLK_a);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z 2", SDLK_s);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x 2", SDLK_d);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y-global 2", SDLK_SPACE);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y-global -2", SDLK_LSHIFT);
 }
@@ -194,13 +204,13 @@ void Game::onMouseMotion(const string&) {
 
     float sensitivity = 0.05;
     stringstream ssx;
-    ssx << -motion.xrel * sensitivity * DeviceManager::getDeltaTime();
+    ssx << motion.xrel * sensitivity * DeviceManager::getDeltaTime();
 //     ssx << " " << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
     moveXCmd.setArguments(ssx.str());
     Terminal::pushCommand(moveXCmd);
 
     stringstream ssy;
-    ssy << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+    ssy << motion.yrel * sensitivity * DeviceManager::getDeltaTime();
     moveYCmd.setArguments(ssy.str());
     Terminal::pushCommand(moveYCmd);
 }

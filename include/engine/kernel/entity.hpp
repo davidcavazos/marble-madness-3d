@@ -31,13 +31,14 @@
 class Entity: public CommandObject {
 public:
     friend class Component;
+    friend class Transform;
     friend std::ostream& operator<<(std::ostream& out, const Entity& rhs);
 
     Entity(const Entity* m_parent, const std::string& objectName);
     ~Entity();
 
     const Transform& getTransform() const;
-    Transform& getTransform();
+    Transform& transform();
 
     Entity* addChild(const std::string& childName);
     void removeChild(Entity* const child);
@@ -79,7 +80,7 @@ inline const Transform& Entity::getTransform() const {
     return m_transform;
 }
 
-inline Transform& Entity::getTransform() {
+inline Transform& Entity::transform() {
     return m_transform;
 }
 

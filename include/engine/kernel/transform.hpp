@@ -29,6 +29,8 @@ typedef btVector3 vector3_t;
 typedef btQuaternion quaternion_t;
 typedef btTransform transform_t;
 
+class Entity;
+
 typedef enum {
     TS_LOCAL,
     TS_PARENT,
@@ -37,11 +39,12 @@ typedef enum {
 
 class Transform {
 public:
+    static vector3_t VECTOR_ZERO;
     static vector3_t VECTOR_X_AXIS;
     static vector3_t VECTOR_Y_AXIS;
     static vector3_t VECTOR_Z_AXIS;
 
-    Transform(const Transform& parent);
+    Transform(const Entity& entity, const Transform& parent);
 
     const vector3_t& getPosition() const;
     const quaternion_t& getRotation() const;
@@ -59,12 +62,13 @@ public:
     void translateY(const float distY, const transform_space_t relativeTo = TS_LOCAL);
     void translateZ(const float distZ, const transform_space_t relativeTo = TS_LOCAL);
 
-    void rotate(const quaternion_t& rotation);
-    void rotate(const float w, const float x, const float y, const float z);
-    void pitch(const float radians, const transform_space_t relativeTo = TS_LOCAL);
+    void rotate(const quaternion_t& rotation, const transform_space_t relativeTo = TS_LOCAL);
+    void rotate(const float w, const float x, const float y, const float z, const transform_space_t relativeTo = TS_LOCAL);
     void yaw(const float radians, const transform_space_t relativeTo = TS_LOCAL);
+    void pitch(const float radians, const transform_space_t relativeTo = TS_LOCAL);
     void roll(const float radians, const transform_space_t relativeTo = TS_LOCAL);
 
+    void setDirection(const vector3_t& target);
     void lookAt(const vector3_t& target);
     vector3_t rotateVector(const vector3_t& v, const quaternion_t& rotation);
 
@@ -73,6 +77,7 @@ public:
     float calcRoll() const;
 
 private:
+    const Entity& m_entity;
     const Transform& m_parent;
     vector3_t m_position;
     quaternion_t m_rotation;
@@ -126,8 +131,24 @@ inline void Transform::translateZ(const float distZ, const transform_space_t rel
     translate(vector3_t(0.0f, 0.0f, distZ), relativeTo);
 }
 
-inline void Transform::rotate(const float w, const float x, const float y, const float z) {
-    rotate(quaternion_t(w, x, y, z));
+inline void Transform::rotate(const float w, const float x, const float y, const float z, const transform_space_t relativeTo) {
+    rotate(quaternion_t(w, x, y, z), relativeTo);
+}
+
+inline void Transform::yaw(const float radians, const transform_space_t relativeTo) {
+    rotate(quaternion_t(VECTOR_Y_AXIS, radians), relativeTo);
+}
+
+inline void Transform::pitch(const float radians, const transform_space_t relativeTo) {
+    rotate(quaternion_t(VECTOR_X_AXIS, radians), relativeTo);
+}
+
+inline void Transform::roll(const float radians, const transform_space_t relativeTo) {
+    rotate(quaternion_t(VECTOR_Z_AXIS, radians), relativeTo);
+}
+
+inline void Transform::lookAt(const vector3_t& target) {
+    setDirection(target - m_position);
 }
 
 #endif // TRANSFORM_HPP

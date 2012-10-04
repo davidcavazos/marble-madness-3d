@@ -33,7 +33,7 @@ Entity::Entity(const Entity* parent, const string& objectName):
     m_parent(*parent),
     m_children(),
     m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
-    m_transform(m_parent.getTransform())
+    m_transform(*this, m_parent.getTransform())
 {
     registerAttribute("position", boost::bind(&Entity::setPosition, this, _1));
     registerCommand("move-xyz", boost::bind(&Entity::moveXYZ, this, _1));
