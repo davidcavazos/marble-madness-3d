@@ -26,6 +26,8 @@
 
 using namespace std;
 
+const char COMMENT_CHAR = '#';
+
 Command::Command(const string& expression):
     m_idObject(0),
     m_idCommand(0),
@@ -51,6 +53,8 @@ bool Command::parseCommand(const string& expression) {
 
     stringstream exp(expression);
     exp >> object >> command >> m_arguments;
+    if (object[0] == COMMENT_CHAR)
+        return false;
 
     while (exp.good()) {
         string temp;
