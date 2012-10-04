@@ -48,11 +48,14 @@ Entity::Entity(const Entity* parent, const string& objectName):
     registerCommand("move-x-global", boost::bind(&Entity::moveX_global, this, _1));
     registerCommand("move-y-global", boost::bind(&Entity::moveY_global, this, _1));
     registerCommand("move-z-global", boost::bind(&Entity::moveZ_global, this, _1));
-    registerCommand("pitch", boost::bind(&Entity::pitch, this, _1));
     registerCommand("yaw", boost::bind(&Entity::yaw, this, _1));
+    registerCommand("pitch", boost::bind(&Entity::pitch, this, _1));
     registerCommand("roll", boost::bind(&Entity::roll, this, _1));
-    registerCommand("pitch-global", boost::bind(&Entity::pitch_global, this, _1));
+//     registerCommand("yaw-parent", boost::bind(&Entity::yaw_parent, this, _1));
+//     registerCommand("pitch-parent", boost::bind(&Entity::pitch_parent, this, _1));
+//     registerCommand("roll-parent", boost::bind(&Entity::roll_parent, this, _1));
     registerCommand("yaw-global", boost::bind(&Entity::yaw_global, this, _1));
+    registerCommand("pitch-global", boost::bind(&Entity::pitch_global, this, _1));
     registerCommand("roll-global", boost::bind(&Entity::roll_global, this, _1));
 }
 
@@ -205,6 +208,27 @@ void Entity::roll(const std::string& arg) {
     ss >> radians;
     m_transform.roll(radians);
 }
+
+// void Entity::yaw_parent(const std::string& arg) {
+//     float radians;
+//     stringstream ss(arg);
+//     ss >> radians;
+//     m_transform.yaw(radians, TS_PARENT);
+// }
+//
+// void Entity::pitch_parent(const std::string& arg) {
+//     float radians;
+//     stringstream ss(arg);
+//     ss >> radians;
+//     m_transform.pitch(radians, TS_PARENT);
+// }
+//
+// void Entity::roll_parent(const std::string& arg) {
+//     float radians;
+//     stringstream ss(arg);
+//     ss >> radians;
+//     m_transform.roll(radians, TS_PARENT);
+// }
 
 void Entity::yaw_global(const std::string& arg) {
     float radians;

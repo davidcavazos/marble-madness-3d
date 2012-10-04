@@ -57,9 +57,11 @@ void Transform::rotate(const quaternion_t& rotation) {
 void Transform::pitch(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
     case TS_LOCAL:
-        m_rotation *= quaternion_t(VECTOR_X_AXIS, radians);
+        m_rotation = m_rotation * quaternion_t(VECTOR_X_AXIS, radians);
         break;
     case TS_PARENT:
+        m_rotation = m_parent.m_rotation * quaternion_t(VECTOR_X_AXIS, radians);
+        break;
     case TS_GLOBAL:
         m_rotation = quaternion_t(VECTOR_X_AXIS, radians) * m_rotation;
         break;
@@ -70,10 +72,12 @@ void Transform::pitch(const float radians, const transform_space_t relativeTo) {
 
 void Transform::yaw(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
-    case TS_LOCAL:
-        m_rotation *= quaternion_t(VECTOR_Y_AXIS, radians);
-        break;
     case TS_PARENT:
+//         m_rotation = m_parent.m_rotation * quaternion_t(VECTOR_Y_AXIS, radians);
+//         break;
+    case TS_LOCAL:
+        m_rotation = m_rotation * quaternion_t(VECTOR_Y_AXIS, radians);
+        break;
     case TS_GLOBAL:
         m_rotation = quaternion_t(VECTOR_Y_AXIS, radians) * m_rotation;
         break;
@@ -84,10 +88,12 @@ void Transform::yaw(const float radians, const transform_space_t relativeTo) {
 
 void Transform::roll(const float radians, const transform_space_t relativeTo) {
     switch (relativeTo) {
-    case TS_LOCAL:
-        m_rotation *= quaternion_t(VECTOR_Z_AXIS, radians);
-        break;
     case TS_PARENT:
+//         m_rotation = m_parent.m_rotation * quaternion_t(VECTOR_Z_AXIS, radians);
+//         break;
+    case TS_LOCAL:
+        m_rotation = m_rotation * quaternion_t(VECTOR_Z_AXIS, radians);
+        break;
     case TS_GLOBAL:
         m_rotation = quaternion_t(VECTOR_Z_AXIS, radians) * m_rotation;
         break;

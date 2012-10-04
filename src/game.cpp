@@ -21,6 +21,7 @@
 #include "game.hpp"
 
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <iomanip>
 #include <SDL.h>
