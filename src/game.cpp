@@ -111,8 +111,8 @@ void Game::bindControls() {
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x 2", SDLK_d);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x -2", SDLK_a);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y 2", SDLK_SPACE);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y -2", SDLK_LSHIFT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y-global 2", SDLK_SPACE);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-y-global -2", SDLK_LSHIFT);
 }
 
 void Game::runGameLoop() {
@@ -175,7 +175,7 @@ void Game::printEntity(const string& arg) {
 }
 
 void Game::onMouseMotion(const string&) {
-    static Command moveXCmd("camera yaw");
+    static Command moveXCmd("camera yaw-global");
     static Command moveYCmd("camera pitch");
 
     mouse_motion_t motion = DeviceManager::getDevice().getInputManager().getLastMouseMotion();

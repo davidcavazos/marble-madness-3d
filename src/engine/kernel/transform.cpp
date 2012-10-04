@@ -50,6 +50,52 @@ void Transform::translate(const vector3_t& displacement, const transform_space_t
     }
 }
 
+void Transform::rotate(const quaternion_t& rotation) {
+    m_rotation *= rotation;
+}
+
+void Transform::pitch(const float radians, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        m_rotation *= quaternion_t(VECTOR_X_AXIS, radians);
+        break;
+    case TS_PARENT:
+    case TS_GLOBAL:
+        m_rotation = quaternion_t(VECTOR_X_AXIS, radians) * m_rotation;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
+
+void Transform::yaw(const float radians, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        m_rotation *= quaternion_t(VECTOR_Y_AXIS, radians);
+        break;
+    case TS_PARENT:
+    case TS_GLOBAL:
+        m_rotation = quaternion_t(VECTOR_Y_AXIS, radians) * m_rotation;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
+
+void Transform::roll(const float radians, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+    case TS_LOCAL:
+        m_rotation *= quaternion_t(VECTOR_Z_AXIS, radians);
+        break;
+    case TS_PARENT:
+    case TS_GLOBAL:
+        m_rotation = quaternion_t(VECTOR_Z_AXIS, radians) * m_rotation;
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
+
 vector3_t Transform::rotateVector(const vector3_t& v, const quaternion_t& rotation) {
     // nVidia SDK implementation
     vector3_t uv, uuv;
