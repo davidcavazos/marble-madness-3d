@@ -47,7 +47,6 @@ Game::Game(const string& objectName, const string& rootNodeName):
     cout << "+ Detect OpenGL version and capabilities" << endl;
     cout << "+ Implement OpenGL Core and shaders" << endl;
     cout << "+ Physics!!" << endl;
-    cout << "~ Recognize first character # as comment in terminal" << endl;
     cout << "~ Save input commands as a replay script" << endl;
     cout << "~ Read/write scene from XML" << endl;
     cout << "- Make input manager into a vector, only one can be active at a time (XML)" << endl;
