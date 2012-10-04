@@ -96,6 +96,9 @@ void Transform::roll(const float radians, const transform_space_t relativeTo) {
     }
 }
 
+void Transform::lookAt(const vector3_t& target) {
+}
+
 vector3_t Transform::rotateVector(const vector3_t& v, const quaternion_t& rotation) {
     // nVidia SDK implementation
     vector3_t uv, uuv;

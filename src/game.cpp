@@ -41,13 +41,25 @@ Game::Game(const string& objectName, const string& rootNodeName):
     m_sceneManager(rootNodeName)
 {
     cout << "TODO:" << endl;
-    cout << "+ Recognize first character # as comment in terminal" << endl;
-    cout << "+ Make input manager into a vector, only one can be active at a time (XML)" << endl;
-    cout << "+ Read/write scene from XML" << endl;
-    cout << "+ Possibility of multiple cameras" << endl;
-    cout << "+ Binding keys (or other inputs) with a command" << endl;
-    cout << "+ Implement OpenGL Core" << endl;
+    cout << "+ Transform.lookAt(vector3) <OgreCamera.cpp>" << endl;
+    cout << "+ Load meshes from .collada (maybe later make a conversion tool to binary)" << endl;
+    cout << "+ Add more primitives (sphere, cilinder, etc) and cube divisions" << endl;
+    cout << "+ Detect OpenGL version and capabilities" << endl;
+    cout << "+ Implement OpenGL Core and shaders" << endl;
+    cout << "+ Physics!!" << endl;
+    cout << "~ Recognize first character # as comment in terminal" << endl;
+    cout << "~ Save input commands as a replay script" << endl;
+    cout << "~ Read/write scene from XML" << endl;
+    cout << "- Make input manager into a vector, only one can be active at a time (XML)" << endl;
+    cout << "- Binding keys (or other inputs) with a command" << endl;
+    cout << "- Possibility of multiple cameras" << endl;
     cout << endl;
+
+    /*
+     * Renderer features
+     *  stencil shadows
+     *  deferred shading
+     */
 
     registerCommand("quit", boost::bind(&Game::quit, this, _1));
     registerCommand("run", boost::bind(&Game::runCommand, this, _1));
@@ -68,23 +80,23 @@ void Game::loadScene() {
     cout << "Loading scene" << endl;
     Entity* root = m_sceneManager.getRootPtr();
 
+    Entity* cube = root->addChild("cube");
+    cube->getTransform().setPosition(0.0f, 0.0f, 0.0f);
+    RenderableMesh* mesh = new RenderableMesh(cube);
+    srand(12345);
+    cube->getTransform().setRotation(rand(), rand(), rand());
+    mesh->generateCube(1.0f, 1.0f, 1.0f);
+
+    Entity* floor = root->addChild("floor");
+    floor->getTransform().setPosition(0.0f, -1.0f, 0.0f);
+    RenderableMesh* floorMesh = new RenderableMesh(floor);
+    floorMesh->generateCube(100.0f, 0.1f, 100.0f);
+
     Entity* camera = root->addChild("camera");
+    camera->getTransform().setPosition(0.0f, 2.0f, 5.0f);
+    camera->getTransform().lookAt(cube->getTransform().getPosition());
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
-    camera->getTransform().setPosition(0.0, 0.0, 5.0);
-
-    Entity* cube = root->addChild("cube");
-    cube->getTransform().setPosition(0.0, 0.0, 0.0);
-    cube->getTransform().setRotation(0.0f, 0.0f, 0.0f);
-    RenderableMesh* mesh = new RenderableMesh(cube);
-    mesh->generateCube(1.0, 1.0, 1.0);
-
-    Entity* enemy1 = root->addChild("enemy1");
-    Entity* gun1 = enemy1->addChild("gun1");
-    gun1->addChild("scope");
-    Entity* enemy2 = root->addChild("enemy2");
-    enemy2->addChild("gun2");
-    root->addChild("enemy3");
 
     cout << Terminal::listsToString() << endl;
 

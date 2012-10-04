@@ -65,6 +65,7 @@ public:
     void yaw(const float radians, const transform_space_t relativeTo = TS_LOCAL);
     void roll(const float radians, const transform_space_t relativeTo = TS_LOCAL);
 
+    void lookAt(const vector3_t& target);
     vector3_t rotateVector(const vector3_t& v, const quaternion_t& rotation);
 
     float calcYaw() const;
