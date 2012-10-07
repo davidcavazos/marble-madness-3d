@@ -58,6 +58,8 @@ Run the executable under src/
 >> Windows XP
 1. Make sure development software is installed
 2. Install the dependencies
+2.5 Install Bullet Physics
+"C:\Program Files\CMake 2.8\bin\cmake.exe" ..\bullet-trunk-rev2600 -G "Visual Studio 10" -DBUILD_EXTRAS=off -DBUILD_DEMOS=off -DINSTALL_LIBS=on
 3. Download from GitHub repository
 4. Compile and install project
 
