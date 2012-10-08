@@ -11,7 +11,6 @@ set(KERNEL_SRC_FILES
     kernel/inputmanager.cpp
     kernel/devicemanager.cpp
 
-    kernel/transform.cpp
     kernel/entity.cpp
     kernel/component.cpp
     kernel/scenemanager.cpp

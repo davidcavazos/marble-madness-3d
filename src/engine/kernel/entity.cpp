@@ -28,12 +28,20 @@ using namespace std;
 
 const size_t INDENT_SIZE = 2;
 
+vector3_t Entity::VECTOR_ZERO = vector3_t(0.0f, 0.0f, 0.0f);
+vector3_t Entity::VECTOR_X_AXIS = vector3_t(1.0f, 0.0f, 0.0f);
+vector3_t Entity::VECTOR_Y_AXIS = vector3_t(0.0f, 1.0f, 0.0f);
+vector3_t Entity::VECTOR_Z_AXIS = vector3_t(0.0f, 0.0f, 1.0f);
+
 Entity::Entity(const Entity* parent, const string& objectName):
     CommandObject(objectName),
     m_parent(*parent),
     m_children(),
     m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
-    m_transform(*this, m_parent.getTransform())
+    m_positionRel(0.0f, 0.0f, 0.0f),
+    m_positionAbs(0.0f, 0.0f, 0.0f),
+    m_rotation(quaternion_t::getIdentity()),
+    m_lastRotation(quaternion_t::getIdentity())
 {
     registerAttribute("position", boost::bind(&Entity::setPosition, this, _1));
     registerCommand("move-xyz", boost::bind(&Entity::moveXYZ, this, _1));
@@ -65,6 +73,107 @@ Entity::~Entity() {
         delete *it;
     for (size_t i = 0; i < m_components.size(); ++i)
         delete m_components[i];
+}
+
+void Entity::translate(const vector3_t& displacement, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+        case SPACE_LOCAL:
+            //         setPositionRel(m_positionRel + displacement.rotate(m_rotation.getAxis(), m_rotation.getAngle()));
+            setPositionRel(m_positionRel + rotateVector(displacement, m_rotation));
+            break;
+        case SPACE_PARENT:
+            //         setPositionRel(m_positionRel + displacement.rotate(m_parent.m_rotation.getAxis(), m_parent.m_rotation.getAngle()));
+            setPositionRel(m_positionRel + rotateVector(displacement, m_parent.m_rotation));
+            break;
+        case SPACE_GLOBAL:
+            setPositionAbs(m_positionAbs + displacement);
+            break;
+        default:
+            cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
+
+void Entity::rotate(const quaternion_t& rotation, const transform_space_t relativeTo) {
+    switch (relativeTo) {
+        case SPACE_LOCAL:
+            setRotation(m_rotation * rotation);
+            break;
+        case SPACE_PARENT:
+            setRotation(rotation * m_parent.m_rotation * m_rotation);
+            break;
+        case SPACE_GLOBAL:
+            setRotation(rotation * m_rotation);
+            break;
+        default:
+            cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    }
+}
+
+void Entity::setDirection(const vector3_t& target) {
+    if (target == VECTOR_ZERO)
+        return;
+    cerr << "Transform.setDirection(vector3) not implemented yet!" << endl;
+}
+
+vector3_t Entity::rotateVector(const vector3_t& v, const quaternion_t& rotation) {
+    //     // Mathematical method
+    //     quaternion_t vecQuat(v.getX(), v.getY(), v.getZ(), 0.0f);
+    //     quaternion_t resQuat = rotation * vecQuat * rotation.inverse();
+    //     return vector3_t(resQuat.getX(), resQuat.getY(), resQuat.getZ());
+
+    // nVidia SDK implementation
+    vector3_t uv, uuv;
+    vector3_t qvec(rotation.getX(), rotation.getY(), rotation.getZ());
+    uv = qvec.cross(v);
+    uuv = qvec.cross(uv);
+    uv *= (2.0f * rotation.getW());
+    uuv *= 2.0f;
+    return v + uv + uuv;
+}
+
+void Entity::calcOpenGLMatrix(float* m) const {
+    transform_t t(m_rotation, m_positionAbs);
+    t.getOpenGLMatrix(m);
+}
+
+float Entity::calcYaw() const {
+    return asin(-2.0 * (m_rotation.getX() * m_rotation.getZ() - m_rotation.getW() * m_rotation.getY()));
+}
+
+float Entity::calcPitch() const {
+    return atan2(2.0 * (m_rotation.getY() * m_rotation.getZ() + m_rotation.getW() * m_rotation.getX()),
+                 m_rotation.getW() * m_rotation.getW() -
+                 m_rotation.getX() * m_rotation.getX() -
+                 m_rotation.getY() * m_rotation.getY() +
+                 m_rotation.getZ() * m_rotation.getZ());
+}
+
+float Entity::calcRoll() const {
+    return atan2(2.0 * (m_rotation.getX() * m_rotation.getY() + m_rotation.getW() * m_rotation.getZ()),
+                 m_rotation.getW() * m_rotation.getW() +
+                 m_rotation.getX() * m_rotation.getX() -
+                 m_rotation.getY() * m_rotation.getY() -
+                 m_rotation.getZ() * m_rotation.getZ());
+}
+
+void Entity::applyTranslationToChildren() {
+    set<Entity*>::iterator it, itend;
+    itend = m_children.end();
+    for (it = m_children.begin(); it != itend; ++it) {
+        Entity& child = **it;
+        child.setPositionRel(child.m_positionRel);
+    }
+}
+
+void Entity::applyRotationToChildren() {
+    quaternion_t relativeRotation = m_rotation * m_lastRotation.inverse();
+    set<Entity*>::iterator it, itend;
+    itend = m_children.end();
+    for (it = m_children.begin(); it != itend; ++it) {
+        Entity& child = **it;
+        child.setPositionRel(rotateVector(child.m_positionRel, relativeRotation));
+        child.setRotation(relativeRotation * child.m_rotation);
+    }
 }
 
 Entity* Entity::addChild(const string& childName) {
@@ -101,169 +210,169 @@ void Entity::setPosition(const string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.setPositionAbs(x, y, z);
+    setPositionAbs(x, y, z);
 }
 
 void Entity::moveXYZ(const std::string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.translate(x, y, z);
+    translate(x, y, z);
 }
 
 void Entity::moveX(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateX(dist * DeviceManager::getDeltaTime());
+    translateX(dist * DeviceManager::getDeltaTime());
 }
 
 void Entity::moveY(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateY(dist * DeviceManager::getDeltaTime());
+    translateY(dist * DeviceManager::getDeltaTime());
 }
 
 void Entity::moveZ(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateZ(dist * DeviceManager::getDeltaTime());
+    translateZ(dist * DeviceManager::getDeltaTime());
 }
 
 void Entity::moveXYZ_parent(const std::string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.translate(x, y, z, SPACE_PARENT);
+    translate(x, y, z, SPACE_PARENT);
 }
 
 void Entity::moveX_parent(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateX(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
+    translateX(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
 void Entity::moveY_parent(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateY(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
+    translateY(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
 void Entity::moveZ_parent(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
+    translateZ(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
 void Entity::moveXYZ_global(const std::string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.translate(x, y, z, SPACE_GLOBAL);
+    translate(x, y, z, SPACE_GLOBAL);
 }
 
 void Entity::moveX_global(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateX(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
+    translateX(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
 void Entity::moveY_global(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateY(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
+    translateY(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
 void Entity::moveZ_global(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
+    translateZ(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
 void Entity::yaw(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.yaw(radians);
+    yaw(radians);
 }
 
 void Entity::pitch(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.pitch(radians);
+    pitch(radians);
 }
 
 void Entity::roll(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.roll(radians);
+    roll(radians);
 }
 
 void Entity::yaw_parent(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.yaw(radians, SPACE_PARENT);
+    yaw(radians, SPACE_PARENT);
 }
 
 void Entity::pitch_parent(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.pitch(radians, SPACE_PARENT);
+    pitch(radians, SPACE_PARENT);
 }
 
 void Entity::roll_parent(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.roll(radians, SPACE_PARENT);
+    roll(radians, SPACE_PARENT);
 }
 
 void Entity::yaw_global(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.yaw(radians, SPACE_GLOBAL);
+    yaw(radians, SPACE_GLOBAL);
 }
 
 void Entity::pitch_global(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.pitch(radians, SPACE_GLOBAL);
+    pitch(radians, SPACE_GLOBAL);
 }
 
 void Entity::roll_global(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.roll(radians, SPACE_GLOBAL);
+    roll(radians, SPACE_GLOBAL);
 }
 
 ostream& operator<<(ostream& out, const Entity& rhs) {
-    out << "position(" << rhs.m_transform.getPositionAbs().getX() << ", " <<
-            rhs.m_transform.getPositionAbs().getY() << ", " <<
-            rhs.m_transform.getPositionAbs().getZ() << ")" << endl;
+    out << "position(" << rhs.getPositionAbs().getX() << ", " <<
+            rhs.getPositionAbs().getY() << ", " <<
+            rhs.getPositionAbs().getZ() << ")" << endl;
 
-    out << "rotation(" << rhs.m_transform.getRotation().getW() << ", " <<
-            rhs.m_transform.getRotation().getX() << ", " <<
-            rhs.m_transform.getRotation().getY() << ", " <<
-            rhs.m_transform.getRotation().getZ() << ")" << endl;
+    out << "rotation(" << rhs.getRotation().getW() << ", " <<
+            rhs.getRotation().getX() << ", " <<
+            rhs.getRotation().getY() << ", " <<
+            rhs.getRotation().getZ() << ")" << endl;
 
-//     out << "scale(" << rhs.m_transform.getScale().getX() << ", " <<
-//             rhs.m_transform.getScale().getY() << ", " <<
-//             rhs.m_transform.getScale().getZ() << ")" << endl;
+//     out << "scale(" << rhs.getScale().getX() << ", " <<
+//             rhs.getScale().getY() << ", " <<
+//             rhs.getScale().getZ() << ")" << endl;
 
     for (size_t i = 0; i < rhs.m_components.size(); ++i) {
         if (rhs.m_components[i] != 0)
