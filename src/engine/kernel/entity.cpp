@@ -77,35 +77,35 @@ Entity::~Entity() {
 
 void Entity::translate(const vector3_t& displacement, const transform_space_t relativeTo) {
     switch (relativeTo) {
-        case SPACE_LOCAL:
-            //         setPositionRel(m_positionRel + displacement.rotate(m_rotation.getAxis(), m_rotation.getAngle()));
-            setPositionRel(m_positionRel + rotateVector(displacement, m_rotation));
-            break;
-        case SPACE_PARENT:
-            //         setPositionRel(m_positionRel + displacement.rotate(m_parent.m_rotation.getAxis(), m_parent.m_rotation.getAngle()));
-            setPositionRel(m_positionRel + rotateVector(displacement, m_parent.m_rotation));
-            break;
-        case SPACE_GLOBAL:
-            setPositionAbs(m_positionAbs + displacement);
-            break;
-        default:
-            cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    case SPACE_LOCAL:
+        //         setPositionRel(m_positionRel + displacement.rotate(m_rotation.getAxis(), m_rotation.getAngle()));
+        setPositionRel(m_positionRel + rotateVector(displacement, m_rotation));
+        break;
+    case SPACE_PARENT:
+        //         setPositionRel(m_positionRel + displacement.rotate(m_parent.m_rotation.getAxis(), m_parent.m_rotation.getAngle()));
+        setPositionRel(m_positionRel + rotateVector(displacement, m_parent.m_rotation));
+        break;
+    case SPACE_GLOBAL:
+        setPositionAbs(m_positionAbs + displacement);
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
     }
 }
 
 void Entity::rotate(const quaternion_t& rotation, const transform_space_t relativeTo) {
     switch (relativeTo) {
-        case SPACE_LOCAL:
-            setRotation(m_rotation * rotation);
-            break;
-        case SPACE_PARENT:
-            setRotation(rotation * m_parent.m_rotation * m_rotation);
-            break;
-        case SPACE_GLOBAL:
-            setRotation(rotation * m_rotation);
-            break;
-        default:
-            cerr << "Invalid transform_space_t: " << relativeTo << endl;
+    case SPACE_LOCAL:
+        setRotation(m_rotation * rotation);
+        break;
+    case SPACE_PARENT:
+        setRotation(rotation * m_parent.m_rotation * m_rotation);
+        break;
+    case SPACE_GLOBAL:
+        setRotation(rotation * m_rotation);
+        break;
+    default:
+        cerr << "Invalid transform_space_t: " << relativeTo << endl;
     }
 }
 
