@@ -36,16 +36,18 @@ Transform::Transform(const Entity& entity, const Transform& parent):
     m_parent(parent),
     m_positionRel(0.0f, 0.0f, 0.0f),
     m_positionAbs(0.0f, 0.0f, 0.0f),
-    m_rotation(quaternion_t::getIdentity())
+    m_rotation(quaternion_t::getIdentity()),
+    m_lastRotation(quaternion_t::getIdentity())
 {}
 
 void Transform::translate(const vector3_t& displacement, const transform_space_t relativeTo) {
-    vector3_t difference;
     switch (relativeTo) {
     case SPACE_LOCAL:
+//         setPositionRel(m_positionRel + displacement.rotate(m_rotation.getAxis(), m_rotation.getAngle()));
         setPositionRel(m_positionRel + rotateVector(displacement, m_rotation));
         break;
     case SPACE_PARENT:
+//         setPositionRel(m_positionRel + displacement.rotate(m_parent.m_rotation.getAxis(), m_parent.m_rotation.getAngle()));
         setPositionRel(m_positionRel + rotateVector(displacement, m_parent.m_rotation));
         break;
     case SPACE_GLOBAL:
@@ -125,7 +127,6 @@ void Transform::applyTranslationToChildren() {
     for (it = m_entity.m_children.begin(); it != itend; ++it) {
         Transform& child = (*it)->m_transform;
         child.setPositionRel(child.m_positionRel);
-        child.applyTranslationToChildren();
     }
 }
 
@@ -134,8 +135,8 @@ void Transform::applyRotationToChildren() {
     itend = m_entity.m_children.end();
     for (it = m_entity.m_children.begin(); it != itend; ++it) {
         Transform& child = (*it)->m_transform;
-        child.setPositionRel(rotateVector(child.m_positionRel,  m_rotation * child.m_rotation.inverse()));
-        child.m_rotation = m_rotation;
-        child.applyRotationToChildren();
+        quaternion_t relativeRotation = m_rotation * m_lastRotation.inverse();
+        child.setPositionRel(rotateVector(child.m_positionRel, relativeRotation));
+        child.setRotation(relativeRotation * child.m_rotation);
     }
 }

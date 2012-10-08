@@ -29,6 +29,7 @@
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/terminal.hpp"
 #include "engine/kernel/scenemanager.hpp"
+#include "engine/kernel/common.hpp"
 #include "engine/renderer/rendermanager.hpp"
 #include "engine/renderer/renderer.hpp"
 #include "engine/renderer/renderablemesh.hpp"
@@ -90,12 +91,6 @@ void Game::loadScene() {
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
     b1Mesh->generateCube(3.0f, 13.0f, 3.0f);
 
-    Entity* camera = root->addChild("camera");
-    camera->transform().setPositionAbs(0.0f, 1.0f, 5.0f);
-//     camera->getTransform().lookAt(cube->getTransform().getPosition());
-    Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
-    camComponent->setPerspectiveFOV(45.0);
-
     Entity* cube = root->addChild("cube");
     cube->transform().setPositionAbs(0.0f, 0.0f, 0.0f);
     cube->transform().setRotation(0.2f, 0.2f, 0.1f);
@@ -106,6 +101,12 @@ void Game::loadScene() {
     cube2->transform().setPositionAbs(2.0f, 0.5f, 0.0f);
     RenderableMesh* mesh2 = new RenderableMesh(cube2);
     mesh2->generateCube(0.5f, 0.5f, 0.5f);
+
+    Entity* camera = root->addChild("camera");
+    camera->transform().setPositionAbs(0.0f, 1.0f, 5.0f);
+//     camera->getTransform().lookAt(cube2->getTransform().getPosition());
+    Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
+    camComponent->setPerspectiveFOV(45.0);
 
     cout << Terminal::listsToString() << endl;
 
@@ -125,12 +126,16 @@ void Game::bindControls() {
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-global -0.01", SDLK_LEFT);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-global 0.01", SDLK_DOWN);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-global -0.01", SDLK_UP);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw 0.01", SDLK_l);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw -0.01", SDLK_j);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch 0.01", SDLK_k);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch -0.01", SDLK_i);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll 0.01", SDLK_u);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll -0.01", SDLK_o);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z -2", SDLK_i);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x -2", SDLK_j);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z 2", SDLK_k);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x 2", SDLK_l);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z -2", SDLK_i);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x -2", SDLK_j);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z 2", SDLK_k);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x 2", SDLK_l);
 
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x -2", SDLK_a);

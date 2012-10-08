@@ -86,6 +86,7 @@ private:
     vector3_t m_positionRel;
     vector3_t m_positionAbs;
     quaternion_t m_rotation;
+    quaternion_t m_lastRotation;
 
     void applyTranslationToChildren();
     void applyRotationToChildren();
@@ -126,6 +127,7 @@ inline void Transform::setPositionRel(const float posX, const float posY, const 
 }
 
 inline void Transform::setRotation(const quaternion_t& rotation) {
+    m_lastRotation = m_rotation;
     m_rotation = rotation.normalized();
     applyRotationToChildren();
 }
