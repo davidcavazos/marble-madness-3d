@@ -82,28 +82,28 @@ void Game::loadScene() {
     Entity* root = m_sceneManager.getRootPtr();
 
     Entity* floor = root->addChild("floor");
-    floor->transform().setPositionAbs(0.0f, -1.0f, 0.0f);
+    floor->setPositionAbs(0.0f, -1.0f, 0.0f);
     RenderableMesh* floorMesh = new RenderableMesh(floor);
     floorMesh->generateCube(100.0f, 0.1f, 100.0f);
 
     Entity* b1 = root->addChild("b1");
-    b1->transform().setPositionAbs(5.0f, 0.0f, -10.0f);
+    b1->setPositionAbs(5.0f, 0.0f, -10.0f);
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
     b1Mesh->generateCube(3.0f, 13.0f, 3.0f);
 
     Entity* cube = root->addChild("cube");
-    cube->transform().setPositionAbs(0.0f, 0.0f, 0.0f);
-    cube->transform().setRotation(0.2f, 0.2f, 0.1f);
+    cube->setPositionAbs(0.0f, 0.0f, 0.0f);
+    cube->setRotation(0.2f, 0.2f, 0.1f);
     RenderableMesh* mesh = new RenderableMesh(cube);
     mesh->generateCube(1.0f, 0.5f, 1.5f);
 
     Entity* cube2 = cube->addChild("cube2");
-    cube2->transform().setPositionAbs(2.0f, 0.5f, 0.0f);
+    cube2->setPositionAbs(2.0f, 0.5f, 0.0f);
     RenderableMesh* mesh2 = new RenderableMesh(cube2);
     mesh2->generateCube(0.5f, 0.5f, 0.5f);
 
     Entity* camera = root->addChild("camera");
-    camera->transform().setPositionAbs(0.0f, 1.0f, 5.0f);
+    camera->setPositionAbs(0.0f, 1.0f, 5.0f);
 //     camera->getTransform().lookAt(cube2->getTransform().getPosition());
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
