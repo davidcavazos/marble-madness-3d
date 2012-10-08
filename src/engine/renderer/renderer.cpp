@@ -41,15 +41,18 @@ void Renderer::draw() {
     float lightPosition[] = {-2.0f, 2.0f, -3.0f, 1.0f};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
+    float m[16];
+
     Transform& camTrans = RenderManager::ms_activeCamera->getEntity().transform();
+//     camTrans.calcOpenGLMatrix(m);
+//     glMultMatrixf(m);
     glRotatef(-radToDeg(camTrans.calcPitch()), 1.0f, 0.0f, 0.0f);
     glRotatef(-radToDeg(camTrans.calcYaw()), 0.0f, 1.0f, 0.0f);
     glRotatef(-radToDeg(camTrans.calcRoll()), 0.0f, 0.0f, 1.0f);
-    glTranslatef(-camTrans.getPosition().getX(), -camTrans.getPosition().getY(), -camTrans.getPosition().getZ());
+    glTranslatef(-camTrans.getPositionAbs().getX(), -camTrans.getPositionAbs().getY(), -camTrans.getPositionAbs().getZ());
 
     set<RenderableMesh*>::const_iterator it;
     for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
-        Transform& trans = (*it)->getEntity().transform();
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -57,10 +60,12 @@ void Renderer::draw() {
         glNormalPointer(GL_FLOAT, 0, &(*it)->getNormals()[0]);
 
         glPushMatrix();
-        glTranslatef(trans.getPosition().getX(), trans.getPosition().getY(), trans.getPosition().getZ());
-        glRotatef(radToDeg(trans.calcPitch()), 1.0f, 0.0f, 0.0f);
-        glRotatef(radToDeg(trans.calcYaw()), 0.0f, 1.0f, 0.0f);
-        glRotatef(radToDeg(trans.calcRoll()), 0.0f, 0.0f, 1.0f);
+        (*it)->getEntity().transform().calcOpenGLMatrix(m);
+        glMultMatrixf(m);
+//         glTranslatef(trans.getPositionAbs().getX(), trans.getPositionAbs().getY(), trans.getPositionAbs().getZ());
+//         glRotatef(radToDeg(trans.calcPitch()), 1.0f, 0.0f, 0.0f);
+//         glRotatef(radToDeg(trans.calcYaw()), 0.0f, 1.0f, 0.0f);
+//         glRotatef(radToDeg(trans.calcRoll()), 0.0f, 0.0f, 1.0f);
         glDrawElements(GL_TRIANGLES, (*it)->getIndices().size(), GL_UNSIGNED_BYTE, &(*it)->getIndices()[0]);
         glPopMatrix();
 

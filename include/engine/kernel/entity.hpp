@@ -66,9 +66,9 @@ private:
     void yaw(const std::string& arg);
     void pitch(const std::string& arg);
     void roll(const std::string& arg);
-//     void yaw_parent(const std::string& arg);
-//     void pitch_parent(const std::string& arg);
-//     void roll_parent(const std::string& arg);
+    void yaw_parent(const std::string& arg);
+    void pitch_parent(const std::string& arg);
+    void roll_parent(const std::string& arg);
     void yaw_global(const std::string& arg);
     void pitch_global(const std::string& arg);
     void roll_global(const std::string& arg);

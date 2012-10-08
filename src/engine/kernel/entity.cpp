@@ -51,9 +51,9 @@ Entity::Entity(const Entity* parent, const string& objectName):
     registerCommand("yaw", boost::bind(&Entity::yaw, this, _1));
     registerCommand("pitch", boost::bind(&Entity::pitch, this, _1));
     registerCommand("roll", boost::bind(&Entity::roll, this, _1));
-//     registerCommand("yaw-parent", boost::bind(&Entity::yaw_parent, this, _1));
-//     registerCommand("pitch-parent", boost::bind(&Entity::pitch_parent, this, _1));
-//     registerCommand("roll-parent", boost::bind(&Entity::roll_parent, this, _1));
+    registerCommand("yaw-parent", boost::bind(&Entity::yaw_parent, this, _1));
+    registerCommand("pitch-parent", boost::bind(&Entity::pitch_parent, this, _1));
+    registerCommand("roll-parent", boost::bind(&Entity::roll_parent, this, _1));
     registerCommand("yaw-global", boost::bind(&Entity::yaw_global, this, _1));
     registerCommand("pitch-global", boost::bind(&Entity::pitch_global, this, _1));
     registerCommand("roll-global", boost::bind(&Entity::roll_global, this, _1));
@@ -101,7 +101,7 @@ void Entity::setPosition(const string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.setPosition(x, y, z);
+    m_transform.setPositionAbs(x, y, z);
 }
 
 void Entity::moveXYZ(const std::string& arg) {
@@ -136,56 +136,56 @@ void Entity::moveXYZ_parent(const std::string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.translate(x, y, z, TS_PARENT);
+    m_transform.translate(x, y, z, SPACE_PARENT);
 }
 
 void Entity::moveX_parent(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateX(dist * DeviceManager::getDeltaTime(), TS_PARENT);
+    m_transform.translateX(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
 void Entity::moveY_parent(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateY(dist * DeviceManager::getDeltaTime(), TS_PARENT);
+    m_transform.translateY(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
 void Entity::moveZ_parent(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), TS_PARENT);
+    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
 void Entity::moveXYZ_global(const std::string& arg) {
     float x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
-    m_transform.translate(x, y, z, TS_GLOBAL);
+    m_transform.translate(x, y, z, SPACE_GLOBAL);
 }
 
 void Entity::moveX_global(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateX(dist * DeviceManager::getDeltaTime(), TS_GLOBAL);
+    m_transform.translateX(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
 void Entity::moveY_global(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateY(dist * DeviceManager::getDeltaTime(), TS_GLOBAL);
+    m_transform.translateY(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
 void Entity::moveZ_global(const std::string& arg) {
     float dist;
     stringstream ss(arg);
     ss >> dist;
-    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), TS_GLOBAL);
+    m_transform.translateZ(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
 void Entity::yaw(const std::string& arg) {
@@ -209,52 +209,52 @@ void Entity::roll(const std::string& arg) {
     m_transform.roll(radians);
 }
 
-// void Entity::yaw_parent(const std::string& arg) {
-//     float radians;
-//     stringstream ss(arg);
-//     ss >> radians;
-//     m_transform.yaw(radians, TS_PARENT);
-// }
-//
-// void Entity::pitch_parent(const std::string& arg) {
-//     float radians;
-//     stringstream ss(arg);
-//     ss >> radians;
-//     m_transform.pitch(radians, TS_PARENT);
-// }
-//
-// void Entity::roll_parent(const std::string& arg) {
-//     float radians;
-//     stringstream ss(arg);
-//     ss >> radians;
-//     m_transform.roll(radians, TS_PARENT);
-// }
+void Entity::yaw_parent(const std::string& arg) {
+    float radians;
+    stringstream ss(arg);
+    ss >> radians;
+    m_transform.yaw(radians, SPACE_PARENT);
+}
+
+void Entity::pitch_parent(const std::string& arg) {
+    float radians;
+    stringstream ss(arg);
+    ss >> radians;
+    m_transform.pitch(radians, SPACE_PARENT);
+}
+
+void Entity::roll_parent(const std::string& arg) {
+    float radians;
+    stringstream ss(arg);
+    ss >> radians;
+    m_transform.roll(radians, SPACE_PARENT);
+}
 
 void Entity::yaw_global(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.yaw(radians, TS_GLOBAL);
+    m_transform.yaw(radians, SPACE_GLOBAL);
 }
 
 void Entity::pitch_global(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.pitch(radians, TS_GLOBAL);
+    m_transform.pitch(radians, SPACE_GLOBAL);
 }
 
 void Entity::roll_global(const std::string& arg) {
     float radians;
     stringstream ss(arg);
     ss >> radians;
-    m_transform.roll(radians, TS_GLOBAL);
+    m_transform.roll(radians, SPACE_GLOBAL);
 }
 
 ostream& operator<<(ostream& out, const Entity& rhs) {
-    out << "position(" << rhs.m_transform.getPosition().getX() << ", " <<
-            rhs.m_transform.getPosition().getY() << ", " <<
-            rhs.m_transform.getPosition().getZ() << ")" << endl;
+    out << "position(" << rhs.m_transform.getPositionAbs().getX() << ", " <<
+            rhs.m_transform.getPositionAbs().getY() << ", " <<
+            rhs.m_transform.getPositionAbs().getZ() << ")" << endl;
 
     out << "rotation(" << rhs.m_transform.getRotation().getW() << ", " <<
             rhs.m_transform.getRotation().getX() << ", " <<

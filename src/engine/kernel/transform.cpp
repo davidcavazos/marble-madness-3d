@@ -34,57 +34,41 @@ vector3_t Transform::VECTOR_Z_AXIS = vector3_t(0.0f, 0.0f, 1.0f);
 Transform::Transform(const Entity& entity, const Transform& parent):
     m_entity(entity),
     m_parent(parent),
-    m_position(0.0f, 0.0f, 0.0f),
+    m_positionRel(0.0f, 0.0f, 0.0f),
+    m_positionAbs(0.0f, 0.0f, 0.0f),
     m_rotation(quaternion_t::getIdentity())
 {}
 
 void Transform::translate(const vector3_t& displacement, const transform_space_t relativeTo) {
     vector3_t difference;
     switch (relativeTo) {
-    case TS_LOCAL:
-        difference = rotateVector(displacement, m_rotation);
+    case SPACE_LOCAL:
+        setPositionRel(m_positionRel + rotateVector(displacement, m_rotation));
         break;
-    case TS_PARENT:
-        difference = rotateVector(displacement, m_parent.m_rotation);
+    case SPACE_PARENT:
+        setPositionRel(m_positionRel + rotateVector(displacement, m_parent.m_rotation));
         break;
-    case TS_GLOBAL:
-        difference = displacement;
+    case SPACE_GLOBAL:
+        setPositionAbs(m_positionAbs + displacement);
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
-    }
-    m_position += difference;
-    set<Entity*>::iterator it, itend;
-    itend = m_entity.m_children.end();
-    for (it = m_entity.m_children.begin(); it != itend; ++it) {
-        Transform& child = (*it)->m_transform;
-        child.m_position += difference;
     }
 }
 
 void Transform::rotate(const quaternion_t& rotation, const transform_space_t relativeTo) {
     switch (relativeTo) {
-    case TS_LOCAL:
-        m_rotation = m_rotation * rotation;
+    case SPACE_LOCAL:
+        setRotation(m_rotation * rotation);
         break;
-    case TS_PARENT:
+    case SPACE_PARENT:
+        setRotation(rotation * m_parent.m_rotation * m_rotation);
         break;
-    case TS_GLOBAL:
-        m_rotation = rotation * m_rotation;
+    case SPACE_GLOBAL:
+        setRotation(rotation * m_rotation);
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
-    }
-    set<Entity*>::iterator it, itend;
-    itend = m_entity.m_children.end();
-    for (it = m_entity.m_children.begin(); it != itend; ++it) {
-        Transform& child = (*it)->m_transform;
-        child.m_position = m_position + rotateVector(child.m_position - m_position, m_rotation);
-//         vector3_t d = child.m_position - m_position;
-//         child.m_position.setX(m_position.getX() + rotateVector(vector3_t(d.getX(), 0.0f, 0.0f), m_rotation).getX());
-//         child.m_position.setY(m_position.getY() + rotateVector(vector3_t(d.getY(), 0.0f, 0.0f), m_rotation).getY());
-//         child.m_position.setZ(m_position.getZ() + rotateVector(vector3_t(d.getZ(), 0.0f, 0.0f), m_rotation).getZ());
-        child.m_rotation = m_rotation;
     }
 }
 
@@ -95,6 +79,11 @@ void Transform::setDirection(const vector3_t& target) {
 }
 
 vector3_t Transform::rotateVector(const vector3_t& v, const quaternion_t& rotation) {
+//     // Mathematical method
+//     quaternion_t vecQuat(v.getX(), v.getY(), v.getZ(), 0.0f);
+//     quaternion_t resQuat = rotation * vecQuat * rotation.inverse();
+//     return vector3_t(resQuat.getX(), resQuat.getY(), resQuat.getZ());
+
     // nVidia SDK implementation
     vector3_t uv, uuv;
     vector3_t qvec(rotation.getX(), rotation.getY(), rotation.getZ());
@@ -105,22 +94,48 @@ vector3_t Transform::rotateVector(const vector3_t& v, const quaternion_t& rotati
     return v + uv + uuv;
 }
 
+void Transform::calcOpenGLMatrix(float* m) const {
+    transform_t t(m_rotation, m_positionAbs);
+    t.getOpenGLMatrix(m);
+}
+
 float Transform::calcYaw() const {
-    return asin(-2.0 * (m_rotation.x() * m_rotation.z() - m_rotation.w() * m_rotation.y()));
+    return asin(-2.0 * (m_rotation.getX() * m_rotation.getZ() - m_rotation.getW() * m_rotation.getY()));
 }
 
 float Transform::calcPitch() const {
-    return atan2(2.0 * (m_rotation.y() * m_rotation.z() + m_rotation.w() * m_rotation.x()),
-                 m_rotation.w() * m_rotation.w() -
-                 m_rotation.x() * m_rotation.x() -
-                 m_rotation.y() * m_rotation.y() +
-                 m_rotation.z() * m_rotation.z());
+    return atan2(2.0 * (m_rotation.getY() * m_rotation.getZ() + m_rotation.getW() * m_rotation.getX()),
+                 m_rotation.getW() * m_rotation.getW() -
+                 m_rotation.getX() * m_rotation.getX() -
+                 m_rotation.getY() * m_rotation.getY() +
+                 m_rotation.getZ() * m_rotation.getZ());
 }
 
 float Transform::calcRoll() const {
-    return atan2(2.0 * (m_rotation.x() * m_rotation.y() + m_rotation.w() * m_rotation.z()),
-                 m_rotation.w() * m_rotation.w() +
-                 m_rotation.x() * m_rotation.x() -
-                 m_rotation.y() * m_rotation.y() -
-                 m_rotation.z() * m_rotation.z());
+    return atan2(2.0 * (m_rotation.getX() * m_rotation.getY() + m_rotation.getW() * m_rotation.getZ()),
+                 m_rotation.getW() * m_rotation.getW() +
+                 m_rotation.getX() * m_rotation.getX() -
+                 m_rotation.getY() * m_rotation.getY() -
+                 m_rotation.getZ() * m_rotation.getZ());
+}
+
+void Transform::applyTranslationToChildren() {
+    set<Entity*>::iterator it, itend;
+    itend = m_entity.m_children.end();
+    for (it = m_entity.m_children.begin(); it != itend; ++it) {
+        Transform& child = (*it)->m_transform;
+        child.setPositionRel(child.m_positionRel);
+        child.applyTranslationToChildren();
+    }
+}
+
+void Transform::applyRotationToChildren() {
+    set<Entity*>::iterator it, itend;
+    itend = m_entity.m_children.end();
+    for (it = m_entity.m_children.begin(); it != itend; ++it) {
+        Transform& child = (*it)->m_transform;
+        child.setPositionRel(rotateVector(child.m_positionRel,  m_rotation * child.m_rotation.inverse()));
+        child.m_rotation = m_rotation;
+        child.applyRotationToChildren();
+    }
 }

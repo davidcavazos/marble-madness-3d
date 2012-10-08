@@ -32,9 +32,9 @@ typedef btTransform transform_t;
 class Entity;
 
 typedef enum {
-    TS_LOCAL,
-    TS_PARENT,
-    TS_GLOBAL
+    SPACE_LOCAL,
+    SPACE_PARENT,
+    SPACE_GLOBAL
 } transform_space_t;
 
 class Transform {
@@ -46,32 +46,36 @@ public:
 
     Transform(const Entity& entity, const Transform& parent);
 
-    const vector3_t& getPosition() const;
+    const vector3_t& getPositionAbs() const;
+    const vector3_t& getPositionRel() const;
     const quaternion_t& getRotation() const;
 
-    void setPosition(const vector3_t& position);
-    void setPosition(const float posX, const float posY, const float posZ);
+    void setPositionAbs(const vector3_t& position);
+    void setPositionAbs(const float posX, const float posY, const float posZ);
+    void setPositionRel(const vector3_t& position);
+    void setPositionRel(const float posX, const float posY, const float posZ);
 
     void setRotation(const quaternion_t& rotation);
     void setRotation(const float w, const float x, const float y, const float z);
     void setRotation(const float yawRad, const float pitchRad, const float rollRad);
 
-    void translate(const vector3_t& displacement, const transform_space_t relativeTo = TS_LOCAL);
-    void translate(const float distX, const float distY, const float distZ, const transform_space_t relativeTo = TS_LOCAL);
-    void translateX(const float distX, const transform_space_t relativeTo = TS_LOCAL);
-    void translateY(const float distY, const transform_space_t relativeTo = TS_LOCAL);
-    void translateZ(const float distZ, const transform_space_t relativeTo = TS_LOCAL);
+    void translate(const vector3_t& displacement, const transform_space_t relativeTo = SPACE_LOCAL);
+    void translate(const float distX, const float distY, const float distZ, const transform_space_t relativeTo = SPACE_LOCAL);
+    void translateX(const float distX, const transform_space_t relativeTo = SPACE_LOCAL);
+    void translateY(const float distY, const transform_space_t relativeTo = SPACE_LOCAL);
+    void translateZ(const float distZ, const transform_space_t relativeTo = SPACE_LOCAL);
 
-    void rotate(const quaternion_t& rotation, const transform_space_t relativeTo = TS_LOCAL);
-    void rotate(const float w, const float x, const float y, const float z, const transform_space_t relativeTo = TS_LOCAL);
-    void yaw(const float radians, const transform_space_t relativeTo = TS_LOCAL);
-    void pitch(const float radians, const transform_space_t relativeTo = TS_LOCAL);
-    void roll(const float radians, const transform_space_t relativeTo = TS_LOCAL);
+    void rotate(const quaternion_t& rotation, const transform_space_t relativeTo = SPACE_LOCAL);
+    void rotate(const float w, const float x, const float y, const float z, const transform_space_t relativeTo = SPACE_LOCAL);
+    void yaw(const float radians, const transform_space_t relativeTo = SPACE_LOCAL);
+    void pitch(const float radians, const transform_space_t relativeTo = SPACE_LOCAL);
+    void roll(const float radians, const transform_space_t relativeTo = SPACE_LOCAL);
 
     void setDirection(const vector3_t& target);
     void lookAt(const vector3_t& target);
     vector3_t rotateVector(const vector3_t& v, const quaternion_t& rotation);
 
+    void calcOpenGLMatrix(float* m) const;
     float calcYaw() const;
     float calcPitch() const;
     float calcRoll() const;
@@ -79,30 +83,51 @@ public:
 private:
     const Entity& m_entity;
     const Transform& m_parent;
-    vector3_t m_position;
+    vector3_t m_positionRel;
+    vector3_t m_positionAbs;
     quaternion_t m_rotation;
+
+    void applyTranslationToChildren();
+    void applyRotationToChildren();
 };
 
 
 
-inline const vector3_t& Transform::getPosition() const {
-    return m_position;
+inline const vector3_t& Transform::getPositionAbs() const {
+    return m_positionAbs;
+}
+
+inline const vector3_t& Transform::getPositionRel() const {
+    return m_positionRel;
 }
 
 inline const quaternion_t& Transform::getRotation() const {
     return m_rotation;
 }
 
-inline void Transform::setPosition(const vector3_t& position) {
-    m_position = position;
+inline void Transform::setPositionAbs(const vector3_t& position) {
+    m_positionAbs = position;
+    m_positionRel = m_positionAbs - m_parent.m_positionAbs;
+    applyTranslationToChildren();
 }
 
-inline void Transform::setPosition(const float posX, const float posY, const float posZ) {
-    setPosition(vector3_t(posX, posY, posZ));
+inline void Transform::setPositionAbs(const float posX, const float posY, const float posZ) {
+    setPositionAbs(vector3_t(posX, posY, posZ));
+}
+
+inline void Transform::setPositionRel(const vector3_t& position) {
+    m_positionRel = position;
+    m_positionAbs = m_positionRel + m_parent.m_positionAbs;
+    applyTranslationToChildren();
+}
+
+inline void Transform::setPositionRel(const float posX, const float posY, const float posZ) {
+    setPositionRel(vector3_t(posX, posY, posZ));
 }
 
 inline void Transform::setRotation(const quaternion_t& rotation) {
-    m_rotation = rotation;
+    m_rotation = rotation.normalized();
+    applyRotationToChildren();
 }
 
 inline void Transform::setRotation(const float w, const float x, const float y, const float z) {
@@ -148,7 +173,7 @@ inline void Transform::roll(const float radians, const transform_space_t relativ
 }
 
 inline void Transform::lookAt(const vector3_t& target) {
-    setDirection(target - m_position);
+    setDirection(target - m_positionAbs);
 }
 
 #endif // TRANSFORM_HPP

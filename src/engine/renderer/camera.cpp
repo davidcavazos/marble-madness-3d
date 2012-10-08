@@ -27,7 +27,7 @@ using namespace std;
 const string CAMERA_DESCRIPTION = "$camera";
 const float DEFAULT_PERSP_FOV = 45.0f;
 const float DEFAULT_ORTHO_HEIGHT = 10.0f;
-const float DEFAULT_NEAR_DISTANCE = 1.0f;
+const float DEFAULT_NEAR_DISTANCE = 0.1f;
 const float DEFAULT_FAR_DISTANCE = 1000.0f;
 
 Camera::Camera(Entity* const entity, const camera_t type):
