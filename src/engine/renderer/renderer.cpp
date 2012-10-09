@@ -46,9 +46,9 @@ void Renderer::draw() {
     Entity& cam = RenderManager::ms_activeCamera->getEntity();
 //     camTrans.calcOpenGLMatrix(m);
 //     glMultMatrixf(m);
-    glRotatef(-radToDeg(cam.calcPitch()), 1.0f, 0.0f, 0.0f);
-    glRotatef(-radToDeg(cam.calcYaw()), 0.0f, 1.0f, 0.0f);
-    glRotatef(-radToDeg(cam.calcRoll()), 0.0f, 0.0f, 1.0f);
+    glRotatef(-radToDeg(cam.getRotation().getPitch()), 1.0f, 0.0f, 0.0f);
+    glRotatef(-radToDeg(cam.getRotation().getYaw()), 0.0f, 1.0f, 0.0f);
+    glRotatef(-radToDeg(cam.getRotation().getRoll()), 0.0f, 0.0f, 1.0f);
     glTranslatef(-cam.getPositionAbs().getX(), -cam.getPositionAbs().getY(), -cam.getPositionAbs().getZ());
 
     set<RenderableMesh*>::const_iterator it;

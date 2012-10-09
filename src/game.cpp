@@ -122,16 +122,16 @@ void Game::bindControls() {
     device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
     device->getInputManager().bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
 
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-global 0.01", SDLK_RIGHT);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-global -0.01", SDLK_LEFT);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-global 0.01", SDLK_DOWN);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-global -0.01", SDLK_UP);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw 0.01", SDLK_l);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw -0.01", SDLK_j);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch 0.01", SDLK_k);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch -0.01", SDLK_i);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll 0.01", SDLK_u);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll -0.01", SDLK_o);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-global 1", SDLK_RIGHT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-global -1", SDLK_LEFT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-global 1", SDLK_DOWN);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-global -1", SDLK_UP);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw 1", SDLK_l);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw -1", SDLK_j);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch 1", SDLK_k);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch -1", SDLK_i);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll 1", SDLK_u);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll -1", SDLK_o);
 //     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z -2", SDLK_i);
 //     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x -2", SDLK_j);
 //     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z 2", SDLK_k);
@@ -212,13 +212,13 @@ void Game::onMouseMotion(const string&) {
 
     float sensitivity = 0.05;
     stringstream ssx;
-    ssx << motion.xrel * sensitivity * DeviceManager::getDeltaTime();
-//     ssx << " " << -motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+    ssx << motion.xrel * sensitivity;
+//     ssx << " " << -motion.yrel * sensitivity;
     moveXCmd.setArguments(ssx.str());
     Terminal::pushCommand(moveXCmd);
 
     stringstream ssy;
-    ssy << motion.yrel * sensitivity * DeviceManager::getDeltaTime();
+    ssy << motion.yrel * sensitivity;
     moveYCmd.setArguments(ssy.str());
     Terminal::pushCommand(moveYCmd);
 }
