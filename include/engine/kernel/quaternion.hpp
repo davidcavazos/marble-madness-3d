@@ -27,8 +27,6 @@ class Vector3;
 
 class Quaternion {
 public:
-    static Quaternion IDENTITY();
-
     Quaternion();
     Quaternion(const Quaternion& rhs);
     Quaternion(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z);
@@ -81,13 +79,9 @@ private:
     scalar_t m_data[4];
 };
 
+const Quaternion QUATERNION_IDENTITY = Quaternion(1, 0, 0, 0);
+
 #include "vector3.hpp"
-
-
-
-inline Quaternion Quaternion::IDENTITY() {
-    return Quaternion(ONE, ZERO, ZERO, ZERO);
-}
 
 
 
@@ -212,7 +206,7 @@ inline Vector3 Quaternion::getAxis() const {
     scalar_t s_squared = ONE - getW() * getW();
 
     if (s_squared < static_cast<scalar_t>(10.0) * EPSILON) //Check for divide by zero
-        return Vector3::X_UNIT();  // Arbitrary
+        return VECTOR3_UNIT_X;  // Arbitrary
     scalar_t s = ONE / std::sqrt(s_squared);
     return Vector3(getX() * s, getY() * s, getZ() * s);
 }

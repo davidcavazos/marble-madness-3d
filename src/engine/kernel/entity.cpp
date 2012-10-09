@@ -20,6 +20,7 @@
 
 #include "engine/kernel/entity.hpp"
 
+#include <iostream>
 #include <cmath>
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/scenemanager.hpp"
@@ -34,10 +35,10 @@ Entity::Entity(const Entity* parent, const string& objectName):
     m_parent(*parent),
     m_children(),
     m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
-    m_positionRel(Vector3::VECTOR_ZERO()),
-    m_positionAbs(Vector3::VECTOR_ZERO()),
-    m_rotation(Quaternion::IDENTITY()),
-    m_lastRotation(Quaternion::IDENTITY())
+    m_positionRel(VECTOR3_ZERO),
+    m_positionAbs(VECTOR3_ZERO),
+    m_rotation(QUATERNION_IDENTITY),
+    m_lastRotation(QUATERNION_IDENTITY)
 {
     registerAttribute("position", boost::bind(&Entity::setPosition, this, _1));
     registerCommand("move-xyz", boost::bind(&Entity::moveXYZ, this, _1));
@@ -93,7 +94,7 @@ void Entity::rotate(const Quaternion& rotation, const transform_space_t& relativ
         setRotation(m_rotation * rotation);
         break;
     case SPACE_PARENT:
-        setRotation(rotation * m_parent.m_rotation * m_rotation);
+        setRotation(m_rotation.inverse() * m_parent.m_rotation);
         break;
     case SPACE_GLOBAL:
         setRotation(rotation * m_rotation);
@@ -104,7 +105,7 @@ void Entity::rotate(const Quaternion& rotation, const transform_space_t& relativ
 }
 
 void Entity::setDirection(const Vector3& target) {
-    if (target == Vector3::VECTOR_ZERO())
+    if (target == VECTOR3_ZERO)
         return;
     cerr << "Transform.setDirection(vector3) not implemented yet!" << endl;
 }

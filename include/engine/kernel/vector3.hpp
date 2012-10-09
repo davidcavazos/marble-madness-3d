@@ -28,16 +28,6 @@ class Quaternion;
 
 class Vector3 {
 public:
-    static Vector3 VECTOR_ZERO();
-    static Vector3 UNIT();
-    static Vector3 UNIT_NEGATIVE();
-    static Vector3 X_UNIT();
-    static Vector3 Y_UNIT();
-    static Vector3 Z_UNIT();
-    static Vector3 X_UNIT_NEGATIVE();
-    static Vector3 Y_UNIT_NEGATIVE();
-    static Vector3 Z_UNIT_NEGATIVE();
-
     Vector3();
     Vector3(const Vector3& rhs);
     Vector3(const scalar_t& x, const scalar_t& y, const scalar_t& z);
@@ -91,45 +81,17 @@ private:
     scalar_t m_data[3];
 };
 
+const Vector3 VECTOR3_ZERO = Vector3(0);
+const Vector3 VECTOR3_UNIT = Vector3(1);
+const Vector3 VECTOR3_UNIT_NEG = Vector3(-1);
+const Vector3 VECTOR3_UNIT_X = Vector3(1, 0, 0);
+const Vector3 VECTOR3_UNIT_Y = Vector3(0, 1, 0);
+const Vector3 VECTOR3_UNIT_Z = Vector3(0, 0, 1);
+const Vector3 VECTOR3_UNIT_X_NEG = Vector3(-1, 0, 0);
+const Vector3 VECTOR3_UNIT_Y_NEG = Vector3(0, -1, 0);
+const Vector3 VECTOR3_UNIT_Z_NEG = Vector3(0, 0, -1);
+
 #include "quaternion.hpp"
-
-
-
-inline Vector3 Vector3::VECTOR_ZERO() {
-    return Vector3(ZERO);
-}
-
-inline Vector3 Vector3::UNIT() {
-    return Vector3(ONE);
-}
-
-inline Vector3 Vector3::UNIT_NEGATIVE() {
-    return Vector3(-ONE);
-}
-
-inline Vector3 Vector3::X_UNIT() {
-    return Vector3(ONE, ZERO, ZERO);
-}
-
-inline Vector3 Vector3::Y_UNIT() {
-    return Vector3(ZERO, ONE, ZERO);
-}
-
-inline Vector3 Vector3::Z_UNIT() {
-    return Vector3(ZERO, ZERO, ONE);
-}
-
-inline Vector3 Vector3::X_UNIT_NEGATIVE() {
-    return Vector3(-ONE, ZERO, ZERO);
-}
-
-inline Vector3 Vector3::Y_UNIT_NEGATIVE() {
-    return Vector3(ZERO, -ONE, ZERO);
-}
-
-inline Vector3 Vector3::Z_UNIT_NEGATIVE() {
-    return Vector3(ZERO, ZERO, -ONE);
-}
 
 
 
