@@ -94,7 +94,7 @@ void Entity::rotate(const Quaternion& rotation, const transform_space_t& relativ
         setRotation(m_rotation * rotation);
         break;
     case SPACE_PARENT:
-        setRotation(m_rotation.inverse() * m_parent.m_rotation);
+        setRotation(m_rotation * rotation);
         break;
     case SPACE_GLOBAL:
         setRotation(rotation * m_rotation);

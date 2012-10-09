@@ -166,15 +166,15 @@ inline void Entity::translate(const scalar_t& distX, const scalar_t& distY, cons
 }
 
 inline void Entity::translateX(const scalar_t& distX, const transform_space_t& relativeTo) {
-    translate(Vector3(distX, 0.0f, 0.0f), relativeTo);
+    translate(Vector3(distX, 0.0, 0.0), relativeTo);
 }
 
 inline void Entity::translateY(const scalar_t& distY, const transform_space_t& relativeTo) {
-    translate(Vector3(0.0f, distY, 0.0f), relativeTo);
+    translate(Vector3(0.0, distY, 0.0), relativeTo);
 }
 
 inline void Entity::translateZ(const scalar_t& distZ, const transform_space_t& relativeTo) {
-    translate(Vector3(0.0f, 0.0f, distZ), relativeTo);
+    translate(Vector3(0.0, 0.0, distZ), relativeTo);
 }
 
 inline void Entity::rotate(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z, const transform_space_t& relativeTo) {
@@ -182,15 +182,15 @@ inline void Entity::rotate(const scalar_t& w, const scalar_t& x, const scalar_t&
 }
 
 inline void Entity::yaw(const scalar_t& radians, const transform_space_t& relativeTo) {
-    rotate(Quaternion(Vector3::Y_UNIT(), radians), relativeTo);
+    rotate(Quaternion(VECTOR3_UNIT_Y, radians), relativeTo);
 }
 
 inline void Entity::pitch(const scalar_t& radians, const transform_space_t& relativeTo) {
-    rotate(Quaternion(Vector3::X_UNIT(), radians), relativeTo);
+    rotate(Quaternion(VECTOR3_UNIT_X, radians), relativeTo);
 }
 
 inline void Entity::roll(const scalar_t& radians, const transform_space_t& relativeTo) {
-    rotate(Quaternion(Vector3::Z_UNIT(), radians), relativeTo);
+    rotate(Quaternion(VECTOR3_UNIT_Z, radians), relativeTo);
 }
 
 inline void Entity::lookAt(const Vector3& target) {
