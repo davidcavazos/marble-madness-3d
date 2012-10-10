@@ -99,7 +99,7 @@ void Game::loadScene() {
 
     Entity* cube = camera->addChild("cube");
     cube->setPositionAbs(0.0f, 0.0f, 0.0f);
-    cube->setRotation(0.2f, 0.2f, 0.1f);
+    cube->setOrientation(0.2f, 0.2f, 0.1f);
     RenderableMesh* mesh = new RenderableMesh(cube);
     mesh->generateCube(1.0f, 0.5f, 1.5f);
 

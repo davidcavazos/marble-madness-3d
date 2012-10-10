@@ -45,15 +45,15 @@ public:
 
     const Vector3& getPositionAbs() const;
     const Vector3& getPositionRel() const;
-    const Quaternion& getRotation() const;
+    const Quaternion& getOrientation() const;
 
     void setPositionAbs(const Vector3& position);
     void setPositionAbs(const scalar_t& posX, const scalar_t& posY, const scalar_t& posZ);
     void setPositionRel(const Vector3& position);
     void setPositionRel(const scalar_t& posX, const scalar_t& posY, const scalar_t& posZ);
-    void setRotation(const Quaternion& rotation);
-    void setRotation(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z);
-    void setRotation(const scalar_t& yawRad, const scalar_t& pitchRad, const scalar_t& rollRad);
+    void setOrientation(const Quaternion& orientation);
+    void setOrientation(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z);
+    void setOrientation(const scalar_t& yawRad, const scalar_t& pitchRad, const scalar_t& rollRad);
 
     void translate(const Vector3& displacement, const transform_space_t& relativeTo = SPACE_LOCAL);
     void translate(const scalar_t& distX, const scalar_t& distY, const scalar_t& distZ, const transform_space_t& relativeTo = SPACE_LOCAL);
@@ -61,7 +61,7 @@ public:
     void translateY(const scalar_t& distY, const transform_space_t& relativeTo = SPACE_LOCAL);
     void translateZ(const scalar_t& distZ, const transform_space_t& relativeTo = SPACE_LOCAL);
 
-    void rotate(const Quaternion& rotation, const transform_space_t& relativeTo = SPACE_LOCAL);
+    void rotate(const Quaternion& deltaRotation, const transform_space_t& relativeTo = SPACE_LOCAL);
     void rotate(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z, const transform_space_t& relativeTo = SPACE_LOCAL);
     void yaw(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
     void pitch(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
@@ -79,13 +79,13 @@ private:
     const Entity& m_parent;
     std::set<Entity*> m_children;
     std::vector<Component*> m_components;
-    Vector3 m_positionRel;
     Vector3 m_positionAbs;
-    Quaternion m_rotation;
-    Quaternion m_lastRotation;
+    Vector3 m_positionRel;
+    Quaternion m_orientation;
+    Quaternion m_lastOrientation;
 
     void applyTranslationToChildren();
-    void applyRotationToChildren();
+    void applyOrientationToChildren();
 
     void setPosition(const std::string& arg);
     void moveXYZ(const std::string& arg);
@@ -121,8 +121,8 @@ inline const Vector3& Entity::getPositionRel() const {
     return m_positionRel;
 }
 
-inline const Quaternion& Entity::getRotation() const {
-    return m_rotation;
+inline const Quaternion& Entity::getOrientation() const {
+    return m_orientation;
 }
 
 inline void Entity::setPositionAbs(const Vector3& position) {
@@ -145,18 +145,18 @@ inline void Entity::setPositionRel(const scalar_t& posX, const scalar_t& posY, c
     setPositionRel(Vector3(posX, posY, posZ));
 }
 
-inline void Entity::setRotation(const Quaternion& rotation) {
-    m_lastRotation = m_rotation;
-    m_rotation = rotation.normalized();
-    applyRotationToChildren();
+inline void Entity::setOrientation(const Quaternion& orientation) {
+    m_lastOrientation = m_orientation;
+    m_orientation = orientation.normalized();
+    applyOrientationToChildren();
 }
 
-inline void Entity::setRotation(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z) {
-    setRotation(Quaternion(w, x, y, z));
+inline void Entity::setOrientation(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z) {
+    setOrientation(Quaternion(w, x, y, z));
 }
 
-inline void Entity::setRotation(const scalar_t& yawRad, const scalar_t& pitchRad, const scalar_t& rollRad) {
-    setRotation(Quaternion(yawRad, pitchRad, rollRad));
+inline void Entity::setOrientation(const scalar_t& yawRad, const scalar_t& pitchRad, const scalar_t& rollRad) {
+    setOrientation(Quaternion(yawRad, pitchRad, rollRad));
 }
 
 

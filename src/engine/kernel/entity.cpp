@@ -35,10 +35,10 @@ Entity::Entity(const Entity* parent, const string& objectName):
     m_parent(*parent),
     m_children(),
     m_components(TOTAL_COMPONENTS_CONTAINER_SIZE, 0),
-    m_positionRel(VECTOR3_ZERO),
     m_positionAbs(VECTOR3_ZERO),
-    m_rotation(QUATERNION_IDENTITY),
-    m_lastRotation(QUATERNION_IDENTITY)
+    m_positionRel(VECTOR3_ZERO),
+    m_orientation(QUATERNION_IDENTITY),
+    m_lastOrientation(QUATERNION_IDENTITY)
 {
     registerAttribute("position", boost::bind(&Entity::setPosition, this, _1));
     registerCommand("move-xyz", boost::bind(&Entity::moveXYZ, this, _1));
@@ -75,10 +75,10 @@ Entity::~Entity() {
 void Entity::translate(const Vector3& displacement, const transform_space_t& relativeTo) {
     switch (relativeTo) {
     case SPACE_LOCAL:
-        setPositionRel(m_positionRel + displacement.rotate(m_rotation));
+        setPositionRel(m_positionRel + displacement.rotate(m_orientation));
         break;
     case SPACE_PARENT:
-        setPositionRel(m_positionRel + displacement.rotate(m_parent.m_rotation));
+        setPositionRel(m_positionRel + displacement.rotate(m_parent.m_orientation));
         break;
     case SPACE_GLOBAL:
         setPositionAbs(m_positionAbs + displacement);
@@ -88,16 +88,22 @@ void Entity::translate(const Vector3& displacement, const transform_space_t& rel
     }
 }
 
-void Entity::rotate(const Quaternion& rotation, const transform_space_t& relativeTo) {
+void Entity::rotate(const Quaternion& deltaRotation, const transform_space_t& relativeTo) {
     switch (relativeTo) {
     case SPACE_LOCAL:
-        setRotation(m_rotation * rotation);
+        setOrientation(m_orientation * deltaRotation);
         break;
     case SPACE_PARENT:
-        setRotation(m_rotation * rotation);
+        // Qc' = Qp' * Inv(Qp) * Qc
+        // Where:
+        // Qp  = Parent orientation last frame
+        // Qp' = Parent orientation this frame
+        // Qc  = Child orientation last frame
+        // Qc' = Child orientation this frame
+        setOrientation(m_parent.m_orientation * m_parent.m_lastOrientation.inverse() * deltaRotation * m_orientation);
         break;
     case SPACE_GLOBAL:
-        setRotation(rotation * m_rotation);
+        setOrientation(deltaRotation * m_orientation);
         break;
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
@@ -111,19 +117,19 @@ void Entity::setDirection(const Vector3& target) {
 }
 
 void Entity::calcOpenGLMatrix(float* m) const {
-    scalar_t s = static_cast<scalar_t>(2.0) / m_rotation.lengthSquared();
-    scalar_t xs = m_rotation.getX() * s;
-    scalar_t ys = m_rotation.getY() * s;
-    scalar_t zs = m_rotation.getZ() * s;
-    scalar_t wx = m_rotation.getW() * xs;
-    scalar_t wy = m_rotation.getW() * ys;
-    scalar_t wz = m_rotation.getW() * zs;
-    scalar_t xx = m_rotation.getX() * xs;
-    scalar_t xy = m_rotation.getX() * ys;
-    scalar_t xz = m_rotation.getX() * zs;
-    scalar_t yy = m_rotation.getY() * ys;
-    scalar_t yz = m_rotation.getY() * zs;
-    scalar_t zz = m_rotation.getZ() * zs;
+    scalar_t s = static_cast<scalar_t>(2.0) / m_orientation.lengthSquared();
+    scalar_t xs = m_orientation.getX() * s;
+    scalar_t ys = m_orientation.getY() * s;
+    scalar_t zs = m_orientation.getZ() * s;
+    scalar_t wx = m_orientation.getW() * xs;
+    scalar_t wy = m_orientation.getW() * ys;
+    scalar_t wz = m_orientation.getW() * zs;
+    scalar_t xx = m_orientation.getX() * xs;
+    scalar_t xy = m_orientation.getX() * ys;
+    scalar_t xz = m_orientation.getX() * zs;
+    scalar_t yy = m_orientation.getY() * ys;
+    scalar_t yz = m_orientation.getY() * zs;
+    scalar_t zz = m_orientation.getZ() * zs;
     m[0]  = static_cast<float>(1.0 - yy - zz);
     m[1]  = static_cast<float>(xy + wz);
     m[2]  = static_cast<float>(xz - wy);
@@ -151,14 +157,20 @@ void Entity::applyTranslationToChildren() {
     }
 }
 
-void Entity::applyRotationToChildren() {
-    Quaternion relativeRotation = m_rotation * m_lastRotation.inverse();
+void Entity::applyOrientationToChildren() {
+    // Qc1 = Qp1 * Inv(Qp0) * Qc0
+    // Where:
+    // Qp0 = Parent orientation last frame
+    // Qp1 = Parent orientation this frame
+    // Qc0 = Child orientation last frame
+    // Qc1 = Child orientation this frame
+    Quaternion relativeRotation = m_orientation * m_lastOrientation.inverse();
     set<Entity*>::iterator it, itend;
     itend = m_children.end();
     for (it = m_children.begin(); it != itend; ++it) {
         Entity& child = **it;
         child.setPositionRel(child.m_positionRel.rotate(relativeRotation));
-        child.setRotation(relativeRotation * child.m_rotation);
+        child.setOrientation(relativeRotation * child.m_orientation);
     }
 }
 
@@ -361,10 +373,10 @@ ostream& operator<<(ostream& out, const Entity& rhs) {
             rhs.getPositionAbs().getY() << ", " <<
             rhs.getPositionAbs().getZ() << ")" << endl;
 
-    out << "rotation(" << rhs.getRotation().getW() << ", " <<
-            rhs.getRotation().getX() << ", " <<
-            rhs.getRotation().getY() << ", " <<
-            rhs.getRotation().getZ() << ")" << endl;
+    out << "rotation(" << rhs.getOrientation().getW() << ", " <<
+            rhs.getOrientation().getX() << ", " <<
+            rhs.getOrientation().getY() << ", " <<
+            rhs.getOrientation().getZ() << ")" << endl;
 
     for (size_t i = 0; i < rhs.m_components.size(); ++i) {
         if (rhs.m_components[i] != 0)
