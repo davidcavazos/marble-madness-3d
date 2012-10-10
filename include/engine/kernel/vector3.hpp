@@ -272,7 +272,7 @@ inline scalar_t Vector3::distanceSquared(const Vector3& v) const {
 }
 
 inline scalar_t Vector3::angle(const Vector3& v) const {
-    scalar_t s = std::sqrt(lengthSquared() * v.lengthSquared());
+    const scalar_t s = std::sqrt(lengthSquared() * v.lengthSquared());
     return std::acos(dot(v) / s);
 }
 
@@ -308,7 +308,7 @@ inline Vector3 Vector3::rotate(const Vector3& axis, const scalar_t& angle) const
 inline Vector3 Vector3::rotate(const Quaternion& q) const {
     // nVidia SDK implementation
     Vector3 uv, uuv;
-    Vector3 qvec(q.getX(), q.getY(), q.getZ());
+    const Vector3 qvec(q.getX(), q.getY(), q.getZ());
     uv = qvec.cross(*this);
     uuv = qvec.cross(uv);
     uv *= (2.0f * q.getW());
