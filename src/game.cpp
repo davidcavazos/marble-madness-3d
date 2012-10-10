@@ -95,18 +95,18 @@ void Game::loadScene() {
     camera->setPositionAbs(0.0f, 1.0f, 5.0f);
 //     camera->getTransform().lookAt(cube2->getTransform().getPosition());
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
-    camComponent->setPerspectiveFOV(45.0);
+    camComponent->setPerspectiveFOV(50.0);
 
-    Entity* cube = camera->addChild("cube");
+    Entity* cube = root->addChild("cube");
     cube->setPositionAbs(0.0f, 0.0f, 0.0f);
-    cube->setOrientation(0.2f, 0.2f, 0.1f);
+    cube->setOrientationAbs(0.2f, 0.2f, 0.1f);
     RenderableMesh* mesh = new RenderableMesh(cube);
     mesh->generateCube(1.0f, 0.5f, 1.5f);
 
     Entity* cube2 = cube->addChild("cube2");
-    cube2->setPositionAbs(2.0f, 0.5f, 0.0f);
+    cube2->setPositionRel(2.0f, 0.5f, 0.0f);
     RenderableMesh* mesh2 = new RenderableMesh(cube2);
-    mesh2->generateCube(0.5f, 0.5f, 0.5f);
+    mesh2->generateCube(0.5f, 0.25f, 0.75f);
 
     cout << Terminal::listsToString() << endl;
 
@@ -122,20 +122,20 @@ void Game::bindControls() {
     device->getInputManager().bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
     device->getInputManager().bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
 
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw-parent 1", SDLK_RIGHT);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw-parent -1", SDLK_LEFT);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch-parent 1", SDLK_DOWN);
-    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch-parent -1", SDLK_UP);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw 1", SDLK_l);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube yaw -1", SDLK_j);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch 1", SDLK_k);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube pitch -1", SDLK_i);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll 1", SDLK_u);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube roll -1", SDLK_o);
-//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 move-z-parent -2", SDLK_i);
-//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 move-x-parent -2", SDLK_j);
-//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 move-z-parent 2", SDLK_k);
-//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 move-x-parent 2", SDLK_l);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-parent 1", SDLK_RIGHT);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 yaw-parent -1", SDLK_LEFT);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-parent 1", SDLK_DOWN);
+//     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube2 pitch-parent -1", SDLK_UP);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z -2", SDLK_UP);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x -2", SDLK_LEFT);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-z 2", SDLK_DOWN);
+    device->getInputManager().bindInput(INPUT_KEY_PRESSED, "cube move-x 2", SDLK_RIGHT);
 
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
     device->getInputManager().bindInput(INPUT_KEY_PRESSED, "camera move-x -2", SDLK_a);
