@@ -8,7 +8,6 @@
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
 - Possibility of multiple cameras
-- Fix Transform.lookAt(direction, up)
 
 
 
