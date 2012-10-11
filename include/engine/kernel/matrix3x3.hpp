@@ -23,7 +23,6 @@
 
 #include "vector3.hpp"
 #include "quaternion.hpp"
-#include "common.hpp"
 
 class Matrix3x3 {
 public:
@@ -80,12 +79,13 @@ private:
     Vector3 m_rows[3];
 };
 
+#include "common.hpp"
+
 const Matrix3x3 MATRIX3X3_IDENTITY = Matrix3x3(
      ONE, ZERO, ZERO,
     ZERO,  ONE, ZERO,
     ZERO, ZERO,  ONE
 );
-
 
 
 inline Matrix3x3::Matrix3x3() {
@@ -200,12 +200,12 @@ inline void Matrix3x3::getRotation(Quaternion& q) const {
 
     if (trace > ZERO) {
         scalar_t s = std::sqrt(trace + ONE);
-        temp[3]=(s * HALF);
+        temp[3] = s * HALF;
         s = HALF / s;
 
-        temp[0]=((get(2, 1) - get(1, 2)) * s);
-        temp[1]=((get(0, 2) - get(2, 0)) * s);
-        temp[2]=((get(1, 0) - get(0, 1)) * s);
+        temp[0] = (get(2, 1) - get(1, 2)) * s;
+        temp[1] = (get(0, 2) - get(2, 0)) * s;
+        temp[2] = (get(1, 0) - get(0, 1)) * s;
     }
     else {
         int i = get(0, 0) < get(1, 1) ?
@@ -222,7 +222,7 @@ inline void Matrix3x3::getRotation(Quaternion& q) const {
         temp[j] = (get(j, i) + get(i, j)) * s;
         temp[k] = (get(k, i) + get(i, k)) * s;
     }
-    q.setValue(temp[0], temp[1], temp[2], temp[3]);
+    q.setValue(temp[3], temp[0], temp[1], temp[2]);
 }
 
 inline void Matrix3x3::getEuler(scalar_t& yaw, scalar_t& pitch, scalar_t& roll) const {
@@ -315,6 +315,7 @@ inline void Matrix3x3::setEuler(const scalar_t& yaw, const scalar_t& pitch, cons
 inline void Matrix3x3::setIdentity() {
     setValue(MATRIX3X3_IDENTITY);
 }
+
 
 
 inline Matrix3x3 Matrix3x3::absolute() const {

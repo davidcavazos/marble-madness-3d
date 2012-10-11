@@ -24,7 +24,6 @@
 #include <ostream>
 #include <vector>
 #include <set>
-#include "common.hpp"
 #include "vector3.hpp"
 #include "quaternion.hpp"
 #include "commandobject.hpp"
@@ -74,7 +73,7 @@ public:
     void yaw(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
     void pitch(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
     void roll(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
-    void lookAt(const Vector3& target); //, const Vector3& up = VECTOR3_UNIT_Y);
+    void lookAt(const Vector3& target, const Vector3& up = VECTOR3_UNIT_Y);
 
     Entity* addChild(const std::string& childName);
     void removeChild(Entity* const child);
@@ -232,10 +231,6 @@ inline void Entity::pitch(const scalar_t& radians, const transform_space_t& rela
 
 inline void Entity::roll(const scalar_t& radians, const transform_space_t& relativeTo) {
     rotate(VECTOR3_UNIT_Z, radians, relativeTo);
-}
-
-inline void Entity::lookAt(const Vector3& target) { //, const Vector3& up) {
-    m_orientationAbs = aimAt(target - m_positionAbs);
 }
 
 #endif // ENTITY_HPP

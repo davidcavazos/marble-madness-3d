@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <cmath>
+#include "engine/kernel/matrix3x3.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/scenemanager.hpp"
 #include "engine/kernel/component.hpp"
@@ -108,6 +109,18 @@ void Entity::rotate(const Quaternion& deltaRotation, const transform_space_t& re
     default:
         cerr << "Invalid transform_space_t: " << relativeTo << endl;
     }
+}
+
+void Entity::lookAt(const Vector3& target, const Vector3& up) {
+    Quaternion result;
+    Vector3 vFwd = (target - m_positionAbs).normalized();
+    Vector3 vSide = vFwd.cross(up).normalized();
+    Vector3 vUp = vSide.cross(vFwd);
+    Matrix3x3 m(vSide.getX(), vUp.getX(), -vFwd.getX(),
+                vSide.getY(), vUp.getY(), -vFwd.getY(),
+                vSide.getZ(), vUp.getZ(), -vFwd.getZ());
+    m.getRotation(result);
+    setOrientationAbs(result);
 }
 
 void Entity::applyTranslationToChildren() {

@@ -26,6 +26,7 @@
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/entity.hpp"
+#include <engine/kernel/matrix3x3.hpp>
 #include "engine/renderer/rendermanager.hpp"
 #include <engine/renderer/camera.hpp>
 #include <engine/renderer/renderablemesh.hpp>
@@ -44,7 +45,7 @@ void Renderer::draw() {
     float m[16];
 
     Entity& cam = RenderManager::ms_activeCamera->getEntity();
-    calcOpenGLMatrix(m, VECTOR3_ZERO, cam.getOrientationAbs().inverse());
+    setOpenGLMatrix(m, VECTOR3_ZERO, cam.getOrientationAbs().inverse());
     glMultMatrixf(m);
     glTranslatef(-cam.getPositionAbs().getX(), -cam.getPositionAbs().getY(), -cam.getPositionAbs().getZ());
 
@@ -57,7 +58,7 @@ void Renderer::draw() {
 
         glPushMatrix();
         Entity& entity = (*it)->getEntity();
-        calcOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
+        setOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
         glDrawElements(GL_TRIANGLES, (*it)->getIndices().size(), GL_UNSIGNED_BYTE, &(*it)->getIndices()[0]);
         glPopMatrix();

@@ -29,7 +29,6 @@
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/terminal.hpp"
 #include "engine/kernel/scenemanager.hpp"
-#include "engine/kernel/common.hpp"
 #include "engine/renderer/rendermanager.hpp"
 #include "engine/renderer/renderer.hpp"
 #include "engine/renderer/renderablemesh.hpp"
@@ -84,7 +83,7 @@ void Game::loadScene() {
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 1.0f, 5.0f);
-    camera->lookAt(cube2->getPositionAbs());
+    camera->lookAt(cube->getPositionAbs(), VECTOR3_UNIT_Y);
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
 

@@ -34,12 +34,9 @@ class Quaternion;
 
 double degToRad(const double deg);
 double radToDeg(const double rad);
-void calcOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot);
-Quaternion aimAt(const Vector3& direction); //, const Vector3& up);
+void setOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot);
 
 #include "matrix3x3.hpp"
-
-
 
 inline double degToRad(const double deg) {
     return deg * DEG_TO_RAD_MULT;
@@ -49,7 +46,7 @@ inline double radToDeg(const double rad) {
     return rad * RAD_TO_DEG_MULT;
 }
 
-inline void calcOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot) {
+inline void setOpenGLMatrix(float*const m, const Vector3& pos, const Quaternion& rot) {
     Matrix3x3 temp(rot);
     m[0]  = static_cast<float>(temp.getRow(0).getX());
     m[1]  = static_cast<float>(temp.getRow(1).getX());
@@ -67,27 +64,6 @@ inline void calcOpenGLMatrix(float* const m, const Vector3& pos, const Quaternio
     m[13] = static_cast<float>(pos.getY());
     m[14] = static_cast<float>(pos.getZ());
     m[15] = 1.0f;
-}
-
-inline Quaternion aimAt(const Vector3& direction) { //, const Vector3& up) {
-    Quaternion result;
-
-//     Vector3 xaxis = direction.cross(up);
-//     Vector3 yaxis = xaxis.cross(direction);
-//     Vector3 zaxis = yaxis.cross(xaxis);
-//     Matrix3x3 temp(yaxis, xaxis, zaxis);
-//     temp.getRotation(result);
-//     return result;
-
-    scalar_t yaw, pitch;
-    if (direction.getZ() != ZERO) {
-        yaw = std::atan(direction.getX() / direction.getZ());
-        pitch = std::atan(-direction.getY() / direction.getZ());
-    }
-    else
-        yaw = pitch = ZERO;
-    result.setEuler(yaw, pitch, ZERO);
-    return result;
 }
 
 #endif // COMMON_HPP
