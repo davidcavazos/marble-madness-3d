@@ -1,3 +1,17 @@
++ Load meshes from .collada (maybe later make a conversion tool to binary)
++ Add more primitives (sphere, cilinder, etc) and cube divisions
++ Detect OpenGL version and capabilities
++ Physics!!
++ Implement OpenGL Core and shaders
+~ Save input commands as a replay script
+~ Read/write scene from XML
+- Make input manager into a vector, only one can be active at a time (XML)
+- Binding keys (or other inputs) with a command
+- Possibility of multiple cameras
+- Fix Transform.lookAt(direction, up)
+
+
+
 General
     Add exceptions (through a macro in case they are not supported)
 
