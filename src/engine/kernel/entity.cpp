@@ -110,44 +110,6 @@ void Entity::rotate(const Quaternion& deltaRotation, const transform_space_t& re
     }
 }
 
-void Entity::setDirection(const Vector3& target) {
-    if (target == VECTOR3_ZERO)
-        return;
-    cerr << "Transform.setDirection(vector3) not implemented yet!" << endl;
-}
-
-void Entity::calcOpenGLMatrix(float* m) const {
-    scalar_t s = static_cast<scalar_t>(2.0) / m_orientationAbs.lengthSquared();
-    scalar_t xs = m_orientationAbs.getX() * s;
-    scalar_t ys = m_orientationAbs.getY() * s;
-    scalar_t zs = m_orientationAbs.getZ() * s;
-    scalar_t wx = m_orientationAbs.getW() * xs;
-    scalar_t wy = m_orientationAbs.getW() * ys;
-    scalar_t wz = m_orientationAbs.getW() * zs;
-    scalar_t xx = m_orientationAbs.getX() * xs;
-    scalar_t xy = m_orientationAbs.getX() * ys;
-    scalar_t xz = m_orientationAbs.getX() * zs;
-    scalar_t yy = m_orientationAbs.getY() * ys;
-    scalar_t yz = m_orientationAbs.getY() * zs;
-    scalar_t zz = m_orientationAbs.getZ() * zs;
-    m[0]  = static_cast<float>(1.0 - yy - zz);
-    m[1]  = static_cast<float>(xy + wz);
-    m[2]  = static_cast<float>(xz - wy);
-    m[3]  = static_cast<float>(0.0);
-    m[4]  = static_cast<float>(xy - wz);
-    m[5]  = static_cast<float>(1.0 - xx - zz);
-    m[6]  = static_cast<float>(yz + wx);
-    m[7]  = static_cast<float>(0.0);
-    m[8]  = static_cast<float>(xz + wy);
-    m[9]  = static_cast<float>(yz - wx);
-    m[10] = static_cast<float>(1.0 - xx - yy);
-    m[11] = static_cast<float>(0.0);
-    m[12] = static_cast<float>(m_positionAbs.getX());
-    m[13] = static_cast<float>(m_positionAbs.getY());
-    m[14] = static_cast<float>(m_positionAbs.getZ());
-    m[15] = static_cast<float>(1.0);
-}
-
 void Entity::applyTranslationToChildren() {
     set<Entity*>::iterator it, itend;
     itend = m_children.end();
@@ -380,10 +342,10 @@ ostream& operator<<(ostream& out, const Entity& rhs) {
             rhs.getPositionAbs().getY() << ", " <<
             rhs.getPositionAbs().getZ() << ")" << endl;
 
-    out << "rotation(" << rhs.getOrientation().getW() << ", " <<
-            rhs.getOrientation().getX() << ", " <<
-            rhs.getOrientation().getY() << ", " <<
-            rhs.getOrientation().getZ() << ")" << endl;
+    out << "rotation(" << rhs.getOrientationAbs().getW() << ", " <<
+            rhs.getOrientationAbs().getX() << ", " <<
+            rhs.getOrientationAbs().getY() << ", " <<
+            rhs.getOrientationAbs().getZ() << ")" << endl;
 
     for (size_t i = 0; i < rhs.m_components.size(); ++i) {
         if (rhs.m_components[i] != 0)

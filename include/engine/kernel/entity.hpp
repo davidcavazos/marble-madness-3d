@@ -24,6 +24,7 @@
 #include <ostream>
 #include <vector>
 #include <set>
+#include "common.hpp"
 #include "vector3.hpp"
 #include "quaternion.hpp"
 #include "commandobject.hpp"
@@ -45,7 +46,8 @@ public:
 
     const Vector3& getPositionAbs() const;
     const Vector3& getPositionRel() const;
-    const Quaternion& getOrientation() const;
+    const Quaternion& getOrientationAbs() const;
+    const Quaternion& getOrientationRel() const;
 
     void setPositionAbs(const Vector3& position);
     void setPositionAbs(const scalar_t& posX, const scalar_t& posY, const scalar_t& posZ);
@@ -72,10 +74,7 @@ public:
     void yaw(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
     void pitch(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
     void roll(const scalar_t& radians, const transform_space_t& relativeTo = SPACE_LOCAL);
-
-    void setDirection(const Vector3& target);
-    void lookAt(const Vector3& target);
-    void calcOpenGLMatrix(float* m) const;
+    void lookAt(const Vector3& target); //, const Vector3& up = VECTOR3_UNIT_Y);
 
     Entity* addChild(const std::string& childName);
     void removeChild(Entity* const child);
@@ -129,9 +128,15 @@ inline const Vector3& Entity::getPositionRel() const {
     return m_positionRel;
 }
 
-inline const Quaternion& Entity::getOrientation() const {
+inline const Quaternion& Entity::getOrientationAbs() const {
     return m_orientationAbs;
 }
+
+inline const Quaternion& Entity::getOrientationRel() const {
+    return m_orientationRel;
+}
+
+
 
 inline void Entity::setPositionAbs(const Vector3& position) {
     m_positionAbs = position;
@@ -229,8 +234,8 @@ inline void Entity::roll(const scalar_t& radians, const transform_space_t& relat
     rotate(VECTOR3_UNIT_Z, radians, relativeTo);
 }
 
-inline void Entity::lookAt(const Vector3& target) {
-    setDirection(target - m_positionAbs);
+inline void Entity::lookAt(const Vector3& target) { //, const Vector3& up) {
+    m_orientationAbs = aimAt(target - m_positionAbs);
 }
 
 #endif // ENTITY_HPP

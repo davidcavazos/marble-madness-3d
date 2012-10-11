@@ -42,26 +42,6 @@ Game::Game(const string& objectName, const string& rootNodeName):
     m_isRunning(false),
     m_sceneManager(rootNodeName)
 {
-    cout << "TODO:" << endl;
-    cout << "+ Transform.lookAt(vector3) <OgreCamera.cpp>" << endl;
-    cout << "+ Load meshes from .collada (maybe later make a conversion tool to binary)" << endl;
-    cout << "+ Add more primitives (sphere, cilinder, etc) and cube divisions" << endl;
-    cout << "+ Detect OpenGL version and capabilities" << endl;
-    cout << "+ Implement OpenGL Core and shaders" << endl;
-    cout << "+ Physics!!" << endl;
-    cout << "~ Save input commands as a replay script" << endl;
-    cout << "~ Read/write scene from XML" << endl;
-    cout << "- Make input manager into a vector, only one can be active at a time (XML)" << endl;
-    cout << "- Binding keys (or other inputs) with a command" << endl;
-    cout << "- Possibility of multiple cameras" << endl;
-    cout << endl;
-
-    /*
-     * Renderer features
-     *  stencil shadows
-     *  deferred shading
-     */
-
     registerCommand("quit", boost::bind(&Game::quit, this, _1));
     registerCommand("run", boost::bind(&Game::runCommand, this, _1));
     registerCommand("print-entity", boost::bind(&Game::printEntity, this, _1));
@@ -91,12 +71,6 @@ void Game::loadScene() {
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
     b1Mesh->generateCube(3.0f, 13.0f, 3.0f);
 
-    Entity* camera = root->addChild("camera");
-    camera->setPositionAbs(0.0f, 1.0f, 5.0f);
-//     camera->getTransform().lookAt(cube2->getTransform().getPosition());
-    Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
-    camComponent->setPerspectiveFOV(50.0);
-
     Entity* cube = root->addChild("cube");
     cube->setPositionAbs(0.0f, 0.0f, 0.0f);
     cube->setOrientationAbs(0.2f, 0.2f, 0.1f);
@@ -107,6 +81,12 @@ void Game::loadScene() {
     cube2->setPositionRel(2.0f, 0.5f, 0.0f);
     RenderableMesh* mesh2 = new RenderableMesh(cube2);
     mesh2->generateCube(0.5f, 0.25f, 0.75f);
+
+    Entity* camera = root->addChild("camera");
+    camera->setPositionAbs(0.0f, 1.0f, 5.0f);
+    camera->lookAt(cube2->getPositionAbs());
+    Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
+    camComponent->setPerspectiveFOV(45.0);
 
     cout << Terminal::listsToString() << endl;
 
@@ -213,7 +193,6 @@ void Game::onMouseMotion(const string&) {
     float sensitivity = 0.05;
     stringstream ssx;
     ssx << motion.xrel * sensitivity;
-//     ssx << " " << -motion.yrel * sensitivity;
     moveXCmd.setArguments(ssx.str());
     Terminal::pushCommand(moveXCmd);
 

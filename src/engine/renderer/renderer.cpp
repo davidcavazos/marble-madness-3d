@@ -44,28 +44,21 @@ void Renderer::draw() {
     float m[16];
 
     Entity& cam = RenderManager::ms_activeCamera->getEntity();
-//     camTrans.calcOpenGLMatrix(m);
-//     glMultMatrixf(m);
-    glRotatef(-radToDeg(cam.getOrientation().getPitch()), 1.0f, 0.0f, 0.0f);
-    glRotatef(-radToDeg(cam.getOrientation().getYaw()), 0.0f, 1.0f, 0.0f);
-    glRotatef(-radToDeg(cam.getOrientation().getRoll()), 0.0f, 0.0f, 1.0f);
+    calcOpenGLMatrix(m, VECTOR3_ZERO, cam.getOrientationAbs().inverse());
+    glMultMatrixf(m);
     glTranslatef(-cam.getPositionAbs().getX(), -cam.getPositionAbs().getY(), -cam.getPositionAbs().getZ());
 
     set<RenderableMesh*>::const_iterator it;
     for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
-
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(VERTEX_TUPLE_SIZE, GL_FLOAT, 0, &(*it)->getVertices()[0]);
         glNormalPointer(GL_FLOAT, 0, &(*it)->getNormals()[0]);
 
         glPushMatrix();
-        (*it)->getEntity().calcOpenGLMatrix(m);
+        Entity& entity = (*it)->getEntity();
+        calcOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
-//         glTranslatef(trans.getPositionAbs().getX(), trans.getPositionAbs().getY(), trans.getPositionAbs().getZ());
-//         glRotatef(radToDeg(trans.calcPitch()), 1.0f, 0.0f, 0.0f);
-//         glRotatef(radToDeg(trans.calcYaw()), 0.0f, 1.0f, 0.0f);
-//         glRotatef(radToDeg(trans.calcRoll()), 0.0f, 0.0f, 1.0f);
         glDrawElements(GL_TRIANGLES, (*it)->getIndices().size(), GL_UNSIGNED_BYTE, &(*it)->getIndices()[0]);
         glPopMatrix();
 

@@ -25,13 +25,19 @@
 #include <cmath>
 
 const double PI = boost::math::constants::pi<double>();
+const double HALF_PI = PI / 2.0;
 const double DEG_TO_RAD_MULT = PI / 180.0;
 const double RAD_TO_DEG_MULT = 180.0 / PI;
 
-
+class Vector3;
+class Quaternion;
 
 double degToRad(const double deg);
 double radToDeg(const double rad);
+void calcOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot);
+Quaternion aimAt(const Vector3& direction); //, const Vector3& up);
+
+#include "matrix3x3.hpp"
 
 
 
@@ -41,6 +47,47 @@ inline double degToRad(const double deg) {
 
 inline double radToDeg(const double rad) {
     return rad * RAD_TO_DEG_MULT;
+}
+
+inline void calcOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot) {
+    Matrix3x3 temp(rot);
+    m[0]  = static_cast<float>(temp.getRow(0).getX());
+    m[1]  = static_cast<float>(temp.getRow(1).getX());
+    m[2]  = static_cast<float>(temp.getRow(2).getX());
+    m[3]  = 0.0f;
+    m[4]  = static_cast<float>(temp.getRow(0).getY());
+    m[5]  = static_cast<float>(temp.getRow(1).getY());
+    m[6]  = static_cast<float>(temp.getRow(2).getY());
+    m[7]  = 0.0f;
+    m[8]  = static_cast<float>(temp.getRow(0).getZ());
+    m[9]  = static_cast<float>(temp.getRow(1).getZ());
+    m[10] = static_cast<float>(temp.getRow(2).getZ());
+    m[11] = 0.0f;
+    m[12] = static_cast<float>(pos.getX());
+    m[13] = static_cast<float>(pos.getY());
+    m[14] = static_cast<float>(pos.getZ());
+    m[15] = 1.0f;
+}
+
+inline Quaternion aimAt(const Vector3& direction) { //, const Vector3& up) {
+    Quaternion result;
+
+//     Vector3 xaxis = direction.cross(up);
+//     Vector3 yaxis = xaxis.cross(direction);
+//     Vector3 zaxis = yaxis.cross(xaxis);
+//     Matrix3x3 temp(yaxis, xaxis, zaxis);
+//     temp.getRotation(result);
+//     return result;
+
+    scalar_t yaw, pitch;
+    if (direction.getZ() != ZERO) {
+        yaw = std::atan(direction.getX() / direction.getZ());
+        pitch = std::atan(-direction.getY() / direction.getZ());
+    }
+    else
+        yaw = pitch = ZERO;
+    result.setEuler(yaw, pitch, ZERO);
+    return result;
 }
 
 #endif // COMMON_HPP
