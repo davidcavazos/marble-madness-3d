@@ -29,32 +29,32 @@ public:
     RenderableMesh(Entity* const entity);
     ~RenderableMesh();
 
-    const std::vector<float>& getVertices();
-    const std::vector<float>& getNormals();
-    const std::vector<unsigned char>& getIndices();
+    const std::vector<float>& getVertices() const;
+    const std::vector<float>& getNormals() const;
+    const std::vector<unsigned char>& getIndices() const;
 
     void loadCube(const double lengthX, const double lengthY, const double lengthZ);
     void loadFromFile(const std::string& fileName);
 
 private:
     bool m_isInitialized;
-    std::vector<float> m_vertices;
-    std::vector<float> m_normals;
-    std::vector<unsigned char> m_indices;
+    std::vector<float>* m_vertices;
+    std::vector<float>* m_normals;
+    std::vector<unsigned char>* m_indices;
 };
 
 
 
-inline const std::vector<float>& RenderableMesh::getVertices() {
-    return m_vertices;
+inline const std::vector<float>& RenderableMesh::getVertices() const {
+    return *m_vertices;
 }
 
-inline const std::vector<float>& RenderableMesh::getNormals() {
-    return m_normals;
+inline const std::vector<float>& RenderableMesh::getNormals() const {
+    return *m_normals;
 }
 
-inline const std::vector<unsigned char>& RenderableMesh::getIndices() {
-    return m_indices;
+inline const std::vector<unsigned char>& RenderableMesh::getIndices() const {
+    return *m_indices;
 }
 
 #endif // RENDERABLEMESH_HPP
