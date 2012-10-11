@@ -41,7 +41,7 @@ RenderableMesh::~RenderableMesh() {
     RenderManager::ms_meshes.erase(this);
 }
 
-void RenderableMesh::generateCube(const double lengthX, const double lengthY, const double lengthZ) {
+void RenderableMesh::loadCube(const double lengthX, const double lengthY, const double lengthZ) {
     double x = lengthX / 2.0;
     double y = lengthY / 2.0;
     double z = lengthZ / 2.0;
@@ -137,5 +137,9 @@ void RenderableMesh::generateCube(const double lengthX, const double lengthY, co
     m_indices.push_back(20); m_indices.push_back(21); m_indices.push_back(22);
     m_indices.push_back(22); m_indices.push_back(23); m_indices.push_back(20);
 
+    m_isInitialized = true;
+}
+
+void RenderableMesh::loadFromFile(const string& fileName) {
     m_isInitialized = true;
 }

@@ -33,7 +33,8 @@ public:
     const std::vector<float>& getNormals();
     const std::vector<unsigned char>& getIndices();
 
-    void generateCube(const double lengthX, const double lengthY, const double lengthZ);
+    void loadCube(const double lengthX, const double lengthY, const double lengthZ);
+    void loadFromFile(const std::string& fileName);
 
 private:
     bool m_isInitialized;

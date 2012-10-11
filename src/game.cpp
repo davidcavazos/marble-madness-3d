@@ -63,23 +63,24 @@ void Game::loadScene() {
     Entity* floor = root->addChild("floor");
     floor->setPositionAbs(0.0f, -1.0f, 0.0f);
     RenderableMesh* floorMesh = new RenderableMesh(floor);
-    floorMesh->generateCube(100.0f, 0.1f, 100.0f);
+    floorMesh->loadCube(100.0f, 0.1f, 100.0f);
 
     Entity* b1 = root->addChild("b1");
     b1->setPositionAbs(5.0f, 0.0f, -10.0f);
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
-    b1Mesh->generateCube(3.0f, 13.0f, 3.0f);
+    b1Mesh->loadCube(3.0f, 13.0f, 3.0f);
 
     Entity* cube = root->addChild("cube");
     cube->setPositionAbs(0.0f, 0.0f, 0.0f);
     cube->setOrientationAbs(0.2f, 0.2f, 0.1f);
     RenderableMesh* mesh = new RenderableMesh(cube);
-    mesh->generateCube(1.0f, 0.5f, 1.5f);
+//     mesh->loadCube(1.0f, 0.5f, 1.5f);
+    mesh->loadFromFile("assets/meshes/cube.dae");
 
     Entity* cube2 = cube->addChild("cube2");
     cube2->setPositionRel(2.0f, 0.5f, 0.0f);
     RenderableMesh* mesh2 = new RenderableMesh(cube2);
-    mesh2->generateCube(0.5f, 0.25f, 0.75f);
+    mesh2->loadCube(0.5f, 0.25f, 0.75f);
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 1.0f, 5.0f);

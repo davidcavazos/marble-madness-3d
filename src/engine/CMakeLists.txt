@@ -1,5 +1,6 @@
 set(KERNEL_LIBRARY_NAME kernel)
 set(RENDER_LIBRARY_NAME renderer)
+set(RESOURCES_LIBRARY_NAME resources)
 
 set(KERNEL_SRC_FILES
     kernel/tokentable.cpp
@@ -23,8 +24,14 @@ set(RENDER_SRC_FILES
     renderer/rendermanager.cpp
 )
 
+set(RESOURCES_SRC_FILES
+    resources/resources.cpp
+    resources/resourcemanager.cpp
+)
+
 add_library(${KERNEL_LIBRARY_NAME} SHARED ${KERNEL_SRC_FILES})
 add_library(${RENDER_LIBRARY_NAME} SHARED ${RENDER_SRC_FILES})
+add_library(${RESOURCES_LIBRARY_NAME} SHARED ${RESOURCES_SRC_FILES})
 
 # Link libraries
 find_package(Boost REQUIRED)
