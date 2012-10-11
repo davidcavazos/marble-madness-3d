@@ -28,25 +28,25 @@ class Vector3;
 class Quaternion {
 public:
     Quaternion();
-    Quaternion(const Quaternion& rhs);
+    Quaternion(const Quaternion& q);
     Quaternion(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z);
     Quaternion(const Vector3& axis, const scalar_t& angle);
     Quaternion(const scalar_t& yaw, const scalar_t& pitch, const scalar_t& roll);
 
-    Quaternion& operator=(const Quaternion& rhs);
+    Quaternion& operator=(const Quaternion& q);
     Quaternion operator-() const;
-    Quaternion& operator+=(const Quaternion& rhs);
-    Quaternion& operator-=(const Quaternion& rhs);
-    Quaternion& operator*=(const Quaternion& rhs);
-    Quaternion& operator*=(const scalar_t& rhs);
-    Quaternion& operator/=(const scalar_t& rhs);
-    const Quaternion operator+(const Quaternion& rhs) const;
-    const Quaternion operator-(const Quaternion& rhs) const;
-    const Quaternion operator*(const Quaternion& rhs) const;
-    const Quaternion operator*(const scalar_t& rhs) const;
-    const Quaternion operator/(const scalar_t& rhs) const;
-    bool operator==(const Quaternion& rhs) const;
-    bool operator!=(const Quaternion& rhs) const;
+    Quaternion& operator+=(const Quaternion& q);
+    Quaternion& operator-=(const Quaternion& q);
+    Quaternion& operator*=(const Quaternion& q);
+    Quaternion& operator*=(const scalar_t& q);
+    Quaternion& operator/=(const scalar_t& q);
+    const Quaternion operator+(const Quaternion& q) const;
+    const Quaternion operator-(const Quaternion& q) const;
+    const Quaternion operator*(const Quaternion& q) const;
+    const Quaternion operator*(const scalar_t& s) const;
+    const Quaternion operator/(const scalar_t& s) const;
+    bool operator==(const Quaternion& q) const;
+    bool operator!=(const Quaternion& q) const;
 
     const scalar_t& getW() const;
     const scalar_t& getX() const;
@@ -88,8 +88,8 @@ const Quaternion QUATERNION_IDENTITY = Quaternion(1, 0, 0, 0);
 inline Quaternion::Quaternion() {
 }
 
-inline Quaternion::Quaternion(const Quaternion& rhs) {
-    setValue(rhs.getW(), rhs.getX(), rhs.getY(), rhs.getZ());
+inline Quaternion::Quaternion(const Quaternion& q) {
+    setValue(q.getW(), q.getX(), q.getY(), q.getZ());
 }
 
 inline Quaternion::Quaternion(const scalar_t& w, const scalar_t& x, const scalar_t& y, const scalar_t& z) {
@@ -106,8 +106,8 @@ inline Quaternion::Quaternion(const scalar_t& yaw, const scalar_t& pitch, const 
 
 
 
-inline Quaternion& Quaternion::operator=(const Quaternion& rhs) {
-    setValue(rhs.getW(), rhs.getX(), rhs.getY(), rhs.getZ());
+inline Quaternion& Quaternion::operator=(const Quaternion& q) {
+    setValue(q.getW(), q.getX(), q.getY(), q.getZ());
     return *this;
 }
 
@@ -115,73 +115,73 @@ inline Quaternion Quaternion::operator-() const {
     return Quaternion(-getW(), -getX(), -getY(), -getZ());
 }
 
-inline Quaternion& Quaternion::operator+=(const Quaternion& rhs) {
-    m_data[0] += rhs.m_data[0];
-    m_data[1] += rhs.m_data[1];
-    m_data[2] += rhs.m_data[2];
-    m_data[3] += rhs.m_data[3];
+inline Quaternion& Quaternion::operator+=(const Quaternion& q) {
+    m_data[0] += q.m_data[0];
+    m_data[1] += q.m_data[1];
+    m_data[2] += q.m_data[2];
+    m_data[3] += q.m_data[3];
     return *this;
 }
 
-inline Quaternion& Quaternion::operator-=(const Quaternion& rhs) {
-    m_data[0] -= rhs.m_data[0];
-    m_data[1] -= rhs.m_data[1];
-    m_data[2] -= rhs.m_data[2];
-    m_data[3] -= rhs.m_data[3];
+inline Quaternion& Quaternion::operator-=(const Quaternion& q) {
+    m_data[0] -= q.m_data[0];
+    m_data[1] -= q.m_data[1];
+    m_data[2] -= q.m_data[2];
+    m_data[3] -= q.m_data[3];
     return *this;
 }
 
-inline Quaternion& Quaternion::operator*=(const Quaternion& rhs) {
+inline Quaternion& Quaternion::operator*=(const Quaternion& q) {
     setValue(
-        getW() * rhs.getW() - getX() * rhs.getX() - getY() * rhs.getY() - getZ() * rhs.getZ(),
-        getW() * rhs.getX() + getX() * rhs.getW() + getY() * rhs.getZ() - getZ() * rhs.getY(),
-        getW() * rhs.getY() + getY() * rhs.getW() + getZ() * rhs.getX() - getX() * rhs.getZ(),
-        getW() * rhs.getZ() + getZ() * rhs.getW() + getX() * rhs.getY() - getY() * rhs.getX()
+        getW() * q.getW() - getX() * q.getX() - getY() * q.getY() - getZ() * q.getZ(),
+        getW() * q.getX() + getX() * q.getW() + getY() * q.getZ() - getZ() * q.getY(),
+        getW() * q.getY() + getY() * q.getW() + getZ() * q.getX() - getX() * q.getZ(),
+        getW() * q.getZ() + getZ() * q.getW() + getX() * q.getY() - getY() * q.getX()
     );
     return *this;
 }
 
-inline Quaternion& Quaternion::operator*=(const scalar_t& rhs) {
-    m_data[0] *= rhs;
-    m_data[1] *= rhs;
-    m_data[2] *= rhs;
-    m_data[3] *= rhs;
+inline Quaternion& Quaternion::operator*=(const scalar_t& q) {
+    m_data[0] *= q;
+    m_data[1] *= q;
+    m_data[2] *= q;
+    m_data[3] *= q;
     return *this;
 }
 
-inline Quaternion& Quaternion::operator/=(const scalar_t& rhs) {
-    return *this *= ONE / rhs;
+inline Quaternion& Quaternion::operator/=(const scalar_t& q) {
+    return *this *= ONE / q;
 }
 
-inline const Quaternion Quaternion::operator+(const Quaternion& rhs) const {
-    return Quaternion(*this) += rhs;
+inline const Quaternion Quaternion::operator+(const Quaternion& q) const {
+    return Quaternion(*this) += q;
 }
 
-inline const Quaternion Quaternion::operator-(const Quaternion& rhs) const {
-    return Quaternion(*this) -= rhs;
+inline const Quaternion Quaternion::operator-(const Quaternion& q) const {
+    return Quaternion(*this) -= q;
 }
 
-inline const Quaternion Quaternion::operator*(const Quaternion& rhs) const {
-    return Quaternion(*this) *= rhs;
+inline const Quaternion Quaternion::operator*(const Quaternion& q) const {
+    return Quaternion(*this) *= q;
 }
 
-inline const Quaternion Quaternion::operator*(const scalar_t& rhs) const {
-    return Quaternion(*this) *= rhs;
+inline const Quaternion Quaternion::operator*(const scalar_t& s) const {
+    return Quaternion(*this) *= s;
 }
 
-inline const Quaternion Quaternion::operator/(const scalar_t& rhs) const {
-    return Quaternion(*this) /= rhs;
+inline const Quaternion Quaternion::operator/(const scalar_t& s) const {
+    return Quaternion(*this) /= s;
 }
 
-inline bool Quaternion::operator==(const Quaternion& rhs) const {
-    return getW() == rhs.getW() &&
-           getX() == rhs.getX() &&
-           getY() == rhs.getY() &&
-           getZ() == rhs.getZ();
+inline bool Quaternion::operator==(const Quaternion& q) const {
+    return getW() == q.getW() &&
+           getX() == q.getX() &&
+           getY() == q.getY() &&
+           getZ() == q.getZ();
 }
 
-inline bool Quaternion::operator!=(const Quaternion& rhs) const {
-    return !(*this == rhs);
+inline bool Quaternion::operator!=(const Quaternion& q) const {
+    return !(*this == q);
 }
 
 
@@ -203,11 +203,11 @@ inline const scalar_t& Quaternion::getZ() const {
 }
 
 inline Vector3 Quaternion::getAxis() const {
-    scalar_t s_squared = ONE - getW() * getW();
+    const scalar_t s_squared = ONE - getW() * getW();
 
     if (s_squared < static_cast<scalar_t>(10.0) * EPSILON) //Check for divide by zero
         return VECTOR3_UNIT_X;  // Arbitrary
-    scalar_t s = ONE / std::sqrt(s_squared);
+    const scalar_t s = ONE / std::sqrt(s_squared);
     return Vector3(getX() * s, getY() * s, getZ() * s);
 }
 
@@ -243,21 +243,21 @@ inline void Quaternion::setValue(const Quaternion& q) {
 }
 
 inline void Quaternion::setAxisAngle(const Vector3& axis, const scalar_t& angle) {
-    scalar_t halfAngle = angle * HALF;
-    scalar_t s = std::sin(halfAngle) / axis.length();
+    const scalar_t halfAngle = angle * HALF;
+    const scalar_t s = std::sin(halfAngle) / axis.length();
     setValue(std::cos(halfAngle), axis.getX() * s, axis.getY() * s, axis.getZ() * s);
 }
 
 inline void Quaternion::setEuler(const scalar_t& yaw, const scalar_t& pitch, const scalar_t& roll) {
-    scalar_t halfYaw = yaw * HALF;
-    scalar_t halfPitch = pitch * HALF;
-    scalar_t halfRoll = roll * HALF;
-    scalar_t cosYaw = std::cos(halfYaw);
-    scalar_t sinYaw = std::sin(halfYaw);
-    scalar_t cosPitch = std::cos(halfPitch);
-    scalar_t sinPitch = std::sin(halfPitch);
-    scalar_t cosRoll = std::cos(halfRoll);
-    scalar_t sinRoll = std::sin(halfRoll);
+    const scalar_t halfYaw = yaw * HALF;
+    const scalar_t halfPitch = pitch * HALF;
+    const scalar_t halfRoll = roll * HALF;
+    const scalar_t cosYaw = std::cos(halfYaw);
+    const scalar_t sinYaw = std::sin(halfYaw);
+    const scalar_t cosPitch = std::cos(halfPitch);
+    const scalar_t sinPitch = std::sin(halfPitch);
+    const scalar_t cosRoll = std::cos(halfRoll);
+    const scalar_t sinRoll = std::sin(halfRoll);
     setValue(
         cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw,
         cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw,

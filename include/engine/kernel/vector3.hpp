@@ -29,31 +29,32 @@ class Quaternion;
 class Vector3 {
 public:
     Vector3();
-    Vector3(const Vector3& rhs);
+    Vector3(const Vector3& v);
     Vector3(const scalar_t& x, const scalar_t& y, const scalar_t& z);
     Vector3(const scalar_t& num);
 
-    Vector3& operator=(const Vector3& rhs);
+    Vector3& operator=(const Vector3& v);
     Vector3 operator-() const;
-    Vector3& operator+=(const Vector3& rhs);
-    Vector3& operator+=(const scalar_t& rhs);
-    Vector3& operator-=(const Vector3& rhs);
-    Vector3& operator-=(const scalar_t& rhs);
-    Vector3& operator*=(const Vector3& rhs);
-    Vector3& operator*=(const scalar_t& rhs);
-    Vector3& operator/=(const Vector3& rhs);
-    Vector3& operator/=(const scalar_t& rhs);
-    const Vector3 operator+(const Vector3& rhs) const;
-    const Vector3 operator+(const scalar_t& rhs) const;
-    const Vector3 operator-(const Vector3& rhs) const;
-    const Vector3 operator-(const scalar_t& rhs) const;
-    const Vector3 operator*(const Vector3& rhs) const;
-    const Vector3 operator*(const scalar_t& rhs) const;
-    const Vector3 operator/(const Vector3& rhs) const;
-    const Vector3 operator/(const scalar_t& rhs) const;
-    bool operator==(const Vector3& rhs) const;
-    bool operator!=(const Vector3& rhs) const;
+    Vector3& operator+=(const Vector3& v);
+    Vector3& operator+=(const scalar_t& s);
+    Vector3& operator-=(const Vector3& v);
+    Vector3& operator-=(const scalar_t& s);
+    Vector3& operator*=(const Vector3& v);
+    Vector3& operator*=(const scalar_t& s);
+    Vector3& operator/=(const Vector3& v);
+    Vector3& operator/=(const scalar_t& s);
+    const Vector3 operator+(const Vector3& v) const;
+    const Vector3 operator+(const scalar_t& s) const;
+    const Vector3 operator-(const Vector3& v) const;
+    const Vector3 operator-(const scalar_t& s) const;
+    const Vector3 operator*(const Vector3& v) const;
+    const Vector3 operator*(const scalar_t& s) const;
+    const Vector3 operator/(const Vector3& v) const;
+    const Vector3 operator/(const scalar_t& s) const;
+    bool operator==(const Vector3& v) const;
+    bool operator!=(const Vector3& v) const;
 
+    const scalar_t& get(const int i) const;
     const scalar_t& getX() const;
     const scalar_t& getY() const;
     const scalar_t& getZ() const;
@@ -98,8 +99,8 @@ const Vector3 VECTOR3_UNIT_Z_NEG = Vector3(0, 0, -1);
 inline Vector3::Vector3() {
 }
 
-inline Vector3::Vector3(const Vector3& rhs) {
-    setValue(rhs.getX(), rhs.getY(), rhs.getZ());
+inline Vector3::Vector3(const Vector3& v) {
+    setValue(v.getX(), v.getY(), v.getZ());
 }
 
 inline Vector3::Vector3(const scalar_t& x, const scalar_t& y, const scalar_t& z) {
@@ -112,8 +113,8 @@ inline Vector3::Vector3(const scalar_t& num) {
 
 
 
-inline Vector3& Vector3::operator=(const Vector3& rhs) {
-    setValue(rhs.getX(), rhs.getY(), rhs.getZ());
+inline Vector3& Vector3::operator=(const Vector3& v) {
+    setValue(v.getX(), v.getY(), v.getZ());
     return *this;
 }
 
@@ -121,99 +122,103 @@ inline Vector3 Vector3::operator-() const {
     return Vector3(-getX(), -getY(), -getZ());
 }
 
-inline Vector3& Vector3::operator+=(const Vector3& rhs) {
-    m_data[0] += rhs.m_data[0];
-    m_data[1] += rhs.m_data[1];
-    m_data[2] += rhs.m_data[2];
+inline Vector3& Vector3::operator+=(const Vector3& v) {
+    m_data[0] += v.m_data[0];
+    m_data[1] += v.m_data[1];
+    m_data[2] += v.m_data[2];
     return *this;
 }
 
-inline Vector3& Vector3::operator+=(const scalar_t& rhs) {
-    m_data[0] += rhs;
-    m_data[1] += rhs;
-    m_data[2] += rhs;
+inline Vector3& Vector3::operator+=(const scalar_t& s) {
+    m_data[0] += s;
+    m_data[1] += s;
+    m_data[2] += s;
     return *this;
 }
 
-inline Vector3& Vector3::operator-=(const Vector3& rhs) {
-    m_data[0] -= rhs.m_data[0];
-    m_data[1] -= rhs.m_data[1];
-    m_data[2] -= rhs.m_data[2];
+inline Vector3& Vector3::operator-=(const Vector3& v) {
+    m_data[0] -= v.m_data[0];
+    m_data[1] -= v.m_data[1];
+    m_data[2] -= v.m_data[2];
     return *this;
 }
 
-inline Vector3& Vector3::operator-=(const scalar_t& rhs) {
-    return *this += -rhs;
+inline Vector3& Vector3::operator-=(const scalar_t& s) {
+    return *this += -s;
 }
 
-inline Vector3& Vector3::operator*=(const Vector3& rhs) {
-    m_data[0] *= rhs.m_data[0];
-    m_data[1] *= rhs.m_data[1];
-    m_data[2] *= rhs.m_data[2];
+inline Vector3& Vector3::operator*=(const Vector3& v) {
+    m_data[0] *= v.m_data[0];
+    m_data[1] *= v.m_data[1];
+    m_data[2] *= v.m_data[2];
     return *this;
 }
 
-inline Vector3& Vector3::operator*=(const scalar_t& rhs) {
-    m_data[0] *= rhs;
-    m_data[1] *= rhs;
-    m_data[2] *= rhs;
+inline Vector3& Vector3::operator*=(const scalar_t& s) {
+    m_data[0] *= s;
+    m_data[1] *= s;
+    m_data[2] *= s;
     return *this;
 }
 
-inline Vector3& Vector3::operator/=(const Vector3& rhs) {
-    m_data[0] /= rhs.m_data[0];
-    m_data[1] /= rhs.m_data[1];
-    m_data[2] /= rhs.m_data[2];
+inline Vector3& Vector3::operator/=(const Vector3& v) {
+    m_data[0] /= v.m_data[0];
+    m_data[1] /= v.m_data[1];
+    m_data[2] /= v.m_data[2];
     return *this;
 }
 
-inline Vector3& Vector3::operator/=(const scalar_t& rhs) {
-    return *this *= ONE / rhs;
+inline Vector3& Vector3::operator/=(const scalar_t& s) {
+    return *this *= ONE / s;
 }
 
-inline const Vector3 Vector3::operator+(const Vector3& rhs) const {
-    return Vector3(*this) += rhs;
+inline const Vector3 Vector3::operator+(const Vector3& v) const {
+    return Vector3(*this) += v;
 }
 
-inline const Vector3 Vector3::operator+(const scalar_t& rhs) const {
-    return Vector3(*this) += rhs;
+inline const Vector3 Vector3::operator+(const scalar_t& s) const {
+    return Vector3(*this) += s;
 }
 
-inline const Vector3 Vector3::operator-(const Vector3& rhs) const {
-    return Vector3(*this) -= rhs;
+inline const Vector3 Vector3::operator-(const Vector3& v) const {
+    return Vector3(*this) -= v;
 }
 
-inline const Vector3 Vector3::operator-(const scalar_t& rhs) const {
-    return Vector3(*this) -= rhs;
+inline const Vector3 Vector3::operator-(const scalar_t& s) const {
+    return Vector3(*this) -= s;
 }
 
-inline const Vector3 Vector3::operator*(const Vector3& rhs) const {
-    return Vector3(*this) *= rhs;
+inline const Vector3 Vector3::operator*(const Vector3& v) const {
+    return Vector3(*this) *= v;
 }
 
-inline const Vector3 Vector3::operator*(const scalar_t& rhs) const {
-    return Vector3(*this) *= rhs;
+inline const Vector3 Vector3::operator*(const scalar_t& s) const {
+    return Vector3(*this) *= s;
 }
 
-inline const Vector3 Vector3::operator/(const Vector3& rhs) const {
-    return Vector3(*this) /= rhs;
+inline const Vector3 Vector3::operator/(const Vector3& v) const {
+    return Vector3(*this) /= v;
 }
 
-inline const Vector3 Vector3::operator/(const scalar_t& rhs) const {
-    return Vector3(*this) /= rhs;
+inline const Vector3 Vector3::operator/(const scalar_t& s) const {
+    return Vector3(*this) /= s;
 }
 
-inline bool Vector3::operator==(const Vector3& rhs) const {
-    return getX() == rhs.getX() &&
-           getY() == rhs.getY() &&
-           getZ() == rhs.getZ();
+inline bool Vector3::operator==(const Vector3& v) const {
+    return getX() == v.getX() &&
+           getY() == v.getY() &&
+           getZ() == v.getZ();
 }
 
-inline bool Vector3::operator!=(const Vector3& rhs) const {
-    return !(*this == rhs);
+inline bool Vector3::operator!=(const Vector3& v) const {
+    return !(*this == v);
 }
 
 
+
+inline const scalar_t& Vector3::get(const int i) const {
+    return m_data[i];
+}
 
 inline const scalar_t& Vector3::getX() const {
     return m_data[0];
