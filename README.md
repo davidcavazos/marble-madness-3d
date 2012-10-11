@@ -17,21 +17,21 @@ NOTE: the following are the only OSs I have compiled the project
 
 >> Arch Linux
 1. Make sure development software is installed
-# pacman -S gcc make cmake git
+pacman -S gcc make cmake git
 
 2. Install the dependencies
-# pacman -S boost sdl mesa bullet
+pacman -S boost sdl mesa bullet
 
 3. Download from GitHub repository
 Navigate to the folder the source code will be downloaded
-$ git clone git://github.com/davido262/marble-madness-3d.git
+git clone git://github.com/davido262/marble-madness-3d.git
 
 4. Compile and install project
 Navigate to the folder where the build will be compiled (preferably outside the source)
-$ ccmake git-source-folder -G "Unix Makefiles"
+ccmake git-source-folder -G "Unix Makefiles"
 Press [c] to configure
 Press [g] to generate and exit
-$ make
+make
 Run the executable under src/
 
 
@@ -42,16 +42,19 @@ From YaST check the following: gcc-g++ make cmake-gui git
 2. Install the dependencies
 From YaST check the following: boost-devel sdl-devel Mesa-devel
 
+2.5 Install Bullet Physics
+cmake ../bullet-trunk-rev2600 -G "Unix Makefiles" -DBUILD_EXTRAS=off -DBUILD_DEMOS=off -DINSTALL_LIBS=on
+
 3. Download from GitHub repository
 Navigate to the folder the source code will be downloaded
-$ git clone git://github.com/davido262/marble-madness-3d.git
+git clone git://github.com/davido262/marble-madness-3d.git
 
 4. Compile and install project
 Navigate to the folder where the build will be compiled (preferably outside the source)
-$ ccmake git-source-folder -G "Unix Makefiles"
+ccmake git-source-folder -G "Unix Makefiles"
 Press [c] to configure
 Press [g] to generate and exit
-$ make
+make
 Run the executable under src/
 
 
