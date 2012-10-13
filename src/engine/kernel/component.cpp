@@ -51,6 +51,5 @@ ostream& operator<<(ostream& out, const Component& rhs) {
     default:
         out << "INVALID";
     }
-    out << " " << rhs.getDescription();
     return out;
 }

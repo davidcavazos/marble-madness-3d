@@ -24,37 +24,46 @@
 #include <vector>
 #include "engine/kernel/component.hpp"
 
+class MeshData;
+
 class RenderableMesh: public Component {
 public:
     RenderableMesh(Entity* const entity);
     ~RenderableMesh();
 
-    const std::vector<float>& getVertices() const;
-    const std::vector<float>& getNormals() const;
-    const std::vector<unsigned char>& getIndices() const;
+    const MeshData* getMeshDataPtr() const;
+    const MeshData& getMeshData() const;
 
     void loadCube(const double lengthX, const double lengthY, const double lengthZ);
     void loadFromFile(const std::string& fileName);
 
 private:
-    bool m_isInitialized;
-    std::vector<float>* m_vertices;
-    std::vector<float>* m_normals;
-    std::vector<unsigned char>* m_indices;
+    MeshData* m_meshData;
+
+    // Should not be called
+    RenderableMesh(const RenderableMesh& rhs);
+    RenderableMesh& operator=(const RenderableMesh& rhs);
 };
 
 
 
-inline const std::vector<float>& RenderableMesh::getVertices() const {
-    return *m_vertices;
+inline const MeshData* RenderableMesh::getMeshDataPtr() const {
+    return m_meshData;
 }
 
-inline const std::vector<float>& RenderableMesh::getNormals() const {
-    return *m_normals;
+inline const MeshData& RenderableMesh::getMeshData() const {
+    return *getMeshDataPtr();
 }
 
-inline const std::vector<unsigned char>& RenderableMesh::getIndices() const {
-    return *m_indices;
+
+
+inline RenderableMesh::RenderableMesh(const RenderableMesh& rhs):
+    Component(rhs.m_type, &rhs.m_entity),
+    m_meshData(rhs.m_meshData)
+{}
+
+inline RenderableMesh& RenderableMesh::operator=(const RenderableMesh&) {
+    return *this;
 }
 
 #endif // RENDERABLEMESH_HPP

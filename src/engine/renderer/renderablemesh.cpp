@@ -22,8 +22,9 @@
 
 #include <sstream>
 #include "engine/renderer/rendermanager.hpp"
+#include "engine/resources/meshdata.hpp"
 #include "engine/resources/resourcemanager.hpp"
-#include <engine/resources/resources.hpp>
+#include "engine/resources/resources.hpp"
 
 using namespace std;
 
@@ -31,10 +32,7 @@ const string CUBE_DESCRIPTION = "$cube";
 
 RenderableMesh::RenderableMesh(Entity* const entity):
     Component(COMPONENT_RENDERABLE_MESH, entity),
-    m_isInitialized(false),
-    m_vertices(0),
-    m_normals(0),
-    m_indices(0)
+    m_meshData(0)
 {
     RenderManager::ms_meshes.insert(this);
 }
@@ -43,14 +41,16 @@ RenderableMesh::~RenderableMesh() {
     RenderManager::ms_meshes.erase(this);
 }
 
+
+
 void RenderableMesh::loadCube(const double lengthX, const double lengthY, const double lengthZ) {
-    Mesh* mesh = ResourceManager::getResources().loadCube(lengthX, lengthY, lengthZ);
-    m_vertices = &(mesh->getVertices());
-    m_normals = &(mesh->getNormals());
-    m_indices = &(mesh->getIndices());
-    m_isInitialized = true;
+    stringstream ss;
+    ss << CUBE_DESCRIPTION << "_" << lengthX << "_" << lengthY << "_" << lengthZ;
+    m_description = ss.str();
+    m_meshData = ResourceManager::getResources().loadCube(m_description, lengthX, lengthY, lengthZ);
 }
 
 void RenderableMesh::loadFromFile(const string& fileName) {
-    m_isInitialized = true;
+    m_description = fileName;
+    m_meshData = ResourceManager::getResources().loadFromFile(fileName);
 }

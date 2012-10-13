@@ -26,10 +26,11 @@
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/entity.hpp"
-#include <engine/kernel/matrix3x3.hpp>
+#include "engine/kernel/matrix3x3.hpp"
 #include "engine/renderer/rendermanager.hpp"
-#include <engine/renderer/camera.hpp>
-#include <engine/renderer/renderablemesh.hpp>
+#include "engine/renderer/camera.hpp"
+#include "engine/renderer/renderablemesh.hpp"
+#include "engine/resources/meshdata.hpp"
 
 using namespace std;
 
@@ -51,16 +52,18 @@ void Renderer::draw() {
 
     set<RenderableMesh*>::const_iterator it;
     for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
+        const MeshData& mesh = (*it)->getMeshData();
+
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(VERTEX_TUPLE_SIZE, GL_FLOAT, 0, &(*it)->getVertices()[0]);
-        glNormalPointer(GL_FLOAT, 0, &(*it)->getNormals()[0]);
+        glVertexPointer(VERTEX_TUPLE_SIZE, GL_FLOAT, 0, mesh.getVerticesPtr());
+        glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
 
         glPushMatrix();
         Entity& entity = (*it)->getEntity();
         setOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
-        glDrawElements(GL_TRIANGLES, (*it)->getIndices().size(), GL_UNSIGNED_BYTE, &(*it)->getIndices()[0]);
+        glDrawElements(GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_BYTE, mesh.getIndicesPtr());
         glPopMatrix();
 
         glDisableClientState(GL_VERTEX_ARRAY);

@@ -24,7 +24,7 @@
 #include <sstream>
 #include "engine/renderer/renderer.hpp"
 #include "engine/renderer/camera.hpp"
-#include <engine/renderer/renderablemesh.hpp>
+#include "engine/renderer/renderablemesh.hpp"
 
 using namespace std;
 
@@ -51,6 +51,14 @@ void RenderManager::shutdown() {
     }
     else
         cerr << "Warning: no existing renderer, cannot shutdown" << endl;
+
+    set<Camera*>::const_iterator itCam;
+    for (itCam = ms_cameras.begin(); itCam != ms_cameras.end(); ++itCam)
+        delete *itCam;
+
+    set<RenderableMesh*>::const_iterator itMesh;
+    for (itMesh = ms_meshes.begin(); itMesh != ms_meshes.end(); ++itMesh)
+        delete *itMesh;
 }
 
 string RenderManager::listsToString() {
