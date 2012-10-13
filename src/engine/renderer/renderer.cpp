@@ -21,7 +21,7 @@
 #include "engine/renderer/renderer.hpp"
 
 #include <iostream>
-#include <GL/glu.h>
+#include <GL/glew.h>
 #include "engine/kernel/common.hpp"
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
