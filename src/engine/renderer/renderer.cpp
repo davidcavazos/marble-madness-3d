@@ -34,8 +34,6 @@
 
 using namespace std;
 
-const GLint VERTEX_TUPLE_SIZE = 3;
-
 void Renderer::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -56,7 +54,7 @@ void Renderer::draw() {
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(VERTEX_TUPLE_SIZE, GL_FLOAT, 0, mesh.getVerticesPtr());
+        glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr());
         glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
 
         glPushMatrix();

@@ -22,6 +22,7 @@
 
 #include "engine/resources/resourcemanager.hpp"
 #include "engine/resources/meshdata.hpp"
+#include <engine/resources/generalmeshloader.hpp>
 
 using namespace std;
 
@@ -67,13 +68,21 @@ MeshData* Resources::loadCube(const string& identifier, const double lengthX, co
     return meshData;
 }
 
-MeshData* Resources::loadFromFile(const std::string& fileName) {
+MeshData* Resources::loadMeshFromFile(const std::string& fileName) {
     MeshData* meshData;
     meshData = findMeshData(fileName);
     if (meshData != 0)
         return meshData;
 
+    vector<float> vertices;
+    vector<float> normals;
+    vector<unsigned char> indices;
+    GeneralMeshLoader::load(fileName, vertices, normals, indices);
+
     meshData = new MeshData(fileName);
+    meshData->setVertices(vertices);
+    meshData->setNormals(normals);
+    meshData->setIndices(indices);
     registerMeshData(meshData);
     return meshData;
 }

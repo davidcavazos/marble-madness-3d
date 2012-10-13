@@ -31,7 +31,7 @@ public:
     friend class ResourceManager;
 
     MeshData* loadCube(const std::string& identifier, const double lengthX, const double lengthY, const double lengthZ);
-    MeshData* loadFromFile(const std::string& fileName);
+    MeshData* loadMeshFromFile(const std::string& fileName);
 
 private:
     Resources();

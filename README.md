@@ -19,8 +19,8 @@ NOTE: the following are the only OSs I have compiled the project
 1. Make sure development software is installed
 pacman -S gcc make cmake git
 
-2. Install the dependencies
-pacman -S boost sdl mesa bullet
+2. Install dependencies
+pacman -S boost sdl mesa bullet assimp
 
 3. Download from GitHub repository
 Navigate to the folder the source code will be downloaded
@@ -28,9 +28,7 @@ git clone git://github.com/davido262/marble-madness-3d.git
 
 4. Compile and install project
 Navigate to the folder where the build will be compiled (preferably outside the source)
-ccmake git-source-folder -G "Unix Makefiles"
-Press [c] to configure
-Press [g] to generate and exit
+cmake git-source-folder -G "Unix Makefiles"
 make
 Run the executable under src/
 
@@ -39,11 +37,20 @@ Run the executable under src/
 1. Make sure development software is installed
 From YaST check the following: gcc-g++ make cmake-gui git
 
-2. Install the dependencies
+2. Install dependencies
 From YaST check the following: boost-devel sdl-devel Mesa-devel
 
-2.5 Install Bullet Physics
+2.1 Install Bullet Physics
+Navigate to the folder where the build will be compiled (preferably outside the source)
 cmake ../bullet-trunk-rev2600 -G "Unix Makefiles" -DBUILD_EXTRAS=off -DBUILD_DEMOS=off -DINSTALL_LIBS=on
+make
+sudo make install
+
+2.2 Install Open Asset Import Library
+Navigate to the folder where the build will be compiled (preferably outside the source)
+cmake ../assimp--3.0.1270-source-only -G "Unix Makefiles" -DBUILD_ASSIMP_SAMPLES=off
+make
+sudo make install
 
 3. Download from GitHub repository
 Navigate to the folder the source code will be downloaded
@@ -58,11 +65,12 @@ make
 Run the executable under src/
 
 
->> Windows XP
+>> Windows
 1. Make sure development software is installed
-2. Install the dependencies
-2.5 Install Bullet Physics
+2. Install dependencies
+2.1 Install Bullet Physics
 "C:\Program Files\CMake 2.8\bin\cmake.exe" ..\bullet-trunk-rev2600 -G "Visual Studio 10" -DBUILD_EXTRAS=off -DBUILD_DEMOS=off -DINSTALL_LIBS=on
+2.2 Install Open Asset Import Library
 3. Download from GitHub repository
 4. Compile and install project
 

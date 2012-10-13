@@ -25,6 +25,7 @@ set(RENDER_SRC_FILES
 )
 
 set(RESOURCES_SRC_FILES
+    resources/generalmeshloader.cpp
     resources/meshdata.cpp
     resources/resources.cpp
     resources/resourcemanager.cpp
@@ -39,6 +40,7 @@ find_package(Boost REQUIRED)
 find_package(SDL REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Bullet REQUIRED)
+find_package(ASSIMP REQUIRED)
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
@@ -46,7 +48,9 @@ include_directories(
     ${SDL_INCLUDE_DIR}/SDL
     ${OPENGL_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIRS}
+    ${ASSIMP_INCLUDE_DIRS}
 )
 
 target_link_libraries(${KERNEL_LIBRARY_NAME} ${SDL_LIBRARY})
 target_link_libraries(${RENDER_LIBRARY_NAME} ${OPENGL_LIBRARIES})
+target_link_libraries(${RESOURCES_LIBRARY_NAME} ${ASSIMP_LIBRARIES})

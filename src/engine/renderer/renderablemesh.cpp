@@ -52,5 +52,5 @@ void RenderableMesh::loadCube(const double lengthX, const double lengthY, const 
 
 void RenderableMesh::loadFromFile(const string& fileName) {
     m_description = fileName;
-    m_meshData = ResourceManager::getResources().loadFromFile(fileName);
+    m_meshData = ResourceManager::getResources().loadMeshFromFile(fileName);
 }
