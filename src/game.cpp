@@ -74,6 +74,17 @@ void Game::loadScene() {
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
     b1Mesh->loadCube(3.0f, 13.0f, 3.0f);
 
+    // model            faces (triangles)
+    // icosphere1              20
+    // icosphere2              80
+    // icosphere3             320
+    // icosphere4           1,280
+    // icosphere5           5,120
+    // icosphere6          20,480
+    // icosphere7          81,920
+    // icosphere8         327,680
+    // icosphere9       1,310,720
+    // icosphere10      5,242,880
     Entity* cube = root->addChild("cube");
     cube->setPositionAbs(0.0f, 0.0f, 0.0f);
 //     cube->setOrientationAbs(0.2f, 0.2f, 0.1f);
