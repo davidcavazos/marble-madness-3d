@@ -1,4 +1,5 @@
 + Bullet Physics!!
++ Add texturing
 + Detect OpenGL version and capabilities (check for extensions)
 + Implement VBO_ARB and Core VBO
 + Implement OpenGL Core and shaders
