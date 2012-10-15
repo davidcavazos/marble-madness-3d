@@ -1,5 +1,6 @@
 + Bullet Physics!!
-+ Detect OpenGL version and capabilities
++ Detect OpenGL version and capabilities (check for extensions)
++ Implement VBO_ARB and Core VBO
 + Implement OpenGL Core and shaders
 + Lighting
 + Add more primitives (sphere, cilinder, etc)
