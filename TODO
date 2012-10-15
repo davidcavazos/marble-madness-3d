@@ -1,8 +1,7 @@
-+ Load meshes from .collada (maybe later make a conversion tool to binary)
-+ Add more primitives (sphere, cilinder, etc) and cube divisions
-+ Detect OpenGL version and capabilities
 + Physics!!
++ Detect OpenGL version and capabilities
 + Implement OpenGL Core and shaders
++ Add more primitives (sphere, cilinder, etc)
 ~ Save input commands as a replay script
 ~ Read/write scene from XML
 - Make input manager into a vector, only one can be active at a time (XML)
