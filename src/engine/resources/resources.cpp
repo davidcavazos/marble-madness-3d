@@ -51,7 +51,7 @@ MeshData* Resources::loadCube(const string& identifier, const double lengthX, co
          0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // v7,v4,v3,v2 (bottom)
          0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1  // v4,v7,v6,v5 (back)
     };
-    unsigned char indices[] = {
+    unsigned int indices[] = {
          0,  1,  2,   2,  3,  0,  // front
          4,  5,  6,   6,  7,  4,  // right
          8,  9, 10,  10, 11,  8,  // top
@@ -74,10 +74,6 @@ MeshData* Resources::loadMeshFromFile(const std::string& fileName) {
     meshData = findMeshData(fileName);
     if (meshData != 0)
         return meshData;
-
-    vector<float> vertices;
-    vector<float> normals;
-    vector<unsigned char> indices;
 
     meshData = new MeshData(fileName);
     GeneralMeshLoader::load(fileName, meshData->getSubmeshes());

@@ -59,7 +59,7 @@ void Renderer::draw() {
         for (size_t submesh = 0; submesh < mesh.getTotalSubmeshes(); ++submesh) {
             glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr(submesh));
             glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr(submesh));
-            glDrawElements(GL_TRIANGLES, mesh.getIndices(submesh).size(), GL_UNSIGNED_BYTE, mesh.getIndicesPtr(submesh));
+            glDrawElements(GL_TRIANGLES, mesh.getIndices(submesh).size(), GL_UNSIGNED_INT, mesh.getIndicesPtr(submesh));
         }
         glPopMatrix();
     }
@@ -71,6 +71,12 @@ Renderer::Renderer() {
     cout << "Vendor: " << glGetString(GL_VENDOR) << endl;
     cout << "Renderer: " << glGetString(GL_RENDERER) << endl;
     cout << "Using OpenGL Legacy" << endl;
+
+    GLint maxElements = 0;
+    glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElements);
+    cout << "Vertex limit: " << maxElements << endl;
+    glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElements);
+    cout << "Index limit: " << maxElements << endl;
 }
 
 void Renderer::initialize() {

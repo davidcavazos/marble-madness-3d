@@ -71,9 +71,12 @@ bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>
         return false;
     }
 
+    cout << scene->mNumMeshes << " meshes" << endl;
     submeshes.resize(scene->mNumMeshes);
     for (size_t n = 0; n < submeshes.size(); ++n) {
         const struct aiMesh* mesh = scene->mMeshes[n];
+
+        cout << mesh->mNumVertices << ", " << mesh->mNumFaces << endl;
 
         submeshes[n].vertices.reserve(mesh->mNumVertices * 3);
         for (size_t i = 0; i < mesh->mNumVertices; ++i) {
@@ -88,8 +91,6 @@ bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>
             submeshes[n].normals.push_back(mesh->mNormals[i].y);
             submeshes[n].normals.push_back(mesh->mNormals[i].z);
         }
-
-        cout << mesh->mNumVertices << ", " << mesh->mNumFaces << endl;
 
         submeshes[n].indices.reserve(mesh->mNumFaces * 3);
         for (size_t i = 0; i < mesh->mNumFaces; ++i) {
