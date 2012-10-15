@@ -1,6 +1,7 @@
-+ Physics!!
++ Bullet Physics!!
 + Detect OpenGL version and capabilities
 + Implement OpenGL Core and shaders
++ Lighting
 + Add more primitives (sphere, cilinder, etc)
 ~ Save input commands as a replay script
 ~ Read/write scene from XML
