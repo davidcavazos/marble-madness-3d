@@ -28,23 +28,13 @@
 
 using namespace std;
 
-bool GeneralMeshLoader::load(const std::string& fileName,
-                             std::vector<float>& vertices,
-                             std::vector<float>& normals,
-                             std::vector<unsigned char>& indices)
-{
-    import(fileName, vertices, normals, indices);
+bool GeneralMeshLoader::load(const std::string& fileName, std::vector<Submesh>& submeshes) {
+    import(fileName, submeshes);
     return true;
 }
 
-bool GeneralMeshLoader::import(const std::string& fileName,
-                                    std::vector<float>& vertices,
-                                    std::vector<float>& normals,
-                                    std::vector<unsigned char>& indices)
-{
-    vertices.clear();
-    normals.clear();
-    indices.clear();
+bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>& submeshes) {
+    submeshes.clear();
     cout << "Importing mesh: " << fileName << endl;
 
     Assimp::Importer importer;
@@ -81,51 +71,47 @@ bool GeneralMeshLoader::import(const std::string& fileName,
         return false;
     }
 
-    const struct aiMesh* mesh = scene->mMeshes[0];
-    vertices.reserve(mesh->mNumVertices * 3);
-    for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-        vertices.push_back(mesh->mVertices[i].x);
-        vertices.push_back(mesh->mVertices[i].y);
-        vertices.push_back(mesh->mVertices[i].z);
-    }
-    if (mesh->HasNormals()) {
-        normals.reserve(mesh->mNumVertices * 3);
+    submeshes.resize(scene->mNumMeshes);
+    for (size_t n = 0; n < submeshes.size(); ++n) {
+        const struct aiMesh* mesh = scene->mMeshes[n];
+
+        submeshes[n].vertices.reserve(mesh->mNumVertices * 3);
         for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-            normals.push_back(mesh->mNormals[i].x);
-            normals.push_back(mesh->mNormals[i].y);
-            normals.push_back(mesh->mNormals[i].z);
+            submeshes[n].vertices.push_back(mesh->mVertices[i].x);
+            submeshes[n].vertices.push_back(mesh->mVertices[i].y);
+            submeshes[n].vertices.push_back(mesh->mVertices[i].z);
         }
-    }
-    if (mesh->HasFaces()) {
-        indices.reserve(mesh->mNumFaces * 3);
+
+        submeshes[n].normals.reserve(mesh->mNumVertices * 3);
+        for (size_t i = 0; i < mesh->mNumVertices; ++i) {
+            submeshes[n].normals.push_back(mesh->mNormals[i].x);
+            submeshes[n].normals.push_back(mesh->mNormals[i].y);
+            submeshes[n].normals.push_back(mesh->mNormals[i].z);
+        }
+
+        cout << mesh->mNumVertices << ", " << mesh->mNumFaces << endl;
+
+        submeshes[n].indices.reserve(mesh->mNumFaces * 3);
         for (size_t i = 0; i < mesh->mNumFaces; ++i) {
-            if (mesh->mFaces[i].mNumIndices != 3)
+            if (mesh->mFaces[i].mNumIndices != 3) {
                 cerr << "Error: non-triangle face found in file: " << fileName << endl;
-            indices.push_back(mesh->mFaces[i].mIndices[0]);
-            indices.push_back(mesh->mFaces[i].mIndices[1]);
-            indices.push_back(mesh->mFaces[i].mIndices[2]);
+                continue;
+            }
+            submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[0]);
+            submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[1]);
+            submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[2]);
         }
     }
     return true;
 }
 
-bool GeneralMeshLoader::loadBinary(const std::string& fileName,
-                                   std::vector<float>& vertices,
-                                   std::vector<float>& normals,
-                                   std::vector<unsigned char>& indices)
-{
-    vertices.clear();
-    normals.clear();
-    indices.clear();
+bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Submesh>& submeshes) {
+    submeshes.clear();
     cout << "Loading mesh: " << fileName << endl;
     return true;
 }
 
-bool GeneralMeshLoader::writeBinary(const std::string& fileName,
-                                    std::vector<float>& vertices,
-                                    std::vector<float>& normals,
-                                    std::vector<unsigned char>& indices)
-{
+bool GeneralMeshLoader::writeBinary(const std::string& fileName, std::vector<Submesh>& submeshes) {
     cout << "Saving optimized binary mesh: " << fileName << endl;
     return true;
 }

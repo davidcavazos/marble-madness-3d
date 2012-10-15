@@ -38,7 +38,7 @@ void Renderer::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    float lightPosition[] = {-2.0f, 2.0f, -3.0f, 1.0f};
+    float lightPosition[] = {-2.0f, 2.0f, 0.0f, 1.0f};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
     float m[16];
@@ -51,21 +51,23 @@ void Renderer::draw() {
     set<RenderableMesh*>::const_iterator it;
     for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
         const MeshData& mesh = (*it)->getMeshData();
-
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr());
-        glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
+        const Entity& entity = (*it)->getEntity();
 
         glPushMatrix();
-        Entity& entity = (*it)->getEntity();
         setOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
-        glDrawElements(GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_BYTE, mesh.getIndicesPtr());
-        glPopMatrix();
+        for (size_t submesh = 0; submesh < mesh.getTotalSubmeshes(); ++submesh) {
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_NORMAL_ARRAY);
 
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
+            glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr(submesh));
+            glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr(submesh));
+            glDrawElements(GL_TRIANGLES, mesh.getIndices(submesh).size(), GL_UNSIGNED_BYTE, mesh.getIndicesPtr(submesh));
+
+            glDisableClientState(GL_NORMAL_ARRAY);
+            glDisableClientState(GL_VERTEX_ARRAY);
+        }
+        glPopMatrix();
     }
 }
 

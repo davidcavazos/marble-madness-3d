@@ -24,31 +24,45 @@
 #include <vector>
 #include <string>
 
+class Submesh {
+public:
+    std::vector<float> vertices;
+    std::vector<float> normals;
+    std::vector<unsigned char> indices;
+
+    Submesh();
+};
+
 class MeshData {
 public:
     MeshData(const std::string& identifier);
 
     const std::string& getIdentifier() const;
-    const std::vector<float>& getVertices() const;
-    const float* getVerticesPtr() const;
-    const std::vector<float>& getNormals() const;
-    const float* getNormalsPtr() const;
-    const std::vector<unsigned char>& getIndices() const;
-    const unsigned char* getIndicesPtr() const;
+    size_t getTotalSubmeshes() const;
+    const std::vector<Submesh>& getSubmeshes() const;
+    std::vector<Submesh>& getSubmeshes();
+    const std::vector<float>& getVertices(const size_t submesh) const;
+    const float* getVerticesPtr(const size_t submesh) const;
+    const std::vector<float>& getNormals(const size_t submesh) const;
+    const float* getNormalsPtr(const size_t submesh) const;
+    const std::vector<unsigned char>& getIndices(const size_t submesh) const;
+    const unsigned char* getIndicesPtr(const size_t submesh) const;
 
     void setIdentifier(const std::string& identifier);
-    void setVertices(const std::vector<float>& vertices);
-    void setVertices(const float* vertices, const size_t size);
-    void setNormals(const std::vector<float>& normals);
-    void setNormals(const float* normals, const size_t size);
-    void setIndices(const std::vector<unsigned char>& indices);
-    void setIndices(const unsigned char* indices, const size_t size);
+    void setTotalSubmeshes(const size_t submeshes);
+    void setVertices(const size_t submesh, const std::vector<float>& vertices);
+    void setVertices(const size_t submesh, const float* vertices, const size_t size);
+    void setNormals(const size_t submesh, const std::vector<float>& normals);
+    void setNormals(const size_t submesh, const float* normals, const size_t size);
+    void setIndices(const size_t submesh, const std::vector<unsigned char>& indices);
+    void setIndices(const size_t submesh, const unsigned char* indices, const size_t size);
 
 private:
     std::string m_identifier;
-    std::vector<float> m_vertices;
-    std::vector<float> m_normals;
-    std::vector<unsigned char> m_indices;
+    std::vector<Submesh> m_submeshes;
+//     std::vector<float> m_vertices;
+//     std::vector<float> m_normals;
+//     std::vector<unsigned char> m_indices;
 };
 
 
@@ -57,28 +71,40 @@ inline const std::string& MeshData::getIdentifier() const {
     return m_identifier;
 }
 
-inline const std::vector<float>& MeshData::getVertices() const {
-    return m_vertices;
+inline size_t MeshData::getTotalSubmeshes() const {
+    return m_submeshes.size();
 }
 
-inline const float* MeshData::getVerticesPtr() const {
-    return &m_vertices[0];
+inline const std::vector< Submesh >& MeshData::getSubmeshes() const {
+    return m_submeshes;
 }
 
-inline const std::vector<float>& MeshData::getNormals() const {
-    return m_normals;
+inline std::vector< Submesh >& MeshData::getSubmeshes() {
+    return m_submeshes;
 }
 
-inline const float* MeshData::getNormalsPtr() const {
-    return &m_normals[0];
+inline const std::vector<float>& MeshData::getVertices(const size_t submesh) const {
+    return m_submeshes[submesh].vertices;
 }
 
-inline const std::vector<unsigned char>& MeshData::getIndices() const {
-    return m_indices;
+inline const float* MeshData::getVerticesPtr(const size_t submesh) const {
+    return &m_submeshes[submesh].vertices[0];
 }
 
-inline const unsigned char* MeshData::getIndicesPtr() const {
-    return &m_indices[0];
+inline const std::vector<float>& MeshData::getNormals(const size_t submesh) const {
+    return m_submeshes[submesh].normals;
+}
+
+inline const float* MeshData::getNormalsPtr(const size_t submesh) const {
+    return &m_submeshes[submesh].normals[0];
+}
+
+inline const std::vector<unsigned char>& MeshData::getIndices(const size_t submesh) const {
+    return m_submeshes[submesh].indices;
+}
+
+inline const unsigned char* MeshData::getIndicesPtr(const size_t submesh) const {
+    return &m_submeshes[submesh].indices[0];
 }
 
 
@@ -87,34 +113,38 @@ inline void MeshData::setIdentifier(const std::string& identifier) {
     m_identifier = identifier;
 }
 
-inline void MeshData::setVertices(const std::vector<float>& vertices) {
-    m_vertices = vertices;
+inline void MeshData::setTotalSubmeshes(const size_t submeshes) {
+    m_submeshes.resize(submeshes);
 }
 
-inline void MeshData::setVertices(const float* vertices, const size_t size) {
-    m_vertices.resize(size);
-    for (size_t i = 0; i < m_vertices.size(); ++i)
-        m_vertices[i] = vertices[i];
+inline void MeshData::setVertices(const size_t submesh, const std::vector<float>& vertices) {
+    m_submeshes[submesh].vertices = vertices;
 }
 
-inline void MeshData::setNormals(const std::vector<float>& normals) {
-    m_normals = normals;
+inline void MeshData::setVertices(const size_t submesh, const float* vertices, const size_t size) {
+    m_submeshes[submesh].vertices.resize(size);
+    for (size_t i = 0; i < m_submeshes[submesh].vertices.size(); ++i)
+        m_submeshes[submesh].vertices[i] = vertices[i];
 }
 
-inline void MeshData::setNormals(const float* normals, const size_t size) {
-    m_normals.resize(size);
-    for (size_t i = 0; i < m_normals.size(); ++i)
-        m_normals[i] = normals[i];
+inline void MeshData::setNormals(const size_t submesh, const std::vector<float>& normals) {
+    m_submeshes[submesh].normals = normals;
 }
 
-inline void MeshData::setIndices(const std::vector<unsigned char>& indices) {
-    m_indices = indices;
+inline void MeshData::setNormals(const size_t submesh, const float* normals, const size_t size) {
+    m_submeshes[submesh].normals.resize(size);
+    for (size_t i = 0; i < m_submeshes[submesh].normals.size(); ++i)
+        m_submeshes[submesh].normals[i] = normals[i];
 }
 
-inline void MeshData::setIndices(const unsigned char* indices, const size_t size) {
-    m_indices.resize(size);
-    for (size_t i = 0; i < m_indices.size(); ++i)
-        m_indices[i] = indices[i];
+inline void MeshData::setIndices(const size_t submesh, const std::vector<unsigned char>& indices) {
+    m_submeshes[submesh].indices = indices;
+}
+
+inline void MeshData::setIndices(const size_t submesh, const unsigned char* indices, const size_t size) {
+    m_submeshes[submesh].indices.resize(size);
+    for (size_t i = 0; i < m_submeshes[submesh].indices.size(); ++i)
+        m_submeshes[submesh].indices[i] = indices[i];
 }
 
 #endif // MESHDATA_HPP

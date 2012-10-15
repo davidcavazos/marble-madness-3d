@@ -61,9 +61,10 @@ MeshData* Resources::loadCube(const string& identifier, const double lengthX, co
     };
 
     meshData = new MeshData(identifier);
-    meshData->setVertices(vertices, 72);
-    meshData->setNormals(normals, 72);
-    meshData->setIndices(indices, 36);
+    meshData->setTotalSubmeshes(1);
+    meshData->setVertices(0, vertices, 72);
+    meshData->setNormals(0, normals, 72);
+    meshData->setIndices(0, indices, 36);
     registerMeshData(meshData);
     return meshData;
 }
@@ -77,12 +78,9 @@ MeshData* Resources::loadMeshFromFile(const std::string& fileName) {
     vector<float> vertices;
     vector<float> normals;
     vector<unsigned char> indices;
-    GeneralMeshLoader::load(fileName, vertices, normals, indices);
 
     meshData = new MeshData(fileName);
-    meshData->setVertices(vertices);
-    meshData->setNormals(normals);
-    meshData->setIndices(indices);
+    GeneralMeshLoader::load(fileName, meshData->getSubmeshes());
     registerMeshData(meshData);
     return meshData;
 }

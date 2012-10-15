@@ -20,9 +20,13 @@
 
 #include "engine/resources/meshdata.hpp"
 
+Submesh::Submesh():
+    vertices(),
+    normals(),
+    indices()
+{}
+
 MeshData::MeshData(const std::string& identifier):
     m_identifier(identifier),
-    m_vertices(),
-    m_normals(),
-    m_indices()
+    m_submeshes()
 {}
