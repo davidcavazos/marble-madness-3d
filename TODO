@@ -3,12 +3,15 @@
 + Implement VBO_ARB and Core VBO
 + Implement OpenGL Core and shaders
 + Lighting
-+ Add more primitives (sphere, cilinder, etc)
++ Debug camera
++ Viewport & Occlusion Culling (BulletPhysics DbvtCullingDemo)
+~ Add more primitives (sphere, cilinder, cone, torus, etc)
 ~ Save input commands as a replay script
 ~ Read/write scene from XML
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
-- Possibility of multiple cameras
+- Possibility of multiple active cameras in different viewports
+- Animations
 
 
 
