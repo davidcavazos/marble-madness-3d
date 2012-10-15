@@ -57,15 +57,9 @@ void Renderer::draw() {
         setOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
         for (size_t submesh = 0; submesh < mesh.getTotalSubmeshes(); ++submesh) {
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_NORMAL_ARRAY);
-
             glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr(submesh));
             glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr(submesh));
             glDrawElements(GL_TRIANGLES, mesh.getIndices(submesh).size(), GL_UNSIGNED_BYTE, mesh.getIndicesPtr(submesh));
-
-            glDisableClientState(GL_NORMAL_ARRAY);
-            glDisableClientState(GL_VERTEX_ARRAY);
         }
         glPopMatrix();
     }
@@ -85,6 +79,8 @@ void Renderer::initialize() {
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
 
     Camera* camera = RenderManager::ms_activeCamera;
 
@@ -124,6 +120,7 @@ void Renderer::initialize() {
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
     float ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+
 }
 
 void Renderer::deinitialize() {

@@ -79,7 +79,7 @@ void Game::loadScene() {
 //     cube->setOrientationAbs(0.2f, 0.2f, 0.1f);
     RenderableMesh* mesh = new RenderableMesh(cube);
 //     mesh->loadCube(1.0f, 0.5f, 1.5f);
-    mesh->loadFromFile("assets/meshes/bench.obj");
+    mesh->loadFromFile("assets/meshes/icosphere.dae");
 
     Entity* cube2 = cube->addChild("cube2");
     cube2->setPositionRel(2.0f, 0.5f, 0.0f);
