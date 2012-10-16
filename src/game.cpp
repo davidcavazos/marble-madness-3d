@@ -237,7 +237,11 @@ void Game::onMouseMotion(const string&) {
 void Game::fireCube(const std::string&) {
     Entity* camera;
     if (m_sceneManager.findEntity("camera", camera)) {
-        Entity* cube = m_sceneManager.getRoot().addChild("missile");
+        static size_t n = 0;
+        stringstream ss;
+        ss << "missile-cube-" << ++n;
+
+        Entity* cube = m_sceneManager.getRoot().addChild(ss.str());
         Vector3 orientationUnit = VECTOR3_UNIT_Z_NEG.rotate(camera->getOrientationAbs());
         cube->setPositionAbs(camera->getPositionAbs() + orientationUnit);
         cube->setOrientationAbs(camera->getOrientationAbs());
@@ -255,17 +259,21 @@ void Game::fireCube(const std::string&) {
 void Game::fireSphere(const std::string&) {
     Entity* camera;
     if (m_sceneManager.findEntity("camera", camera)) {
-        Entity* sphere = m_sceneManager.getRoot().addChild("missile");
+        static size_t n = 0;
+        stringstream ss;
+        ss << "missile-sphere-" << ++n;
+
+        Entity* sphere = m_sceneManager.getRoot().addChild(ss.str());
         Vector3 orientationUnit = VECTOR3_UNIT_Z_NEG.rotate(camera->getOrientationAbs());
         sphere->setPositionAbs(camera->getPositionAbs() + orientationUnit);
         sphere->setOrientationAbs(camera->getOrientationAbs());
 
         RenderableMesh* cubeMesh = new RenderableMesh(sphere);
-        cubeMesh->loadFromFile("assets/meshes/icosphere1.dae");
+        cubeMesh->loadFromFile("assets/meshes/icosphere3.dae");
 
         RigidBody* cubeBody = new RigidBody(sphere);
         cubeBody->init(1.0, 0.8);
-        cubeBody->addSphere(MISSILE_SIZE);
+        cubeBody->addSphere(1.0);
         cubeBody->setLinearVelocity(orientationUnit * FIRE_SPEED);
     }
 }
