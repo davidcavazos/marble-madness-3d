@@ -1,4 +1,3 @@
-+ Bullet Physics!!
 + Add texturing
 + Detect OpenGL version and capabilities (check for extensions)
 + Implement VBO_ARB and Core VBO
@@ -12,6 +11,8 @@
 ~ Save input commands as a replay script
 ~ Read/write scene from XML
 ~ Use relative positions to the camera for physics and rendering
+~ Add constraints support
+~ Add soft body support
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
 - Possibility of multiple active cameras in different viewports
