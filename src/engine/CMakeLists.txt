@@ -20,6 +20,7 @@ set(KERNEL_SRC_FILES
 
 set(RENDER_SRC_FILES
     renderer/camera.cpp
+    renderer/light.cpp
     renderer/renderablemesh.cpp
     renderer/renderer.cpp
     renderer/rendermanager.cpp

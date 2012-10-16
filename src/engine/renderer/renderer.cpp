@@ -38,9 +38,6 @@ void Renderer::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    float lightPosition[] = {-2.0f, 2.0f, 0.0f, 1.0f};
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-
     float m[16];
 
     Entity& cam = RenderManager::ms_activeCamera->getEntity();
@@ -80,11 +77,33 @@ Renderer::Renderer() {
 }
 
 void Renderer::initialize() {
+    // always
     glFrontFace(GL_CCW); // redundant
     glCullFace(GL_BACK); // redundant
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+//     glShadeModel(GL_SMOOTH); // using manually defined normals
+
+    // enable lighting for legacy lights
     glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+    glEnable(GL_LIGHT3);
+    glEnable(GL_LIGHT4);
+    glEnable(GL_LIGHT5);
+    glEnable(GL_LIGHT6);
+    glEnable(GL_LIGHT7);
+    GLfloat global_ambient[] = {0.5f, 0.5f, 1.0f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+    float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    float ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    float lightPosition[] = {-2.0f, 2.0f, 0.0f, 1.0f};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+    // enable arrays for Vertex Array (Legacy)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
 
@@ -118,15 +137,6 @@ void Renderer::initialize() {
             break;
     }
     glMatrixMode(GL_MODELVIEW);
-
-    GLfloat global_ambient[] = {0.5f, 0.5f, 1.0f, 1.0f};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
-    glEnable(GL_LIGHT0);
-    float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    float ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-
 }
 
 void Renderer::deinitialize() {

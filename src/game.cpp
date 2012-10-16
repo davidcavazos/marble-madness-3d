@@ -114,7 +114,7 @@ void Game::loadScene() {
     Entity* sphere = root->addChild("sphere");
     sphere->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* sphereMesh = new RenderableMesh(sphere);
-    sphereMesh->loadFromFile("assets/meshes/icosphere5.dae");
+    sphereMesh->loadFromFile("assets/meshes/suzanne-midpoly.dae");
     RigidBody* sphereBody = new RigidBody(sphere);
     sphereBody->init(2.0);
     sphereBody->addSphere(1);
@@ -125,6 +125,10 @@ void Game::loadScene() {
 //     camera->lookAt(cube->getPositionAbs(), VECTOR3_UNIT_Y);
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
+
+    Entity* light1 = root->addChild("light1");
+    light1->setPositionAbs(5, 5, 5);
+
 
 //     cout << Terminal::listsToString() << endl;
 //     cout << m_sceneManager.sceneGraphToString() << endl;
@@ -269,7 +273,7 @@ void Game::fireSphere(const std::string&) {
         sphere->setOrientationAbs(camera->getOrientationAbs());
 
         RenderableMesh* cubeMesh = new RenderableMesh(sphere);
-        cubeMesh->loadFromFile("assets/meshes/icosphere3.dae");
+        cubeMesh->loadFromFile("assets/meshes/icosphere2.dae");
 
         RigidBody* cubeBody = new RigidBody(sphere);
         cubeBody->init(1.0, 0.8);
