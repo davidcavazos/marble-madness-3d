@@ -40,6 +40,10 @@
 
 using namespace std;
 
+const double FIRE_SPEED = 50.0;
+const double MISSILE_SIZE = 0.5;
+
+
 Game::Game(const string& objectName, const string& rootNodeName):
     CommandObject(objectName),
     m_isRunning(false),
@@ -78,14 +82,14 @@ void Game::loadScene() {
     RenderableMesh* floorMesh = new RenderableMesh(floor);
     floorMesh->loadBox(100, 0.1, 100);
     RigidBody* floorBody = new RigidBody(floor);
-    floorBody->addBox(0, 100, 0.1, 100);
+    floorBody->addBox(100, 0.1, 100);
 
     Entity* b1 = root->addChild("b1");
     b1->setPositionAbs(5.0f, 0.0f, -10.0f);
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
     b1Mesh->loadBox(3.0f, 13.0f, 3.0f);
     RigidBody* b1Body = new RigidBody(b1);
-    b1Body->addBox(0, 3, 13, 3);
+    b1Body->addBox(3, 13, 3);
 
     // model            faces (triangles)
     // icosphere1              20
@@ -104,14 +108,16 @@ void Game::loadScene() {
     RenderableMesh* cubeMesh = new RenderableMesh(cube);
     cubeMesh->loadBox(0.5, 0.5, 0.5);
     RigidBody* cubeBody = new RigidBody(cube);
-    cubeBody->addBox(0.5, 0.5, 0.5, 0.5);
+    cubeBody->init(1.0);
+    cubeBody->addBox(0.5, 0.5, 0.5);
 
     Entity* sphere = root->addChild("sphere");
     sphere->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* sphereMesh = new RenderableMesh(sphere);
     sphereMesh->loadFromFile("assets/meshes/icosphere5.dae");
     RigidBody* sphereBody = new RigidBody(sphere);
-    sphereBody->addSphere(1, 1);
+    sphereBody->init(2.0);
+    sphereBody->addSphere(1);
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 4.0f, 10.0f);
@@ -237,12 +243,29 @@ void Game::fireCube(const std::string&) {
         cube->setOrientationAbs(camera->getOrientationAbs());
 
         RenderableMesh* cubeMesh = new RenderableMesh(cube);
-        cubeMesh->loadBox(0.5, 0.5, 0.5);
+        cubeMesh->loadBox(MISSILE_SIZE, MISSILE_SIZE, MISSILE_SIZE);
 
         RigidBody* cubeBody = new RigidBody(cube);
-        cubeBody->addBox(1, 0.5, 0.5, 0.5);
+        cubeBody->init(1.0, 0.8);
+        cubeBody->addBox(MISSILE_SIZE, MISSILE_SIZE, MISSILE_SIZE);
+        cubeBody->setLinearVelocity(orientationUnit * FIRE_SPEED);
     }
 }
 
 void Game::fireSphere(const std::string&) {
+    Entity* camera;
+    if (m_sceneManager.findEntity("camera", camera)) {
+        Entity* sphere = m_sceneManager.getRoot().addChild("missile");
+        Vector3 orientationUnit = VECTOR3_UNIT_Z_NEG.rotate(camera->getOrientationAbs());
+        sphere->setPositionAbs(camera->getPositionAbs() + orientationUnit);
+        sphere->setOrientationAbs(camera->getOrientationAbs());
+
+        RenderableMesh* cubeMesh = new RenderableMesh(sphere);
+        cubeMesh->loadFromFile("assets/meshes/icosphere1.dae");
+
+        RigidBody* cubeBody = new RigidBody(sphere);
+        cubeBody->init(1.0, 0.8);
+        cubeBody->addSphere(MISSILE_SIZE);
+        cubeBody->setLinearVelocity(orientationUnit * FIRE_SPEED);
+    }
 }
