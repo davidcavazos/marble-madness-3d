@@ -41,39 +41,42 @@ RigidBody::RigidBody(Entity* const entity):
     Component(COMPONENT_PHYSICS, entity)
 {}
 
-void RigidBody::generateCollisionBox(const double mass, const double lengthX, const double lengthY, const double lengthZ) const {
+void RigidBody::addBox(const double mass, const double lengthX, const double lengthY, const double lengthZ) const {
     stringstream ss;
     ss << COLLISION_SHAPE_BOX << "_" << lengthX << "_" << lengthY << "_" << lengthZ;
     string shapeId = ss.str();
 
+    PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
+    PhysicsWorld::collision_shapes_map_t::const_iterator it;
+
     btCollisionShape* shape;
-    if (!shapeIsFound(shapeId, shape))
+    it = collisionShapes.find(shapeId);
+    if (it == collisionShapes.end()) {
         shape = new btBoxShape(btVector3(lengthX * 0.5, lengthY * 0.5, lengthZ * 0.5));
+        collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+    }
+    else
+        shape = it->second;
     addRigidBody(mass, shape);
 }
 
-void RigidBody::generateCollisionSphere(const double mass, const double radius) const {
+void RigidBody::addSphere(const double mass, const double radius) const {
     stringstream ss;
     ss << COLLISION_SHAPE_BOX << "_" << radius;
     string shapeId = ss.str();
 
-    btCollisionShape* shape;
-    if (!shapeIsFound(shapeId, shape))
-        shape = new btSphereShape(radius);
-    addRigidBody(mass, shape);
-}
-
-bool RigidBody::shapeIsFound(const string& shapeId, btCollisionShape*& shape) const {
     PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
     PhysicsWorld::collision_shapes_map_t::const_iterator it;
 
+    btCollisionShape* shape;
     it = collisionShapes.find(shapeId);
     if (it == collisionShapes.end()) {
+        shape = new btSphereShape(radius);
         collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
-        return false;
     }
-    shape = it->second;
-    return true;
+    else
+        shape = it->second;
+    addRigidBody(mass, shape);
 }
 
 void RigidBody::addRigidBody(const double mass, btCollisionShape* shape) const {
@@ -100,8 +103,7 @@ btDefaultMotionState* getMotionState(const Entity& entity) {
 }
 
 btVector3 getFallInertia(const double mass, btCollisionShape* shape) {
-    btVector3 inertia(0, 0, 0);
-    if (mass > 0.0)
-        shape->calculateLocalInertia(mass, inertia);
+    btVector3 inertia;
+    shape->calculateLocalInertia(mass, inertia);
     return inertia;
 }

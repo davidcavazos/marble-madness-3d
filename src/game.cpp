@@ -78,14 +78,14 @@ void Game::loadScene() {
     RenderableMesh* floorMesh = new RenderableMesh(floor);
     floorMesh->loadBox(100, 0.1, 100);
     RigidBody* floorBody = new RigidBody(floor);
-    floorBody->generateCollisionBox(0, 100, 0.1, 100);
+    floorBody->addBox(0, 100, 0.1, 100);
 
     Entity* b1 = root->addChild("b1");
     b1->setPositionAbs(5.0f, 0.0f, -10.0f);
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
     b1Mesh->loadBox(3.0f, 13.0f, 3.0f);
     RigidBody* b1Body = new RigidBody(b1);
-    b1Body->generateCollisionBox(0, 3, 13, 3);
+    b1Body->addBox(0, 3, 13, 3);
 
     // model            faces (triangles)
     // icosphere1              20
@@ -104,14 +104,14 @@ void Game::loadScene() {
     RenderableMesh* cubeMesh = new RenderableMesh(cube);
     cubeMesh->loadBox(0.5, 0.5, 0.5);
     RigidBody* cubeBody = new RigidBody(cube);
-    cubeBody->generateCollisionBox(0.5, 0.5, 0.5, 0.5);
+    cubeBody->addBox(0.5, 0.5, 0.5, 0.5);
 
     Entity* sphere = root->addChild("sphere");
     sphere->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* sphereMesh = new RenderableMesh(sphere);
     sphereMesh->loadFromFile("assets/meshes/icosphere5.dae");
     RigidBody* sphereBody = new RigidBody(sphere);
-    sphereBody->generateCollisionSphere(1, 1);
+    sphereBody->addSphere(1, 1);
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 4.0f, 10.0f);
@@ -229,6 +229,19 @@ void Game::onMouseMotion(const string&) {
 }
 
 void Game::fireCube(const std::string&) {
+    Entity* camera;
+    if (m_sceneManager.findEntity("camera", camera)) {
+        Entity* cube = m_sceneManager.getRoot().addChild("missile");
+        Vector3 orientationUnit = VECTOR3_UNIT_Z_NEG.rotate(camera->getOrientationAbs());
+        cube->setPositionAbs(camera->getPositionAbs() + orientationUnit);
+        cube->setOrientationAbs(camera->getOrientationAbs());
+
+        RenderableMesh* cubeMesh = new RenderableMesh(cube);
+        cubeMesh->loadBox(0.5, 0.5, 0.5);
+
+        RigidBody* cubeBody = new RigidBody(cube);
+        cubeBody->addBox(1, 0.5, 0.5, 0.5);
+    }
 }
 
 void Game::fireSphere(const std::string&) {

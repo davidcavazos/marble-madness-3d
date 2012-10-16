@@ -23,11 +23,6 @@
 
 #include "engine/kernel/component.hpp"
 
-// typedef enum {
-//     PHYSICS_RIGIDBODY,
-//     PHYSICS_SOFTBODY
-// } physics_t;
-
 class btCollisionShape;
 class btDefaultMotionState;
 class btVector3;
@@ -36,11 +31,10 @@ class RigidBody: public Component {
 public:
     RigidBody(Entity* const entity);
 
-    void generateCollisionBox(const double mass, const double lengthX, const double lengthY, const double lengthZ) const;
-    void generateCollisionSphere(const double mass, const double radius) const;
+    void addBox(const double mass, const double lengthX, const double lengthY, const double lengthZ) const;
+    void addSphere(const double mass, const double radius) const;
 
 private:
-    bool shapeIsFound(const std::string& shapeId, btCollisionShape*& shape) const;
     void addRigidBody(const double mass, btCollisionShape* shape) const;
 };
 
