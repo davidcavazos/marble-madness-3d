@@ -1,3 +1,5 @@
++ Add ability to change physical properties from btRigidBodyConstructionInfo
++ Add ability to change rigid body properties like linear velocity, acceleration, etc
 + Add texturing
 + Detect OpenGL version and capabilities (check for extensions)
 + Implement VBO_ARB and Core VBO
