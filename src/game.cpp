@@ -33,8 +33,10 @@
 #include "engine/renderer/renderer.hpp"
 #include "engine/renderer/renderablemesh.hpp"
 #include "engine/renderer/camera.hpp"
-// #include "engine/resources/resources.hpp"
 #include "engine/resources/resourcemanager.hpp"
+#include "engine/physics/rigidbody.hpp"
+#include "engine/physics/physicsworld.hpp"
+#include "engine/physics/physicsmanager.hpp"
 
 using namespace std;
 
@@ -47,32 +49,43 @@ Game::Game(const string& objectName, const string& rootNodeName):
     registerCommand("run", boost::bind(&Game::runCommand, this, _1));
     registerCommand("print-entity", boost::bind(&Game::printEntity, this, _1));
     registerCommand("on-mouse-motion", boost::bind(&Game::onMouseMotion, this, _1));
+    registerCommand("fire-cube", boost::bind(&Game::fireCube, this, _1));
+    registerCommand("fire-sphere", boost::bind(&Game::fireSphere, this, _1));
 
     ResourceManager::create();
+
     Device* device = DeviceManager::create();
     device->setTitle("Marble Madness 3D");
     device->setResolution(800, 500);
+
+//     PhysicsWorld* world =
+    PhysicsManager::create();
 }
 
 Game::~Game() {
     RenderManager::shutdown();
+    PhysicsManager::shutdown();
     DeviceManager::shutdown();
     ResourceManager::shutdown();
 }
 
 void Game::loadScene() {
-    cout << "Loading scene" << endl;
+    cout << "Loading scene..." << endl;
     Entity* root = m_sceneManager.getRootPtr();
 
     Entity* floor = root->addChild("floor");
     floor->setPositionAbs(0.0f, -1.0f, 0.0f);
     RenderableMesh* floorMesh = new RenderableMesh(floor);
-    floorMesh->loadCube(100.0f, 0.1f, 100.0f);
+    floorMesh->loadBox(100, 0.1, 100);
+    RigidBody* floorBody = new RigidBody(floor);
+    floorBody->generateCollisionBox(0, 100, 0.1, 100);
 
     Entity* b1 = root->addChild("b1");
     b1->setPositionAbs(5.0f, 0.0f, -10.0f);
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
-    b1Mesh->loadCube(3.0f, 13.0f, 3.0f);
+    b1Mesh->loadBox(3.0f, 13.0f, 3.0f);
+    RigidBody* b1Body = new RigidBody(b1);
+    b1Body->generateCollisionBox(0, 3, 13, 3);
 
     // model            faces (triangles)
     // icosphere1              20
@@ -86,20 +99,24 @@ void Game::loadScene() {
     // icosphere9       1,310,720
     // icosphere10      5,242,880
     Entity* cube = root->addChild("cube");
-    cube->setPositionAbs(0.0f, 0.0f, 0.0f);
-//     cube->setOrientationAbs(0.2f, 0.2f, 0.1f);
-    RenderableMesh* mesh = new RenderableMesh(cube);
-//     mesh->loadCube(1.0f, 0.5f, 1.5f);
-    mesh->loadFromFile("assets/meshes/icosphere4.dae");
+    cube->setPositionAbs(1.0, 8.0, 0.0);
+    cube->setOrientationAbs(0.5, 0.3, 0.2);
+    RenderableMesh* cubeMesh = new RenderableMesh(cube);
+    cubeMesh->loadBox(0.5, 0.5, 0.5);
+    RigidBody* cubeBody = new RigidBody(cube);
+    cubeBody->generateCollisionBox(0.5, 0.5, 0.5, 0.5);
 
-    Entity* cube2 = cube->addChild("cube2");
-    cube2->setPositionRel(2.0f, 0.5f, 0.0f);
-    RenderableMesh* mesh2 = new RenderableMesh(cube2);
-    mesh2->loadCube(1.0f, 0.5f, 1.5f);
+    Entity* sphere = root->addChild("sphere");
+    sphere->setPositionRel(1.5f, 5.0f, 0.0f);
+    RenderableMesh* sphereMesh = new RenderableMesh(sphere);
+    sphereMesh->loadFromFile("assets/meshes/icosphere5.dae");
+    RigidBody* sphereBody = new RigidBody(sphere);
+    sphereBody->generateCollisionSphere(1, 1);
 
     Entity* camera = root->addChild("camera");
-    camera->setPositionAbs(0.0f, 1.0f, 5.0f);
-    camera->lookAt(cube->getPositionAbs(), VECTOR3_UNIT_Y);
+    camera->setPositionAbs(0.0f, 4.0f, 10.0f);
+    camera->pitch(-0.2);
+//     camera->lookAt(cube->getPositionAbs(), VECTOR3_UNIT_Y);
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
 
@@ -110,33 +127,20 @@ void Game::loadScene() {
 }
 
 void Game::bindControls() {
-    cout << "Binding controls" << endl;
+    cout << "Binding inputs..." << endl;
     InputManager& inputs = DeviceManager::getDevice().getInputManager();
     inputs.bindInput(INPUT_KEY_RELEASE, "game quit", SDLK_ESCAPE);
     inputs.bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
     inputs.bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
 
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube yaw 1", SDLK_l);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube yaw -1", SDLK_j);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube pitch 1", SDLK_k);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube pitch -1", SDLK_i);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube roll 1", SDLK_u);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube roll -1", SDLK_o);
-//     inputs.bindInput(INPUT_KEY_PRESSED, "cube2 yaw-parent 1", SDLK_RIGHT);
-//     inputs.bindInput(INPUT_KEY_PRESSED, "cube2 yaw-parent -1", SDLK_LEFT);
-//     inputs.bindInput(INPUT_KEY_PRESSED, "cube2 pitch-parent 1", SDLK_DOWN);
-//     inputs.bindInput(INPUT_KEY_PRESSED, "cube2 pitch-parent -1", SDLK_UP);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube move-z -2", SDLK_UP);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube move-x -2", SDLK_LEFT);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube move-z 2", SDLK_DOWN);
-    inputs.bindInput(INPUT_KEY_PRESSED, "cube move-x 2", SDLK_RIGHT);
-
-    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-z -2", SDLK_w);
-    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-x -2", SDLK_a);
-    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-z 2", SDLK_s);
-    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-x 2", SDLK_d);
-    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-y-global 2", SDLK_SPACE);
-    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-y-global -2", SDLK_LSHIFT);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-z        -5", SDLK_w);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-x        -5", SDLK_a);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-z         5", SDLK_s);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-x         5", SDLK_d);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-y-global  5", SDLK_SPACE);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera move-y-global -5", SDLK_LSHIFT);
+    inputs.bindInput(INPUT_MOUSE_BUTTON_RELEASE, "game fire-cube", 1);
+    inputs.bindInput(INPUT_MOUSE_BUTTON_RELEASE, "game fire-sphere", 3);
 }
 
 void Game::runGameLoop() {
@@ -146,9 +150,12 @@ void Game::runGameLoop() {
     Device* device = DeviceManager::getDevicePtr();
 //     device->trapCursor();
     device->hideCursor();
-    cout << "Creating renderer" << endl;
+
+    cout << "Creating renderer..." << endl;
     Renderer* renderer = RenderManager::create();
     cout << "Entering game loop" << endl;
+
+    PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
 
     int screenCenterX = device->getWinWidth() / 2;
     int screenCenterY = device->getWinHeight() / 2;
@@ -158,18 +165,23 @@ void Game::runGameLoop() {
         startTime = SDL_GetTicks();
         device->onFrameStart();
 
+        world->stepSimulation(0.001 * SDL_GetTicks());
+
         device->processEvents(m_isRunning);
         Terminal::processCommandsQueue();
 
-        deltaTime = SDL_GetTicks() - startTime;
         stringstream ss;
-        ss << "Marble Madness 3D - " << setw(3) << deltaTime << " ms (16-40 ideal) - ";
+        deltaTime = SDL_GetTicks() - startTime;
+        ss << "Marble Madness 3D - CPU:" << setw(3) << deltaTime << " ms - ";
 
+        startTime = SDL_GetTicks();
         renderer->draw();
         device->swapBuffers();
+        deltaTime = SDL_GetTicks() - startTime;
+        ss << "GPU:" << setw(3) << deltaTime << " ms (16-40 ideal) - ";
 
         device->onFrameEnd();
-        ss << fixed << setprecision(1) << device->getFps() << " fps";
+        ss << setw(5) << fixed << setprecision(1) << device->getFps() << " fps";
         device->setTitle(ss.str());
     }
 }
@@ -214,4 +226,10 @@ void Game::onMouseMotion(const string&) {
     ssy << motion.yrel * sensitivity;
     moveYCmd.setArguments(ssy.str());
     Terminal::pushCommand(moveYCmd);
+}
+
+void Game::fireCube(const std::string&) {
+}
+
+void Game::fireSphere(const std::string&) {
 }

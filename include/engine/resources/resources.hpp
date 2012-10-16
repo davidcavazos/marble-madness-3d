@@ -30,8 +30,8 @@ class Resources {
 public:
     friend class ResourceManager;
 
-    MeshData* loadCube(const std::string& identifier, const double lengthX, const double lengthY, const double lengthZ);
-    MeshData* loadMeshFromFile(const std::string& fileName);
+    MeshData* generateBox(const std::string& identifier, const double lengthX, const double lengthY, const double lengthZ);
+    MeshData* generateMeshFromFile(const std::string& fileName);
 
 private:
     Resources();

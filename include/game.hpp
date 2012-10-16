@@ -42,6 +42,8 @@ private:
     void runCommand(const std::string& arg);
     void printEntity(const std::string& arg);
     void onMouseMotion(const std::string&);
+    void fireCube(const std::string&);
+    void fireSphere(const std::string&);
 };
 
 #endif // GAME_HPP

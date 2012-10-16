@@ -72,11 +72,11 @@ Renderer::Renderer() {
     cout << "Renderer: " << glGetString(GL_RENDERER) << endl;
     cout << "Using OpenGL Legacy" << endl;
 
-    GLint maxElements = 0;
-    glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElements);
-    cout << "Vertex limit: " << maxElements << endl;
-    glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElements);
-    cout << "Index limit: " << maxElements << endl;
+//     GLint maxElements = 0;
+//     glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElements);
+//     cout << "Vertex limit: " << maxElements << endl;
+//     glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElements);
+//     cout << "Index limit: " << maxElements << endl;
 }
 
 void Renderer::initialize() {

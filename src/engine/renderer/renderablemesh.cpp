@@ -28,7 +28,7 @@
 
 using namespace std;
 
-const string CUBE_DESCRIPTION = "$cube";
+const string BOX_DESCRIPTION = "$box";
 
 RenderableMesh::RenderableMesh(Entity* const entity):
     Component(COMPONENT_RENDERABLE_MESH, entity),
@@ -43,14 +43,14 @@ RenderableMesh::~RenderableMesh() {
 
 
 
-void RenderableMesh::loadCube(const double lengthX, const double lengthY, const double lengthZ) {
+void RenderableMesh::loadBox(const double lengthX, const double lengthY, const double lengthZ) {
     stringstream ss;
-    ss << CUBE_DESCRIPTION << "_" << lengthX << "_" << lengthY << "_" << lengthZ;
+    ss << BOX_DESCRIPTION << "_" << lengthX << "_" << lengthY << "_" << lengthZ;
     m_description = ss.str();
-    m_meshData = ResourceManager::getResources().loadCube(m_description, lengthX, lengthY, lengthZ);
+    m_meshData = ResourceManager::getResources().generateBox(m_description, lengthX, lengthY, lengthZ);
 }
 
 void RenderableMesh::loadFromFile(const string& fileName) {
     m_description = fileName;
-    m_meshData = ResourceManager::getResources().loadMeshFromFile(fileName);
+    m_meshData = ResourceManager::getResources().generateMeshFromFile(fileName);
 }

@@ -1,6 +1,7 @@
 set(KERNEL_LIBRARY_NAME kernel)
 set(RENDER_LIBRARY_NAME renderer)
 set(RESOURCES_LIBRARY_NAME resources)
+set(PHYSICS_LIBRARY_NAME physics)
 
 set(KERNEL_SRC_FILES
     kernel/tokentable.cpp
@@ -31,9 +32,16 @@ set(RESOURCES_SRC_FILES
     resources/resourcemanager.cpp
 )
 
+set(PHYSICS_SRC_FILES
+    physics/rigidbody.cpp
+    physics/physicsworld.cpp
+    physics/physicsmanager.cpp
+)
+
 add_library(${KERNEL_LIBRARY_NAME} SHARED ${KERNEL_SRC_FILES})
 add_library(${RENDER_LIBRARY_NAME} SHARED ${RENDER_SRC_FILES})
 add_library(${RESOURCES_LIBRARY_NAME} SHARED ${RESOURCES_SRC_FILES})
+add_library(${PHYSICS_LIBRARY_NAME} SHARED ${PHYSICS_SRC_FILES})
 
 # Link libraries
 find_package(Boost REQUIRED)
@@ -54,3 +62,4 @@ include_directories(
 target_link_libraries(${KERNEL_LIBRARY_NAME} ${SDL_LIBRARY})
 target_link_libraries(${RENDER_LIBRARY_NAME} ${OPENGL_LIBRARIES})
 target_link_libraries(${RESOURCES_LIBRARY_NAME} ${ASSIMP_LIBRARIES})
+target_link_libraries(${PHYSICS_LIBRARY_NAME} ${BULLET_LIBRARIES})

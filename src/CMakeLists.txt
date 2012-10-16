@@ -9,6 +9,7 @@ set(LIBRARIES
     kernel
     renderer
     resources
+    physics
 )
 
 add_executable(${EXE_NAME} ${SRC_FILES})

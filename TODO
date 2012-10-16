@@ -6,14 +6,20 @@
 + Lighting
 + Debug camera
 + Viewport & Occlusion Culling (BulletPhysics DbvtCullingDemo)
+~ Change SceneManager into static class
+~ Move lists from managers to the actual object managed
 ~ Add more primitives (sphere, cilinder, cone, torus, etc)
 ~ Save input commands as a replay script
 ~ Read/write scene from XML
+~ Use relative positions to the camera for physics and rendering
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
 - Possibility of multiple active cameras in different viewports
 - Animations
 
+
+Try this on the Alienware 11x
+http://forums.opensuse.org/english/get-technical-help-here/how-faq-forums/unreviewed-how-faq/469419-opensuse-12-1-optimus-laptop.html
 
 
 General

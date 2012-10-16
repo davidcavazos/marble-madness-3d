@@ -21,7 +21,6 @@
 #ifndef RENDERABLEMESH_HPP
 #define RENDERABLEMESH_HPP
 
-#include <vector>
 #include "engine/kernel/component.hpp"
 
 class MeshData;
@@ -34,7 +33,7 @@ public:
     const MeshData* getMeshDataPtr() const;
     const MeshData& getMeshData() const;
 
-    void loadCube(const double lengthX, const double lengthY, const double lengthZ);
+    void loadBox(const double lengthX, const double lengthY, const double lengthZ);
     void loadFromFile(const std::string& fileName);
 
 private:

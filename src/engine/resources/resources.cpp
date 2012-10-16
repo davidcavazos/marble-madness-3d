@@ -26,15 +26,15 @@
 
 using namespace std;
 
-MeshData* Resources::loadCube(const string& identifier, const double lengthX, const double lengthY, const double lengthZ) {
+MeshData* Resources::generateBox(const string& identifier, const double lengthX, const double lengthY, const double lengthZ) {
     MeshData* meshData;
     meshData = findMeshData(identifier);
     if (meshData != 0)
         return meshData;
 
-    float x = static_cast<float>(lengthX / 2.0);
-    float y = static_cast<float>(lengthY / 2.0);
-    float z = static_cast<float>(lengthZ / 2.0);
+    float x = static_cast<float>(lengthX * 0.5);
+    float y = static_cast<float>(lengthY * 0.5);
+    float z = static_cast<float>(lengthZ * 0.5);
     float vertices[] = {
          x,  y,  z,  -x,  y,  z,  -x, -y,  z,   x, -y,  z, // v0,v1,v2,v3 (front)
          x,  y,  z,   x, -y,  z,   x, -y, -z,   x,  y, -z, // v0,v3,v4,v5 (right)
@@ -69,7 +69,7 @@ MeshData* Resources::loadCube(const string& identifier, const double lengthX, co
     return meshData;
 }
 
-MeshData* Resources::loadMeshFromFile(const std::string& fileName) {
+MeshData* Resources::generateMeshFromFile(const std::string& fileName) {
     MeshData* meshData;
     meshData = findMeshData(fileName);
     if (meshData != 0)
