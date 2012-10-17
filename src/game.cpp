@@ -114,7 +114,7 @@ void Game::loadScene() {
     Entity* sphere = root->addChild("sphere");
     sphere->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* sphereMesh = new RenderableMesh(sphere);
-    sphereMesh->loadFromFile("assets/meshes/suzanne-midpoly.dae");
+    sphereMesh->loadFromFile("assets/meshes/icosphere3.dae");
     RigidBody* sphereBody = new RigidBody(sphere);
     sphereBody->init(2.0);
     sphereBody->addSphere(1);
@@ -143,12 +143,18 @@ void Game::bindControls() {
     inputs.bindInput(INPUT_KEY_RELEASE, "game run commands.txt", SDLK_TAB);
     inputs.bindInput(INPUT_MOUSE_MOTION, "game on-mouse-motion");
 
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera pitch         -3", SDLK_DOWN);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera pitch          3", SDLK_UP);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera yaw-global     3", SDLK_LEFT);
+    inputs.bindInput(INPUT_KEY_PRESSED, "camera yaw-global    -3", SDLK_RIGHT);
+
     inputs.bindInput(INPUT_KEY_PRESSED, "camera move-z        -5", SDLK_w);
     inputs.bindInput(INPUT_KEY_PRESSED, "camera move-x        -5", SDLK_a);
     inputs.bindInput(INPUT_KEY_PRESSED, "camera move-z         5", SDLK_s);
     inputs.bindInput(INPUT_KEY_PRESSED, "camera move-x         5", SDLK_d);
     inputs.bindInput(INPUT_KEY_PRESSED, "camera move-y-global  5", SDLK_SPACE);
     inputs.bindInput(INPUT_KEY_PRESSED, "camera move-y-global -5", SDLK_LSHIFT);
+
     inputs.bindInput(INPUT_MOUSE_BUTTON_RELEASE, "game fire-cube", 1);
     inputs.bindInput(INPUT_MOUSE_BUTTON_RELEASE, "game fire-sphere", 3);
 }
@@ -159,7 +165,7 @@ void Game::runGameLoop() {
 
     Device* device = DeviceManager::getDevicePtr();
 //     device->trapCursor();
-    device->hideCursor();
+//     device->hideCursor();
 
     cout << "Creating renderer..." << endl;
     Renderer* renderer = RenderManager::create();
@@ -167,11 +173,8 @@ void Game::runGameLoop() {
 
     PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
 
-    int screenCenterX = device->getWinWidth() / 2;
-    int screenCenterY = device->getWinHeight() / 2;
     m_isRunning = true;
     while (m_isRunning) {
-        device->setCursorPos(screenCenterX, screenCenterY);
         startTime = SDL_GetTicks();
         device->onFrameStart();
 
@@ -226,14 +229,14 @@ void Game::onMouseMotion(const string&) {
 
     mouse_motion_t motion = DeviceManager::getDevice().getInputManager().getLastMouseMotion();
 
-    float sensitivity = 0.05;
+    double sensitivity = 0.05;
     stringstream ssx;
-    ssx << motion.xrel * sensitivity;
+    ssx << sensitivity * motion.xrel;
     moveXCmd.setArguments(ssx.str());
     Terminal::pushCommand(moveXCmd);
 
     stringstream ssy;
-    ssy << motion.yrel * sensitivity;
+    ssy << sensitivity * motion.yrel;
     moveYCmd.setArguments(ssy.str());
     Terminal::pushCommand(moveYCmd);
 }

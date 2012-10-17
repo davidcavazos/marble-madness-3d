@@ -30,8 +30,8 @@ public:
 
     static Device* create();
     static void shutdown();
-    static float getDeltaTime();
-    static float getFps();
+    static double getDeltaTime();
+    static double getFps();
 
 private:
     static Device* ms_device;
