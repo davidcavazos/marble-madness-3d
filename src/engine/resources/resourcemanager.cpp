@@ -28,7 +28,6 @@
 using namespace std;
 
 Resources* ResourceManager::ms_resources = 0;
-ResourceManager::mesh_data_map_t ResourceManager::ms_meshDataMap = mesh_data_map_t();
 
 
 Resources* ResourceManager::create() {
@@ -49,17 +48,5 @@ void ResourceManager::shutdown() {
     }
     else
         cerr << "Warning: no resources instance, cannot shutdown" << endl;
-
-    mesh_data_map_t::const_iterator itMesh;
-    for (itMesh = ms_meshDataMap.begin(); itMesh != ms_meshDataMap.end(); ++itMesh)
-        delete itMesh->second;
 }
 
-string ResourceManager::listsToString() {
-    stringstream ss;
-    ss << "Mesh Data List:" << endl;
-    mesh_data_map_t::const_iterator itMesh;
-    for (itMesh = ms_meshDataMap.begin(); itMesh != ms_meshDataMap.end(); ++itMesh)
-        ss << "  " << itMesh->second->getIdentifier() << endl;
-    return ss.str();
-}

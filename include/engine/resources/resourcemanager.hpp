@@ -21,10 +21,7 @@
 #ifndef RESOURCEMANAGER_HPP
 #define RESOURCEMANAGER_HPP
 
-#include <boost/unordered_map.hpp>
-
 class Resources;
-class MeshData;
 
 class ResourceManager {
 public:
@@ -35,13 +32,9 @@ public:
 
     static Resources* create();
     static void shutdown();
-    static std::string listsToString();
 
 private:
-    typedef boost::unordered_map<std::string, MeshData*> mesh_data_map_t;
-
     static Resources* ms_resources;
-    static mesh_data_map_t ms_meshDataMap;
 };
 
 

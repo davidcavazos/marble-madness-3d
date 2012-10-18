@@ -160,12 +160,10 @@ void Game::runGameLoop() {
 
     Device* device = DeviceManager::getDevicePtr();
     Renderer* renderer = RenderManager::getRendererPtr();
+    PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
     renderer->initCamera();
 
     cout << "Entering game loop" << endl;
-
-    PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
-
     m_isRunning = true;
     while (m_isRunning) {
         startTime = SDL_GetTicks();

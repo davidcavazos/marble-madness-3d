@@ -81,25 +81,38 @@ MeshData* Resources::generateMeshFromFile(const std::string& fileName) {
     return meshData;
 }
 
-Resources::Resources() {
-}
+Resources::Resources():
+    m_meshDataMap()
+{}
 
 void Resources::initialize() {
 }
 
 void Resources::deinitialize() {
+    mesh_data_map_t::const_iterator itMesh;
+    for (itMesh = m_meshDataMap.begin(); itMesh != m_meshDataMap.end(); ++itMesh)
+        delete itMesh->second;
+}
+
+string Resources::listsToString() {
+    stringstream ss;
+    ss << "Mesh Data List:" << endl;
+    mesh_data_map_t::const_iterator itMesh;
+    for (itMesh = m_meshDataMap.begin(); itMesh != m_meshDataMap.end(); ++itMesh)
+        ss << "  " << itMesh->second->getIdentifier() << endl;
+    return ss.str();
 }
 
 
 
 void Resources::registerMeshData(MeshData* meshData) {
-    ResourceManager::ms_meshDataMap.insert(pair<string, MeshData*>(meshData->getIdentifier(), meshData));
+    ResourceManager::getResources().m_meshDataMap.insert(pair<string, MeshData*>(meshData->getIdentifier(), meshData));
 }
 
 MeshData* Resources::findMeshData(const std::string& identifier) {
-    ResourceManager::mesh_data_map_t::const_iterator it;
-    it = ResourceManager::ms_meshDataMap.find(identifier);
-    if (it != ResourceManager::ms_meshDataMap.end())
+    mesh_data_map_t::const_iterator it;
+    it = ResourceManager::getResources().m_meshDataMap.find(identifier);
+    if (it != ResourceManager::getResources().m_meshDataMap.end())
         return it->second;
     return 0;
 }
