@@ -91,30 +91,33 @@ private:
 
     void applyTranslationToChildren();
     void applyOrientationToChildren();
+    void applyTransformToPhysicsComponent();
 
-    void setPosition(const std::string& arg);
-    void setOrientationYPR(const std::string& arg);
-    void moveXYZ(const std::string& arg);
-    void moveX(const std::string& arg);
-    void moveY(const std::string& arg);
-    void moveZ(const std::string& arg);
-    void moveXYZ_parent(const std::string& arg);
-    void moveX_parent(const std::string& arg);
-    void moveY_parent(const std::string& arg);
-    void moveZ_parent(const std::string& arg);
-    void moveXYZ_global(const std::string& arg);
-    void moveX_global(const std::string& arg);
-    void moveY_global(const std::string& arg);
-    void moveZ_global(const std::string& arg);
-    void yaw(const std::string& arg);
-    void pitch(const std::string& arg);
-    void roll(const std::string& arg);
-    void yaw_parent(const std::string& arg);
-    void pitch_parent(const std::string& arg);
-    void roll_parent(const std::string& arg);
-    void yaw_global(const std::string& arg);
-    void pitch_global(const std::string& arg);
-    void roll_global(const std::string& arg);
+    void cmdPositionAbs(const std::string& arg);
+    void cmdPositionRel(const std::string& arg);
+    void cmdOrientationAbsYPR(const std::string& arg);
+    void cmdOrientationRelYPR(const std::string& arg);
+    void cmdMoveXYZ(const std::string& arg);
+    void cmdMoveX(const std::string& arg);
+    void cmdMoveY(const std::string& arg);
+    void cmdMoveZ(const std::string& arg);
+    void cmdMoveXYZ_parent(const std::string& arg);
+    void cmdMoveX_parent(const std::string& arg);
+    void cmdMoveY_parent(const std::string& arg);
+    void cmdMoveZ_parent(const std::string& arg);
+    void cmdMoveXYZ_global(const std::string& arg);
+    void cmdMoveX_global(const std::string& arg);
+    void cmdMoveY_global(const std::string& arg);
+    void cmdMoveZ_global(const std::string& arg);
+    void cmdYaw(const std::string& arg);
+    void cmdPitch(const std::string& arg);
+    void cmdRoll(const std::string& arg);
+    void cmdYaw_parent(const std::string& arg);
+    void cmdPitch_parent(const std::string& arg);
+    void cmdRoll_parent(const std::string& arg);
+    void cmdYaw_global(const std::string& arg);
+    void cmdPitch_global(const std::string& arg);
+    void cmdRoll_global(const std::string& arg);
 };
 
 
@@ -140,6 +143,7 @@ inline const Quaternion& Entity::getOrientationRel() const {
 inline void Entity::setPositionAbs(const Vector3& position) {
     m_positionAbs = position;
     m_positionRel = m_positionAbs - m_parent.m_positionAbs;
+    applyTransformToPhysicsComponent();
     applyTranslationToChildren();
 }
 
@@ -150,6 +154,7 @@ inline void Entity::setPositionAbs(const scalar_t& posX, const scalar_t& posY, c
 inline void Entity::setPositionRel(const Vector3& position) {
     m_positionRel = position;
     m_positionAbs = m_positionRel + m_parent.m_positionAbs;
+    applyTransformToPhysicsComponent();
     applyTranslationToChildren();
 }
 
@@ -161,6 +166,7 @@ inline void Entity::setOrientationAbs(const Quaternion& orientation) {
     m_lastOrientation = m_orientationAbs;
     m_orientationAbs = orientation.normalized();
     m_orientationRel = (m_parent.m_orientationAbs.inverse() * m_orientationAbs).normalized();
+    applyTransformToPhysicsComponent();
     applyOrientationToChildren();
 }
 
@@ -180,6 +186,7 @@ inline void Entity::setOrientationRel(const Quaternion& orientation) {
     m_lastOrientation = m_orientationAbs;
     m_orientationRel = orientation.normalized();
     m_orientationAbs = (m_parent.m_orientationAbs * m_orientationRel).normalized();
+    applyTransformToPhysicsComponent();
     applyOrientationToChildren();
 }
 

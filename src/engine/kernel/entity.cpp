@@ -26,6 +26,7 @@
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/scenemanager.hpp"
 #include "engine/kernel/component.hpp"
+#include "engine/physics/rigidbody.hpp"
 
 using namespace std;
 
@@ -46,29 +47,31 @@ Entity::Entity(const Entity* parent, const string& objectName):
         setPositionRel(VECTOR3_ZERO);
         setOrientationRel(QUATERNION_IDENTITY);
     }
-    registerAttribute("position", boost::bind(&Entity::setPosition, this, _1));
-    registerAttribute("orientation-ypr", boost::bind(&Entity::setOrientationYPR, this, _1));
-    registerCommand("move-xyz", boost::bind(&Entity::moveXYZ, this, _1));
-    registerCommand("move-x", boost::bind(&Entity::moveX, this, _1));
-    registerCommand("move-y", boost::bind(&Entity::moveY, this, _1));
-    registerCommand("move-z", boost::bind(&Entity::moveZ, this, _1));
-    registerCommand("move-xyz-parent", boost::bind(&Entity::moveXYZ_parent, this, _1));
-    registerCommand("move-x-parent", boost::bind(&Entity::moveX_parent, this, _1));
-    registerCommand("move-y-parent", boost::bind(&Entity::moveY_parent, this, _1));
-    registerCommand("move-z-parent", boost::bind(&Entity::moveZ_parent, this, _1));
-    registerCommand("move-xyz-global", boost::bind(&Entity::moveXYZ_global, this, _1));
-    registerCommand("move-x-global", boost::bind(&Entity::moveX_global, this, _1));
-    registerCommand("move-y-global", boost::bind(&Entity::moveY_global, this, _1));
-    registerCommand("move-z-global", boost::bind(&Entity::moveZ_global, this, _1));
-    registerCommand("yaw", boost::bind(&Entity::yaw, this, _1));
-    registerCommand("pitch", boost::bind(&Entity::pitch, this, _1));
-    registerCommand("roll", boost::bind(&Entity::roll, this, _1));
-    registerCommand("yaw-parent", boost::bind(&Entity::yaw_parent, this, _1));
-    registerCommand("pitch-parent", boost::bind(&Entity::pitch_parent, this, _1));
-    registerCommand("roll-parent", boost::bind(&Entity::roll_parent, this, _1));
-    registerCommand("yaw-global", boost::bind(&Entity::yaw_global, this, _1));
-    registerCommand("pitch-global", boost::bind(&Entity::pitch_global, this, _1));
-    registerCommand("roll-global", boost::bind(&Entity::roll_global, this, _1));
+    registerAttribute("position-abs", boost::bind(&Entity::cmdPositionAbs, this, _1));
+    registerAttribute("position-rel", boost::bind(&Entity::cmdPositionRel, this, _1));
+    registerAttribute("orientation-abs-ypr", boost::bind(&Entity::cmdOrientationAbsYPR, this, _1));
+    registerAttribute("orientation-rel-ypr", boost::bind(&Entity::cmdOrientationRelYPR, this, _1));
+    registerCommand("move-xyz", boost::bind(&Entity::cmdMoveXYZ, this, _1));
+    registerCommand("move-x", boost::bind(&Entity::cmdMoveX, this, _1));
+    registerCommand("move-y", boost::bind(&Entity::cmdMoveY, this, _1));
+    registerCommand("move-z", boost::bind(&Entity::cmdMoveZ, this, _1));
+    registerCommand("move-xyz-parent", boost::bind(&Entity::cmdMoveXYZ_parent, this, _1));
+    registerCommand("move-x-parent", boost::bind(&Entity::cmdMoveX_parent, this, _1));
+    registerCommand("move-y-parent", boost::bind(&Entity::cmdMoveY_parent, this, _1));
+    registerCommand("move-z-parent", boost::bind(&Entity::cmdMoveZ_parent, this, _1));
+    registerCommand("move-xyz-global", boost::bind(&Entity::cmdMoveXYZ_global, this, _1));
+    registerCommand("move-x-global", boost::bind(&Entity::cmdMoveX_global, this, _1));
+    registerCommand("move-y-global", boost::bind(&Entity::cmdMoveY_global, this, _1));
+    registerCommand("move-z-global", boost::bind(&Entity::cmdMoveZ_global, this, _1));
+    registerCommand("yaw", boost::bind(&Entity::cmdYaw, this, _1));
+    registerCommand("pitch", boost::bind(&Entity::cmdPitch, this, _1));
+    registerCommand("roll", boost::bind(&Entity::cmdRoll, this, _1));
+    registerCommand("yaw-parent", boost::bind(&Entity::cmdYaw_parent, this, _1));
+    registerCommand("pitch-parent", boost::bind(&Entity::cmdPitch_parent, this, _1));
+    registerCommand("roll-parent", boost::bind(&Entity::cmdRoll_parent, this, _1));
+    registerCommand("yaw-global", boost::bind(&Entity::cmdYaw_global, this, _1));
+    registerCommand("pitch-global", boost::bind(&Entity::cmdPitch_global, this, _1));
+    registerCommand("roll-global", boost::bind(&Entity::cmdRoll_global, this, _1));
 }
 
 Entity::~Entity() {
@@ -78,6 +81,7 @@ Entity::~Entity() {
     for (size_t i = 0; i < m_components.size(); ++i)
         delete m_components[i];
 }
+
 
 void Entity::translate(const Vector3& displacement, const transform_space_t& relativeTo) {
     switch (relativeTo) {
@@ -149,6 +153,11 @@ void Entity::applyOrientationToChildren() {
     }
 }
 
+void Entity::applyTransformToPhysicsComponent() {
+    if (m_components[COMPONENT_PHYSICS] != 0)
+        dynamic_cast<RigidBody*>(m_components[COMPONENT_PHYSICS])->setTransform(m_positionAbs, m_orientationAbs);
+}
+
 Entity* Entity::addChild(const string& childName) {
     Entity* child = new Entity(this, childName);
     m_children.insert(child);
@@ -179,49 +188,65 @@ string Entity::treeToString(const size_t indent) const {
     return ss.str();
 }
 
-void Entity::setPosition(const string& arg) {
+
+
+void Entity::cmdPositionAbs(const string& arg) {
     scalar_t x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
     setPositionAbs(x, y, z);
 }
 
-void Entity::setOrientationYPR(const string& arg) {
+void Entity::cmdPositionRel(const string& arg) {
+    scalar_t x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    setPositionRel(x, y, z);
+}
+
+void Entity::cmdOrientationAbsYPR(const string& arg) {
     scalar_t yaw, pitch, roll;
     stringstream ss(arg);
     ss >> yaw >> pitch >> roll;
     setOrientationAbs(yaw, pitch, roll);
 }
 
-void Entity::moveXYZ(const std::string& arg) {
+void Entity::cmdOrientationRelYPR(const string& arg) {
+    scalar_t yaw, pitch, roll;
+    stringstream ss(arg);
+    ss >> yaw >> pitch >> roll;
+    setOrientationRel(yaw, pitch, roll);
+}
+
+void Entity::cmdMoveXYZ(const std::string& arg) {
     scalar_t x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
     translate(x, y, z);
 }
 
-void Entity::moveX(const std::string& arg) {
+void Entity::cmdMoveX(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateX(dist * DeviceManager::getDeltaTime());
 }
 
-void Entity::moveY(const std::string& arg) {
+void Entity::cmdMoveY(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateY(dist * DeviceManager::getDeltaTime());
 }
 
-void Entity::moveZ(const std::string& arg) {
+void Entity::cmdMoveZ(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateZ(dist * DeviceManager::getDeltaTime());
 }
 
-void Entity::moveXYZ_parent(const std::string& arg) {
+void Entity::cmdMoveXYZ_parent(const std::string& arg) {
     scalar_t x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
@@ -233,28 +258,28 @@ void Entity::moveXYZ_parent(const std::string& arg) {
     );
 }
 
-void Entity::moveX_parent(const std::string& arg) {
+void Entity::cmdMoveX_parent(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateX(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
-void Entity::moveY_parent(const std::string& arg) {
+void Entity::cmdMoveY_parent(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateY(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
-void Entity::moveZ_parent(const std::string& arg) {
+void Entity::cmdMoveZ_parent(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateZ(dist * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
-void Entity::moveXYZ_global(const std::string& arg) {
+void Entity::cmdMoveXYZ_global(const std::string& arg) {
     scalar_t x, y, z;
     stringstream ss(arg);
     ss >> x >> y >> z;
@@ -266,84 +291,84 @@ void Entity::moveXYZ_global(const std::string& arg) {
     );
 }
 
-void Entity::moveX_global(const std::string& arg) {
+void Entity::cmdMoveX_global(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateX(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
-void Entity::moveY_global(const std::string& arg) {
+void Entity::cmdMoveY_global(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateY(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
-void Entity::moveZ_global(const std::string& arg) {
+void Entity::cmdMoveZ_global(const std::string& arg) {
     scalar_t dist;
     stringstream ss(arg);
     ss >> dist;
     translateZ(dist * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
-void Entity::yaw(const std::string& arg) {
+void Entity::cmdYaw(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     yaw(radians * DeviceManager::getDeltaTime());
 }
 
-void Entity::pitch(const std::string& arg) {
+void Entity::cmdPitch(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     pitch(radians * DeviceManager::getDeltaTime());
 }
 
-void Entity::roll(const std::string& arg) {
+void Entity::cmdRoll(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     roll(radians * DeviceManager::getDeltaTime());
 }
 
-void Entity::yaw_parent(const std::string& arg) {
+void Entity::cmdYaw_parent(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     yaw(radians * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
-void Entity::pitch_parent(const std::string& arg) {
+void Entity::cmdPitch_parent(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     pitch(radians * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
-void Entity::roll_parent(const std::string& arg) {
+void Entity::cmdRoll_parent(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     roll(radians * DeviceManager::getDeltaTime(), SPACE_PARENT);
 }
 
-void Entity::yaw_global(const std::string& arg) {
+void Entity::cmdYaw_global(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     yaw(radians * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
-void Entity::pitch_global(const std::string& arg) {
+void Entity::cmdPitch_global(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;
     pitch(radians * DeviceManager::getDeltaTime(), SPACE_GLOBAL);
 }
 
-void Entity::roll_global(const std::string& arg) {
+void Entity::cmdRoll_global(const std::string& arg) {
     scalar_t radians;
     stringstream ss(arg);
     ss >> radians;

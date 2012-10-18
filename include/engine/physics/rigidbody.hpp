@@ -33,6 +33,8 @@ class RigidBody: public Component {
 public:
     RigidBody(Entity* const entity);
 
+    const Vector3& getPosition() const;
+    const Quaternion& getOrientation() const;
     double getMass() const;
     double getLinearDamping() const;
     double getAngularDamping() const;
@@ -55,6 +57,8 @@ public:
               const double linearSleepingThreshold = 0.8,
               const double angularSleepingThreshold = 1.0,
               const double restitution = 0.0);
+    void setTransform(const Vector3& position, const Quaternion& orientation);
+    void setMass(const double mass);
     void setDamping(const double linear, const double angular);
     void setFriction(const double friction);
     void setRollingFriction(const double rollingFriction);
@@ -71,6 +75,8 @@ public:
 
 private:
     btRigidBody* m_rigidBody;
+    Vector3 m_position;
+    Quaternion m_orientation;
     double m_mass;
     double m_linearDamping;
     double m_angularDamping;
@@ -89,9 +95,28 @@ private:
     RigidBody& operator=(const RigidBody& rhs);
 
     void addRigidBody(btCollisionShape* shape);
+
+    void cmdMass(const std::string& arg);
+    void cmdDamping(const std::string& arg);
+    void cmdFriction(const std::string& arg);
+    void cmdRollingFriction(const std::string& arg);
+    void cmdRestitution(const std::string& arg);
+    void cmdSleepingThresholds(const std::string& arg);
+    void cmdLinearFactor(const std::string& arg);
+    void cmdLinearVelocity(const std::string& arg);
+    void cmdAngularFactor(const std::string& arg);
+    void cmdAngularVelocity(const std::string& arg);
+    void cmdGravity(const std::string& arg);
 };
 
 
+inline const Vector3& RigidBody::getPosition() const {
+    return m_position;
+}
+
+inline const Quaternion& RigidBody::getOrientation() const {
+    return m_orientation;
+}
 
 inline double RigidBody::getMass() const {
     return m_mass;

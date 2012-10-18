@@ -56,12 +56,11 @@ Game::Game(const string& objectName, const string& rootNodeName):
     registerCommand("fire-cube", boost::bind(&Game::fireCube, this, _1));
     registerCommand("fire-sphere", boost::bind(&Game::fireSphere, this, _1));
 
-    ResourceManager::create();
-
     Device* device = DeviceManager::create();
     device->setTitle("Marble Madness 3D");
     device->setResolution(800, 500);
 
+    ResourceManager::create();
     RenderManager::create();
     PhysicsManager::create();
 }
@@ -69,8 +68,8 @@ Game::Game(const string& objectName, const string& rootNodeName):
 Game::~Game() {
     PhysicsManager::shutdown();
     RenderManager::shutdown();
-    DeviceManager::shutdown();
     ResourceManager::shutdown();
+    DeviceManager::shutdown();
 }
 
 void Game::loadScene() {
@@ -104,7 +103,7 @@ void Game::loadScene() {
     // icosphere9       1,310,720
     // icosphere10      5,242,880
     Entity* cube = root->addChild("cube");
-    cube->setPositionAbs(1.0, 8.0, 0.0);
+    cube->setPositionAbs(-1.0, 8.0, 0.0);
     cube->setOrientationAbs(0.5, 0.3, 0.2);
     RenderableMesh* cubeMesh = new RenderableMesh(cube);
     cubeMesh->loadBox(0.5, 0.5, 0.5);
@@ -115,9 +114,9 @@ void Game::loadScene() {
     Entity* sphere = root->addChild("sphere");
     sphere->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* sphereMesh = new RenderableMesh(sphere);
-    sphereMesh->loadFromFile("assets/meshes/suzanne-midpoly.dae");
+    sphereMesh->loadFromFile("assets/meshes/icosphere3.dae");
     RigidBody* sphereBody = new RigidBody(sphere);
-    sphereBody->init(2.0);
+    sphereBody->init(1.0);
     sphereBody->addSphere(1);
 
     Entity* camera = root->addChild("camera");
