@@ -156,6 +156,8 @@ void Device::initialize() {
 
     ms_screen = SDL_SetVideoMode(m_width, m_height, m_depth, SDL_VIDEO_FLAGS);
     assert(ms_screen != 0);
+
+    SDL_ShowCursor(SDL_FALSE);
 }
 
 void Device::deinitialize() {
