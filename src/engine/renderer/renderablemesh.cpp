@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include "engine/renderer/rendermanager.hpp"
+#include "engine/renderer/renderer.hpp"
 #include "engine/resources/meshdata.hpp"
 #include "engine/resources/resourcemanager.hpp"
 #include "engine/resources/resources.hpp"
@@ -34,11 +35,11 @@ RenderableMesh::RenderableMesh(Entity* const entity):
     Component(COMPONENT_RENDERABLE_MESH, entity),
     m_meshData(0)
 {
-    RenderManager::ms_meshes.insert(this);
+    RenderManager::getRenderer().m_meshes.insert(this);
 }
 
 RenderableMesh::~RenderableMesh() {
-    RenderManager::ms_meshes.erase(this);
+    RenderManager::getRenderer().m_meshes.erase(this);
 }
 
 

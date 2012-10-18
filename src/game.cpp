@@ -62,19 +62,20 @@ Game::Game(const string& objectName, const string& rootNodeName):
     device->setTitle("Marble Madness 3D");
     device->setResolution(800, 500);
 
-//     PhysicsWorld* world =
+    RenderManager::create();
     PhysicsManager::create();
 }
 
 Game::~Game() {
-    RenderManager::shutdown();
     PhysicsManager::shutdown();
+    RenderManager::shutdown();
     DeviceManager::shutdown();
     ResourceManager::shutdown();
 }
 
 void Game::loadScene() {
     cout << "Loading scene..." << endl;
+
     Entity* root = m_sceneManager.getRootPtr();
 
     Entity* floor = root->addChild("floor");
@@ -158,11 +159,12 @@ void Game::runGameLoop() {
     Uint32 deltaTime;
 
     Device* device = DeviceManager::getDevicePtr();
+    Renderer* renderer = RenderManager::getRendererPtr();
+    renderer->initCamera();
+
 //     device->trapCursor();
     device->hideCursor();
 
-    cout << "Creating renderer..." << endl;
-    Renderer* renderer = RenderManager::create();
     cout << "Entering game loop" << endl;
 
     PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();

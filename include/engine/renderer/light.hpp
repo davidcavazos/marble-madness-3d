@@ -18,5 +18,12 @@
 */
 
 
-#include "engine/renderer/light.hpp"
+#ifndef LIGHT_HPP
+#define LIGHT_HPP
 
+#include "engine/kernel/component.hpp"
+
+class Light: public Component {
+};
+
+#endif // LIGHT_HPP

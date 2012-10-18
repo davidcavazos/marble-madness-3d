@@ -21,7 +21,7 @@
 #include "engine/renderer/renderer.hpp"
 
 #include <iostream>
-#include <GL/glu.h>
+#include <GL/glew.h>
 #include "engine/kernel/common.hpp"
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
@@ -34,19 +34,50 @@
 
 using namespace std;
 
-void Renderer::draw() {
+void Renderer::initCamera() const {
+    Device& dev = DeviceManager::getDevice();
+    m_activeCamera->setViewport(0, 0, dev.getWinWidth(), dev.getWinHeight());
+    viewport_t view = m_activeCamera->getViewport();
+    glViewport(view.posX, view.posY, view.width, view.height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    switch (m_activeCamera->getType()) {
+        case CAMERA_ORTHOGRAPHIC:
+            glOrtho(
+                -m_activeCamera->getOrthoWidth(),
+                    m_activeCamera->getOrthoWidth(),
+                    -m_activeCamera->getOrthoHeight(),
+                    m_activeCamera->getOrthoHeight(),
+                    m_activeCamera->getNearDistance(),
+                    m_activeCamera->getFarDistance()
+            );
+            break;
+        case CAMERA_PROJECTION:
+            gluPerspective(
+                m_activeCamera->getPerspectiveFOV(),
+                           m_activeCamera->getAspectRatio(),
+                           m_activeCamera->getNearDistance(),
+                           m_activeCamera->getFarDistance()
+            );
+            break;
+    }
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void Renderer::draw() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
     float m[16];
 
-    Entity& cam = RenderManager::ms_activeCamera->getEntity();
+    Entity& cam = m_activeCamera->getEntity();
     setOpenGLMatrix(m, VECTOR3_ZERO, cam.getOrientationAbs().inverse());
     glMultMatrixf(m);
     glTranslatef(-cam.getPositionAbs().getX(), -cam.getPositionAbs().getY(), -cam.getPositionAbs().getZ());
 
     set<RenderableMesh*>::const_iterator it;
-    for (it = RenderManager::ms_meshes.begin(); it != RenderManager::ms_meshes.end(); ++it) {
+    for (it = m_meshes.begin(); it != m_meshes.end(); ++it) {
         const MeshData& mesh = (*it)->getMeshData();
         const Entity& entity = (*it)->getEntity();
 
@@ -62,18 +93,44 @@ void Renderer::draw() {
     }
 }
 
-Renderer::Renderer() {
+Renderer::Renderer():
+    m_activeCamera(0),
+    m_cameras(),
+    m_meshes()
+{
     cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
     cout << "Shader language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
     cout << "Vendor: " << glGetString(GL_VENDOR) << endl;
     cout << "Renderer: " << glGetString(GL_RENDERER) << endl;
     cout << "Using OpenGL Legacy" << endl;
 
+    GLint numExtensions;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+    cout << numExtensions << " extensions" << endl;
+
 //     GLint maxElements = 0;
 //     glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElements);
 //     cout << "Vertex limit: " << maxElements << endl;
 //     glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElements);
 //     cout << "Index limit: " << maxElements << endl;
+}
+
+Renderer::Renderer(const Renderer& rhs):
+    m_activeCamera(rhs.m_activeCamera),
+    m_cameras(rhs.m_cameras),
+    m_meshes(rhs.m_meshes)
+{
+    cerr << "Renderer copy constructor should not be called" << endl;
+}
+
+Renderer& Renderer::operator=(const Renderer& rhs) {
+    cerr << "Renderer assignment operator should not be called" << endl;
+    if (this == &rhs)
+        return *this;
+    m_activeCamera = rhs.m_activeCamera;
+    m_cameras = rhs.m_cameras;
+    m_meshes = rhs.m_meshes;
+    return *this;
 }
 
 void Renderer::initialize() {
@@ -106,38 +163,34 @@ void Renderer::initialize() {
     // enable arrays for Vertex Array (Legacy)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
-
-    Camera* camera = RenderManager::ms_activeCamera;
-
-    Device& dev = DeviceManager::getDevice();
-    camera->setViewport(0, 0, dev.getWinWidth(), dev.getWinHeight());
-    viewport_t view = camera->getViewport();
-    glViewport(view.posX, view.posY, view.width, view.height);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    switch (camera->getType()) {
-        case CAMERA_ORTHOGRAPHIC:
-            glOrtho(
-                -camera->getOrthoWidth(),
-                    camera->getOrthoWidth(),
-                    -camera->getOrthoHeight(),
-                    camera->getOrthoHeight(),
-                    camera->getNearDistance(),
-                    camera->getFarDistance()
-            );
-            break;
-        case CAMERA_PROJECTION:
-            gluPerspective(
-                camera->getPerspectiveFOV(),
-                           camera->getAspectRatio(),
-                           camera->getNearDistance(),
-                           camera->getFarDistance()
-            );
-            break;
-    }
-    glMatrixMode(GL_MODELVIEW);
 }
 
 void Renderer::deinitialize() {
+    set<Camera*>::const_iterator itCam;
+    for (itCam = m_cameras.begin(); itCam != m_cameras.end(); ++itCam)
+        delete *itCam;
+
+    set<RenderableMesh*>::const_iterator itMesh;
+    for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
+        delete *itMesh;
+}
+
+string Renderer::listsToString() const {
+    stringstream ss;
+    ss << "Renderer Cameras List:" << endl;
+    set<Camera*>::const_iterator itCam;
+    for (itCam = m_cameras.begin(); itCam != m_cameras.end(); ++itCam) {
+        ss << "  " << (*itCam)->getDescription();
+        if (*itCam == m_activeCamera)
+            ss << " *";
+        ss << endl;
+    }
+    ss << endl;
+
+    ss << "Renderer Meshes List:" << endl;
+    set<RenderableMesh*>::const_iterator itMesh;
+    for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
+        ss << "  " << (*itMesh)->getDescription() << endl;
+
+    return ss.str();
 }

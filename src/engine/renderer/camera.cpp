@@ -21,6 +21,7 @@
 #include "engine/renderer/camera.hpp"
 
 #include "engine/renderer/rendermanager.hpp"
+#include "engine/renderer/renderer.hpp"
 
 using namespace std;
 
@@ -52,10 +53,10 @@ Camera::Camera(Entity* const entity, const camera_t type):
         m_description.append("INVALID");
     }
 
-    RenderManager::ms_cameras.insert(this);
-    RenderManager::ms_activeCamera = this;
+    RenderManager::getRenderer().m_cameras.insert(this);
+    RenderManager::getRenderer().m_activeCamera = this;
 }
 
 Camera::~Camera() {
-    RenderManager::ms_cameras.erase(this);
+    RenderManager::getRenderer().m_cameras.erase(this);
 }
