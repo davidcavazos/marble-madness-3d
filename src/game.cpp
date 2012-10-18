@@ -33,6 +33,7 @@
 #include "engine/renderer/renderer.hpp"
 #include "engine/renderer/renderablemesh.hpp"
 #include "engine/renderer/camera.hpp"
+#include "engine/renderer/light.hpp"
 #include "engine/resources/resourcemanager.hpp"
 #include "engine/physics/rigidbody.hpp"
 #include "engine/physics/physicsworld.hpp"
@@ -127,12 +128,23 @@ void Game::loadScene() {
     camComponent->setPerspectiveFOV(45.0);
 
     Entity* light1 = root->addChild("light1");
-    light1->setPositionAbs(5, 5, 5);
+    light1->setPositionAbs(5, 5, 0);
+    Light* light1Cmp = new Light(light1);
+    light1Cmp->setDiffuse(1.0, 0.0, 0.0);
 
+    Entity* light2 = root->addChild("light2");
+    light2->setPositionAbs(0, 5, 5);
+    Light* light2Cmp = new Light(light2);
+    light2Cmp->setDiffuse(0.0, 1.0, 0.0);
+
+    Entity* light3 = root->addChild("light3");
+    light3->setPositionAbs(0, 5, 0);
+    Light* light3Cmp = new Light(light3);
+    light3Cmp->setDiffuse(0.0, 0.0, 1.0);
 
 //     cout << Terminal::listsToString() << endl;
 //     cout << m_sceneManager.sceneGraphToString() << endl;
-//     cout << RenderManager::listsToString() << endl;
+    cout << RenderManager::getRenderer().listsToString() << endl;
 //     cout << ResourceManager::listsToString() << endl;
 }
 
@@ -160,6 +172,7 @@ void Game::runGameLoop() {
     Device* device = DeviceManager::getDevicePtr();
     Renderer* renderer = RenderManager::getRendererPtr();
     PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
+    renderer->initLights();
 
     cout << "Entering game loop" << endl;
     m_isRunning = true;

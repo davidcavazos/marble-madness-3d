@@ -30,9 +30,53 @@
 #include "engine/renderer/rendermanager.hpp"
 #include "engine/renderer/camera.hpp"
 #include "engine/renderer/renderablemesh.hpp"
+#include "engine/renderer/light.hpp"
 #include "engine/resources/meshdata.hpp"
 
 using namespace std;
+
+void Renderer::initLights() const {
+    // enable lighting for legacy lights
+    glEnable(GL_LIGHTING);
+    GLfloat global_ambient[] = {0.5f, 0.5f, 1.0f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
+    set<Light*>::const_iterator it = m_lights.begin();
+    for (size_t i = 0; i < m_lights.size(); ++i) {
+        GLenum lightEnum;
+        switch (i) {
+        case 0:
+            lightEnum = GL_LIGHT0;
+            break;
+        case 1:
+            lightEnum = GL_LIGHT1;
+            break;
+        case 2:
+            lightEnum = GL_LIGHT2;
+            break;
+        case 3:
+            lightEnum = GL_LIGHT3;
+            break;
+        case 4:
+            lightEnum = GL_LIGHT4;
+            break;
+        case 5:
+            lightEnum = GL_LIGHT5;
+            break;
+        case 6:
+            lightEnum = GL_LIGHT6;
+            break;
+        case 7: default:
+            lightEnum = GL_LIGHT7;
+            break;
+        }
+        glEnable(lightEnum);
+        glLightfv(lightEnum, GL_AMBIENT, (*it)->getAmbient());
+        glLightfv(lightEnum, GL_DIFFUSE, (*it)->getDiffuse());
+        glLightfv(lightEnum, GL_SPECULAR, (*it)->getSpecular());
+        ++it;
+    }
+}
 
 void Renderer::draw() const {
     if (m_activeCamera->hasChanged()) {
@@ -45,11 +89,16 @@ void Renderer::draw() const {
 
     float m[16];
 
+    // set camera
     Entity& cam = m_activeCamera->getEntity();
     setOpenGLMatrix(m, VECTOR3_ZERO, cam.getOrientationAbs().inverse());
     glMultMatrixf(m);
     glTranslatef(-cam.getPositionAbs().getX(), -cam.getPositionAbs().getY(), -cam.getPositionAbs().getZ());
 
+    // set lights
+    displayLegacyLights();
+
+    // set meshes
     set<RenderableMesh*>::const_iterator it;
     for (it = m_meshes.begin(); it != m_meshes.end(); ++it) {
         const MeshData& mesh = (*it)->getMeshData();
@@ -67,9 +116,35 @@ void Renderer::draw() const {
     }
 }
 
+string Renderer::listsToString() const {
+    stringstream ss;
+    ss << "Renderer Cameras List:" << endl;
+    set<Camera*>::const_iterator itCam;
+    for (itCam = m_cameras.begin(); itCam != m_cameras.end(); ++itCam) {
+        ss << "  " << (*itCam)->getDescription();
+        if (*itCam == m_activeCamera)
+            ss << " *";
+        ss << endl;
+    }
+    ss << endl;
+
+    ss << "Renderer Meshes List:" << endl;
+    set<RenderableMesh*>::const_iterator itMesh;
+    for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
+        ss << "  " << (*itMesh)->getDescription() << endl;
+
+    ss << "Lights List:" << endl;
+    set<Light*>::const_iterator itLight;
+    for (itLight = m_lights.begin(); itLight != m_lights.end(); ++itLight)
+        ss << "  " << (*itLight)->getDescription() << endl;
+
+    return ss.str();
+}
+
 Renderer::Renderer():
     m_activeCamera(0),
     m_cameras(),
+    m_lights(),
     m_meshes()
 {
     cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
@@ -92,6 +167,7 @@ Renderer::Renderer():
 Renderer::Renderer(const Renderer& rhs):
     m_activeCamera(rhs.m_activeCamera),
     m_cameras(rhs.m_cameras),
+    m_lights(rhs.m_lights),
     m_meshes(rhs.m_meshes)
 {
     cerr << "Renderer copy constructor should not be called" << endl;
@@ -103,6 +179,7 @@ Renderer& Renderer::operator=(const Renderer& rhs) {
         return *this;
     m_activeCamera = rhs.m_activeCamera;
     m_cameras = rhs.m_cameras;
+    m_lights = rhs.m_lights;
     m_meshes = rhs.m_meshes;
     return *this;
 }
@@ -115,26 +192,7 @@ void Renderer::initialize() {
     glEnable(GL_DEPTH_TEST);
 //     glShadeModel(GL_SMOOTH); // using manually defined normals
 
-    // enable lighting for legacy lights
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    glEnable(GL_LIGHT2);
-    glEnable(GL_LIGHT3);
-    glEnable(GL_LIGHT4);
-    glEnable(GL_LIGHT5);
-    glEnable(GL_LIGHT6);
-    glEnable(GL_LIGHT7);
-    GLfloat global_ambient[] = {0.5f, 0.5f, 1.0f, 1.0f};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
-    float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    float ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-    float lightPosition[] = {-2.0f, 2.0f, 0.0f, 1.0f};
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-
-    // enable arrays for Vertex Array (Legacy)
+    // enable arrays for Vertex Array (legacy)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
 }
@@ -180,22 +238,39 @@ void Renderer::initCamera() const {
     glMatrixMode(GL_MODELVIEW);
 }
 
-string Renderer::listsToString() const {
-    stringstream ss;
-    ss << "Renderer Cameras List:" << endl;
-    set<Camera*>::const_iterator itCam;
-    for (itCam = m_cameras.begin(); itCam != m_cameras.end(); ++itCam) {
-        ss << "  " << (*itCam)->getDescription();
-        if (*itCam == m_activeCamera)
-            ss << " *";
-        ss << endl;
+void Renderer::displayLegacyLights() const {
+    set<Light*>::const_iterator itLight = m_lights.begin();
+    for (size_t i = 0; i < m_lights.size(); ++i) {
+        GLenum lightEnum;
+        switch (i) {
+            case 0:
+                lightEnum = GL_LIGHT0;
+                break;
+            case 1:
+                lightEnum = GL_LIGHT1;
+                break;
+            case 2:
+                lightEnum = GL_LIGHT2;
+                break;
+            case 3:
+                lightEnum = GL_LIGHT3;
+                break;
+            case 4:
+                lightEnum = GL_LIGHT4;
+                break;
+            case 5:
+                lightEnum = GL_LIGHT5;
+                break;
+            case 6:
+                lightEnum = GL_LIGHT6;
+                break;
+            case 7: default:
+                lightEnum = GL_LIGHT7;
+                break;
+        }
+        const Vector3& pos = (*itLight)->getEntity().getPositionAbs();
+        float lightPosition[] = {float(pos.getX()), float(pos.getY()), float(pos.getZ()), 1.0f};
+        glLightfv(lightEnum, GL_POSITION, lightPosition);
+        ++itLight;
     }
-    ss << endl;
-
-    ss << "Renderer Meshes List:" << endl;
-    set<RenderableMesh*>::const_iterator itMesh;
-    for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
-        ss << "  " << (*itMesh)->getDescription() << endl;
-
-    return ss.str();
 }

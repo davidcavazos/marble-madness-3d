@@ -26,15 +26,19 @@
 
 class RenderManager;
 class Camera;
+class Light;
 class RenderableMesh;
 
 class Renderer {
 public:
     friend class RenderManager;
     friend class Camera;
+    friend class Light;
     friend class RenderableMesh;
 
+    void initLights() const;
     void draw() const;
+    std::string listsToString() const;
 
 private:
     Renderer();
@@ -44,10 +48,11 @@ private:
     void initialize();
     void deinitialize();
     void initCamera() const;
-    std::string listsToString() const;
+    void displayLegacyLights() const;
 
     Camera* m_activeCamera;
     std::set<Camera*> m_cameras;
+    std::set<Light*> m_lights;
     std::set<RenderableMesh*> m_meshes;
 };
 

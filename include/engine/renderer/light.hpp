@@ -24,6 +24,56 @@
 #include "engine/kernel/component.hpp"
 
 class Light: public Component {
+public:
+    Light(Entity*const entity);
+    ~Light();
+
+    const float* getAmbient() const;
+    const float* getDiffuse() const;
+    const float* getSpecular() const;
+    void setAmbient(const float r, const float g, const float b, const float a = 1.0f);
+    void setDiffuse(const float r, const float g, const float b, const float a = 1.0f);
+    void setSpecular(const float r, const float g, const float b, const float a = 1.0f);
+
+private:
+    float m_ambient[4];
+    float m_diffuse[4];
+    float m_specular[4];
 };
+
+
+
+inline const float* Light::getAmbient() const {
+    return m_ambient;
+}
+
+inline const float* Light::getDiffuse() const {
+    return m_diffuse;
+}
+
+inline const float* Light::getSpecular() const {
+    return m_specular;
+}
+
+inline void Light::setAmbient(const float r, const float g, const float b, const float a) {
+    m_ambient[0] = r;
+    m_ambient[1] = g;
+    m_ambient[2] = b;
+    m_ambient[3] = a;
+}
+
+inline void Light::setDiffuse(const float r, const float g, const float b, const float a) {
+    m_diffuse[0] = r;
+    m_diffuse[1] = g;
+    m_diffuse[2] = b;
+    m_diffuse[3] = a;
+}
+
+inline void Light::setSpecular(const float r, const float g, const float b, const float a) {
+    m_specular[0] = r;
+    m_specular[1] = g;
+    m_specular[2] = b;
+    m_specular[3] = a;
+}
 
 #endif // LIGHT_HPP
