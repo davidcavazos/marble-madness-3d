@@ -39,12 +39,12 @@ InputManager Device::ms_inputManager = InputManager();
 SDL_Surface* Device::ms_screen = 0;
 
 void Device::onFrameStart() {
-    m_startTime = SDL_GetTicks() * 0.001f;
+    m_startTime = SDL_GetTicks() * 0.001;
 }
 
 void Device::onFrameEnd() {
-    m_deltaTime = SDL_GetTicks() * 0.001f - m_startTime;
-    m_fps = 1.0f / m_deltaTime;
+    m_deltaTime = SDL_GetTicks() * 0.001 - m_startTime;
+    m_fps = 1.0 / m_deltaTime;
 }
 
 void Device::swapBuffers() {
@@ -75,21 +75,9 @@ void Device::setResolution(const size_t width, const size_t height) {
     Uint32 flags = SDL_GetVideoSurface()->flags;
     ms_screen = SDL_SetVideoMode(width, height, 0, flags);
     m_width = static_cast<size_t>(ms_screen->w);
+    m_halfWidth = m_width / 2;
     m_height = static_cast<size_t>(ms_screen->h);
-}
-
-void Device::trapCursor(const bool shouldTrapCursor) {
-    if (shouldTrapCursor)
-        SDL_WM_GrabInput(SDL_GRAB_ON);
-    else
-        SDL_WM_GrabInput(SDL_GRAB_OFF);
-}
-
-void Device::hideCursor(const bool shouldHideCursor) {
-    if (shouldHideCursor && SDL_ShowCursor(-1))
-        SDL_ShowCursor(0);
-    else if (shouldHideCursor && !SDL_ShowCursor(-1))
-        SDL_ShowCursor(1);
+    m_halfHeight = m_height / 2;
 }
 
 size_t Device::getWinWidth() const {
@@ -130,6 +118,7 @@ void Device::processEvents(bool& isRunning) {
             motion.xrel = event.motion.xrel;
             motion.yrel = event.motion.yrel;
             ms_inputManager.onMouseMotion(motion);
+            SDL_WarpMouse(m_halfWidth, m_halfHeight);
             break; }
         }
     }
@@ -140,17 +129,11 @@ void Device::processEvents(bool& isRunning) {
         ms_inputManager.onMouseButtonPressed(*it);
 }
 
-void Device::getCursorPos(int& x, int& y) {
-    SDL_GetMouseState(&x, &y);
-}
-
-void Device::setCursorPos(const int x, const int y) {
-    SDL_WarpMouse(x, y);
-}
-
 Device::Device() :
     m_width(DEFAULT_SCREEN_WIDTH),
     m_height(DEFAULT_SCREEN_HEIGHT),
+    m_halfWidth(m_width / 2),
+    m_halfHeight(m_height / 2),
     m_depth(DEFAULT_SCREEN_DEPTH),
     m_keysPressed(),
     m_mouseButtonsPressed(),
@@ -166,7 +149,9 @@ void Device::initialize() {
 
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
     m_width = info->current_w;
+    m_halfWidth = m_width / 2;
     m_height = info->current_h;
+    m_halfHeight = m_height / 2;
     m_depth = info->vfmt->BitsPerPixel;
 
     ms_screen = SDL_SetVideoMode(m_width, m_height, m_depth, SDL_VIDEO_FLAGS);

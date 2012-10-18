@@ -162,18 +162,12 @@ void Game::runGameLoop() {
     Renderer* renderer = RenderManager::getRendererPtr();
     renderer->initCamera();
 
-//     device->trapCursor();
-    device->hideCursor();
-
     cout << "Entering game loop" << endl;
 
     PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
 
-    int screenCenterX = device->getWinWidth() / 2;
-    int screenCenterY = device->getWinHeight() / 2;
     m_isRunning = true;
     while (m_isRunning) {
-        device->setCursorPos(screenCenterX, screenCenterY);
         startTime = SDL_GetTicks();
         device->onFrameStart();
 
