@@ -34,7 +34,6 @@ public:
     friend class Camera;
     friend class RenderableMesh;
 
-    void initCamera() const;
     void draw() const;
 
 private:
@@ -44,6 +43,7 @@ private:
 
     void initialize();
     void deinitialize();
+    void initCamera() const;
     std::string listsToString() const;
 
     Camera* m_activeCamera;

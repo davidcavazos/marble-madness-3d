@@ -41,6 +41,7 @@ public:
     ~Camera();
 
     camera_t getType() const;
+    bool hasChanged() const;
     const viewport_t& getViewport() const;
     float getAspectRatio() const;
     float getPerspectiveFOV() const;
@@ -49,6 +50,7 @@ public:
     float getNearDistance() const;
     float getFarDistance() const;
     void setType(const camera_t type);
+    void setHasChanged(const bool hasChanged);
     void setViewport(const int posX, const int posY, const size_t width, const size_t height);
     void setPerspectiveFOV(const float fov);
     void setOrthoHeight(const float orthoHeight);
@@ -57,18 +59,29 @@ public:
 
 private:
     camera_t m_type;
+    bool m_hasChanged;
     viewport_t m_viewport;
     float m_aspectRatio;
     float m_perspectiveFOV;
     float m_orthoHeight;
     float m_nearDistance;
     float m_farDistance;
+
+    void cmdType(const std::string& arg);
+    void cmdPerspectiveFOV(const std::string& arg);
+    void cmdOrthoHeight(const std::string& arg);
+    void cmdNearDistance(const std::string& arg);
+    void cmdFarDistance(const std::string& arg);
 };
 
 
 
 inline camera_t Camera::getType() const {
     return m_type;
+}
+
+inline bool Camera::hasChanged() const {
+    return m_hasChanged;
 }
 
 inline const viewport_t& Camera::getViewport() const {
@@ -101,6 +114,11 @@ inline float Camera::getFarDistance() const {
 
 inline void Camera::setType(const camera_t type) {
     m_type = type;
+    m_hasChanged = true;
+}
+
+inline void Camera::setHasChanged(const bool hasChanged) {
+    m_hasChanged = hasChanged;
 }
 
 inline void Camera::setViewport(const int posX, const int posY, const size_t width, const size_t height) {
@@ -109,24 +127,31 @@ inline void Camera::setViewport(const int posX, const int posY, const size_t wid
     m_viewport.width = width;
     m_viewport.height = height;
     m_aspectRatio = static_cast<float>(m_viewport.width) / m_viewport.height;
+    m_hasChanged = true;
 }
 
 inline void Camera::setPerspectiveFOV(const float fov) {
     m_perspectiveFOV = fov;
+    m_hasChanged = true;
 }
 
 inline void Camera::setOrthoHeight(const float orthoHeight) {
     m_orthoHeight = orthoHeight;
+    m_hasChanged = true;
 }
 
 inline void Camera::setNearDistance(const float nearDistance) {
-    if (nearDistance < m_farDistance)
+    if (nearDistance < m_farDistance) {
         m_nearDistance = nearDistance;
+        m_hasChanged = true;
+    }
 }
 
 inline void Camera::setFarDistance(const float farDistance) {
-    if (farDistance > m_nearDistance)
+    if (farDistance > m_nearDistance) {
         m_farDistance = farDistance;
+        m_hasChanged = true;
+    }
 }
 
 #endif // CAMERA_HPP

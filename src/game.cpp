@@ -160,7 +160,6 @@ void Game::runGameLoop() {
     Device* device = DeviceManager::getDevicePtr();
     Renderer* renderer = RenderManager::getRendererPtr();
     PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
-    renderer->initCamera();
 
     cout << "Entering game loop" << endl;
     m_isRunning = true;

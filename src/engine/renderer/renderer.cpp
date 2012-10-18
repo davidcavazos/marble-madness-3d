@@ -34,38 +34,12 @@
 
 using namespace std;
 
-void Renderer::initCamera() const {
-    Device& dev = DeviceManager::getDevice();
-    m_activeCamera->setViewport(0, 0, dev.getWinWidth(), dev.getWinHeight());
-    viewport_t view = m_activeCamera->getViewport();
-    glViewport(view.posX, view.posY, view.width, view.height);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    switch (m_activeCamera->getType()) {
-        case CAMERA_ORTHOGRAPHIC:
-            glOrtho(
-                -m_activeCamera->getOrthoWidth(),
-                    m_activeCamera->getOrthoWidth(),
-                    -m_activeCamera->getOrthoHeight(),
-                    m_activeCamera->getOrthoHeight(),
-                    m_activeCamera->getNearDistance(),
-                    m_activeCamera->getFarDistance()
-            );
-            break;
-        case CAMERA_PROJECTION:
-            gluPerspective(
-                m_activeCamera->getPerspectiveFOV(),
-                           m_activeCamera->getAspectRatio(),
-                           m_activeCamera->getNearDistance(),
-                           m_activeCamera->getFarDistance()
-            );
-            break;
-    }
-    glMatrixMode(GL_MODELVIEW);
-}
-
 void Renderer::draw() const {
+    if (m_activeCamera->hasChanged()) {
+        initCamera();
+        m_activeCamera->setHasChanged(false);
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
@@ -173,6 +147,37 @@ void Renderer::deinitialize() {
     set<RenderableMesh*>::const_iterator itMesh;
     for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
         delete *itMesh;
+}
+
+void Renderer::initCamera() const {
+    Device& dev = DeviceManager::getDevice();
+    m_activeCamera->setViewport(0, 0, dev.getWinWidth(), dev.getWinHeight());
+    viewport_t view = m_activeCamera->getViewport();
+    glViewport(view.posX, view.posY, view.width, view.height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    switch (m_activeCamera->getType()) {
+        case CAMERA_ORTHOGRAPHIC:
+            glOrtho(
+                -m_activeCamera->getOrthoWidth(),
+                    m_activeCamera->getOrthoWidth(),
+                    -m_activeCamera->getOrthoHeight(),
+                    m_activeCamera->getOrthoHeight(),
+                    m_activeCamera->getNearDistance(),
+                    m_activeCamera->getFarDistance()
+            );
+            break;
+        case CAMERA_PROJECTION:
+            gluPerspective(
+                m_activeCamera->getPerspectiveFOV(),
+                           m_activeCamera->getAspectRatio(),
+                           m_activeCamera->getNearDistance(),
+                           m_activeCamera->getFarDistance()
+            );
+            break;
+    }
+    glMatrixMode(GL_MODELVIEW);
 }
 
 string Renderer::listsToString() const {
