@@ -126,7 +126,6 @@ string Renderer::listsToString() const {
             ss << " *";
         ss << endl;
     }
-    ss << endl;
 
     ss << "Renderer Meshes List:" << endl;
     set<RenderableMesh*>::const_iterator itMesh;
