@@ -50,6 +50,8 @@ public:
 protected:
     size_t m_width;
     size_t m_height;
+    size_t m_halfWidth;
+    size_t m_halfHeight;
     size_t m_depth;
     std::set<size_t> m_keysPressed;
     std::set<size_t> m_mouseButtonsPressed;

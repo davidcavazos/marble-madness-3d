@@ -21,19 +21,39 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
+#include <string>
+#include <set>
+
 class RenderManager;
+class Camera;
+class Light;
+class RenderableMesh;
 
 class Renderer {
 public:
     friend class RenderManager;
+    friend class Camera;
+    friend class Light;
+    friend class RenderableMesh;
 
-    void draw();
+    void initLights() const;
+    void draw() const;
+    std::string listsToString() const;
 
 private:
     Renderer();
+    Renderer(const Renderer& rhs);
+    Renderer& operator=(const Renderer& rhs);
 
     void initialize();
     void deinitialize();
+    void initCamera() const;
+    void displayLegacyLights() const;
+
+    Camera* m_activeCamera;
+    std::set<Camera*> m_cameras;
+    std::set<Light*> m_lights;
+    std::set<RenderableMesh*> m_meshes;
 };
 
 #endif // RENDERER_HPP

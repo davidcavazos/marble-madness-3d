@@ -22,6 +22,7 @@
 #define RESOURCES_HPP
 
 #include <string>
+#include <boost/unordered_map.hpp>
 
 class ResourceManager;
 class MeshData;
@@ -32,8 +33,12 @@ public:
 
     MeshData* generateBox(const std::string& identifier, const double lengthX, const double lengthY, const double lengthZ);
     MeshData* generateMeshFromFile(const std::string& fileName);
+    std::string listsToString();
 
 private:
+    typedef boost::unordered_map<std::string, MeshData*> mesh_data_map_t;
+    mesh_data_map_t m_meshDataMap;
+
     Resources();
 
     void initialize();

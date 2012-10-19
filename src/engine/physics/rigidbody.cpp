@@ -33,14 +33,16 @@ const string COLLISION_SHAPE_BOX = "box";
 const string COLLISION_SHAPE_SPHERE = "sph";
 
 btDefaultMotionState* getMotionState(const Entity& entity);
-btVector3 getFallInertia(const double mass, btCollisionShape* shape);
 btVector3 v3(const Vector3& v);
+btQuaternion quat(const Quaternion& q);
 
 
 
 RigidBody::RigidBody(Entity* const entity):
     Component(COMPONENT_PHYSICS, entity),
     m_rigidBody(0),
+    m_position(VECTOR3_ZERO),
+    m_orientation(QUATERNION_IDENTITY),
     m_mass(0.0),
     m_linearDamping(0.0),
     m_angularDamping(0.0),
@@ -54,11 +56,25 @@ RigidBody::RigidBody(Entity* const entity):
     m_angularFactor(VECTOR3_ZERO),
     m_angularVelocity(VECTOR3_ZERO),
     m_gravity(VECTOR3_ZERO)
-{}
+{
+    m_entity.registerAttribute("mass", boost::bind(&RigidBody::cmdMass, this, _1));
+    m_entity.registerAttribute("damping", boost::bind(&RigidBody::cmdDamping, this, _1));
+    m_entity.registerAttribute("friction", boost::bind(&RigidBody::cmdFriction, this, _1));
+    m_entity.registerAttribute("rolling-friction", boost::bind(&RigidBody::cmdRollingFriction, this, _1));
+    m_entity.registerAttribute("restitution", boost::bind(&RigidBody::cmdRestitution, this, _1));
+    m_entity.registerAttribute("sleeping-thresholds", boost::bind(&RigidBody::cmdSleepingThresholds, this, _1));
+    m_entity.registerAttribute("linear-factor", boost::bind(&RigidBody::cmdLinearFactor, this, _1));
+    m_entity.registerAttribute("linear-velocity", boost::bind(&RigidBody::cmdLinearVelocity, this, _1));
+    m_entity.registerAttribute("angular-factor", boost::bind(&RigidBody::cmdAngularFactor, this, _1));
+    m_entity.registerAttribute("angular-velocity", boost::bind(&RigidBody::cmdAngularVelocity, this, _1));
+    m_entity.registerAttribute("gravity", boost::bind(&RigidBody::cmdGravity, this, _1));
+}
 
 RigidBody::RigidBody(const RigidBody& rhs):
     Component(COMPONENT_PHYSICS, &rhs.m_entity),
     m_rigidBody(rhs.m_rigidBody),
+    m_position(rhs.m_position),
+    m_orientation(rhs.m_orientation),
     m_mass(rhs.m_mass),
     m_linearDamping(rhs.m_linearDamping),
     m_angularDamping(rhs.m_angularDamping),
@@ -78,6 +94,8 @@ RigidBody& RigidBody::operator=(const RigidBody& rhs) {
     if (this == &rhs)
         return *this;
     m_rigidBody = rhs.m_rigidBody;
+    m_position = rhs.m_position;
+    m_orientation = rhs.m_orientation;
     m_mass = rhs.m_mass;
     m_linearDamping = rhs.m_linearDamping;
     m_angularDamping = rhs.m_angularDamping;
@@ -110,6 +128,19 @@ void RigidBody::init(const double mass,
     m_linearSleepingThreshold = linearSleepingThreshold;
     m_angularSleepingThreshold = angularSleepingThreshold;
     m_restitution = restitution;
+}
+
+void RigidBody::setTransform(const Vector3& position, const Quaternion& orientation) {
+    m_position = position;
+    m_orientation = orientation;
+    m_rigidBody->setWorldTransform(btTransform(quat(m_orientation), v3(m_position)));
+}
+
+void RigidBody::setMass(const double mass) {
+    m_mass = mass;
+    btVector3 inertia;
+    m_rigidBody->getCollisionShape()->calculateLocalInertia(m_mass, inertia);
+    m_rigidBody->setMassProps(mass, inertia);
 }
 
 void RigidBody::setDamping(const double linear, const double angular) {
@@ -203,8 +234,9 @@ void RigidBody::addSphere(const double radius) {
 }
 
 void RigidBody::addRigidBody(btCollisionShape* shape) {
+    btVector3 inertia;
+    shape->calculateLocalInertia(m_mass, inertia);
     btDefaultMotionState* motion = getMotionState(m_entity);
-    btVector3 inertia = getFallInertia(m_mass, shape);
     btRigidBody::btRigidBodyConstructionInfo constructionInfo(m_mass, motion, shape, inertia);
     constructionInfo.m_friction = m_friction;
     constructionInfo.m_rollingFriction = m_rollingFriction;
@@ -221,6 +253,84 @@ void RigidBody::addRigidBody(btCollisionShape* shape) {
 }
 
 
+void RigidBody::cmdMass(const string& arg) {
+    double mass;
+    stringstream ss(arg);
+    ss >> mass;
+    setMass(mass);
+}
+
+void RigidBody::cmdDamping(const string& arg) {
+    double linear, angular;
+    stringstream ss(arg);
+    ss >> linear >> angular;
+    setDamping(linear, angular);
+}
+
+void RigidBody::cmdFriction(const string& arg) {
+    double friction;
+    stringstream ss(arg);
+    ss >> friction;
+    setFriction(friction);
+}
+
+void RigidBody::cmdRollingFriction(const string& arg) {
+    double rollingFriction;
+    stringstream ss(arg);
+    ss >> rollingFriction;
+    setRollingFriction(rollingFriction);
+}
+
+void RigidBody::cmdRestitution(const string& arg) {
+    double restitution;
+    stringstream ss(arg);
+    ss >> restitution;
+    setRestitution(restitution);
+}
+
+void RigidBody::cmdSleepingThresholds(const string& arg) {
+    double linear, angular;
+    stringstream ss(arg);
+    ss >> linear >> angular;
+    setSleepingThresholds(linear, angular);
+}
+
+void RigidBody::cmdLinearFactor(const string& arg) {
+    double x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    setLinearFactor(Vector3(x, y, z));
+}
+
+void RigidBody::cmdLinearVelocity(const string& arg) {
+    double x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    setLinearVelocity(Vector3(x, y, z));
+}
+
+void RigidBody::cmdAngularFactor(const string& arg) {
+    double x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    setAngularFactor(Vector3(x, y, z));
+}
+
+void RigidBody::cmdAngularVelocity(const string& arg) {
+    double x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    setAngularVelocity(Vector3(x, y, z));
+}
+
+void RigidBody::cmdGravity(const string& arg) {
+    double x, y, z;
+    stringstream ss(arg);
+    ss >> x >> y >> z;
+    setGravity(Vector3(x, y, z));
+}
+
+
 
 btDefaultMotionState* getMotionState(const Entity& entity) {
     const Quaternion& rot = entity.getOrientationAbs();
@@ -233,12 +343,10 @@ btDefaultMotionState* getMotionState(const Entity& entity) {
     return motion;
 }
 
-btVector3 getFallInertia(const double mass, btCollisionShape* shape) {
-    btVector3 inertia;
-    shape->calculateLocalInertia(mass, inertia);
-    return inertia;
-}
-
 btVector3 v3(const Vector3& v) {
     return btVector3(v.getX(), v.getY(), v.getZ());
+}
+
+btQuaternion quat(const Quaternion& q) {
+    return btQuaternion(q.getX(), q.getY(), q.getZ(), q.getW());
 }

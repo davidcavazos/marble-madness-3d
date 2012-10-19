@@ -29,9 +29,6 @@
 using namespace std;
 
 Renderer* RenderManager::ms_renderer = 0;
-Camera* RenderManager::ms_activeCamera = 0;
-set<Camera*> RenderManager::ms_cameras = set<Camera*>();
-set<RenderableMesh*> RenderManager::ms_meshes = set<RenderableMesh*>();
 
 Renderer* RenderManager::create() {
     if (ms_renderer == 0) {
@@ -51,32 +48,4 @@ void RenderManager::shutdown() {
     }
     else
         cerr << "Warning: no existing renderer, cannot shutdown" << endl;
-
-    set<Camera*>::const_iterator itCam;
-    for (itCam = ms_cameras.begin(); itCam != ms_cameras.end(); ++itCam)
-        delete *itCam;
-
-    set<RenderableMesh*>::const_iterator itMesh;
-    for (itMesh = ms_meshes.begin(); itMesh != ms_meshes.end(); ++itMesh)
-        delete *itMesh;
-}
-
-string RenderManager::listsToString() {
-    stringstream ss;
-    ss << "Renderer Cameras List:" << endl;
-    set<Camera*>::const_iterator itCam;
-    for (itCam = ms_cameras.begin(); itCam != ms_cameras.end(); ++itCam) {
-        ss << "  " << (*itCam)->getDescription();
-        if (*itCam == ms_activeCamera)
-            ss << " *";
-        ss << endl;
-    }
-    ss << endl;
-
-    ss << "Renderer Meshes List:" << endl;
-    set<RenderableMesh*>::const_iterator itMesh;
-    for (itMesh = ms_meshes.begin(); itMesh != ms_meshes.end(); ++itMesh)
-        ss << "  " << (*itMesh)->getDescription() << endl;
-
-    return ss.str();
 }

@@ -18,5 +18,38 @@
 */
 
 
-#include "light.hpp"
+#include "engine/renderer/light.hpp"
 
+#include "engine/renderer/rendermanager.hpp"
+#include "engine/renderer/renderer.hpp"
+
+using namespace std;
+
+const string LIGHT_DESCRIPTION = "$light";
+
+Light::Light(Entity*const entity):
+    Component(COMPONENT_LIGHT, entity)
+{
+    m_description = LIGHT_DESCRIPTION;
+
+    m_ambient[0] = 0.0f;
+    m_ambient[1] = 0.0f;
+    m_ambient[2] = 0.0f;
+    m_ambient[3] = 1.0f;
+
+    m_diffuse[0] = 1.0f;
+    m_diffuse[1] = 1.0f;
+    m_diffuse[2] = 1.0f;
+    m_diffuse[3] = 1.0f;
+
+    m_specular[0] = 1.0f;
+    m_specular[1] = 1.0f;
+    m_specular[2] = 1.0f;
+    m_specular[3] = 1.0f;
+
+    RenderManager::getRenderer().m_lights.insert(this);
+}
+
+Light::~Light() {
+    RenderManager::getRenderer().m_lights.erase(this);
+}

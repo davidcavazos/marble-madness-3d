@@ -21,6 +21,8 @@
 #include "engine/renderer/camera.hpp"
 
 #include "engine/renderer/rendermanager.hpp"
+#include "engine/renderer/renderer.hpp"
+#include "engine/kernel/entity.hpp"
 
 using namespace std;
 
@@ -33,6 +35,7 @@ const float DEFAULT_FAR_DISTANCE = 1000.0f;
 Camera::Camera(Entity* const entity, const camera_t type):
     Component(COMPONENT_CAMERA, entity),
     m_type(type),
+    m_hasChanged(true),
     m_viewport(),
     m_aspectRatio(0.0f),
     m_perspectiveFOV(DEFAULT_PERSP_FOV),
@@ -52,10 +55,53 @@ Camera::Camera(Entity* const entity, const camera_t type):
         m_description.append("INVALID");
     }
 
-    RenderManager::ms_cameras.insert(this);
-    RenderManager::ms_activeCamera = this;
+    RenderManager::getRenderer().m_cameras.insert(this);
+    RenderManager::getRenderer().m_activeCamera = this;
+
+    m_entity.registerAttribute("type", boost::bind(&Camera::cmdType, this, _1));
+    m_entity.registerAttribute("perspective-fov", boost::bind(&Camera::cmdPerspectiveFOV, this, _1));
+    m_entity.registerAttribute("ortho-height", boost::bind(&Camera::cmdOrthoHeight, this, _1));
+    m_entity.registerAttribute("near-distance", boost::bind(&Camera::cmdNearDistance, this, _1));
+    m_entity.registerAttribute("far-distance", boost::bind(&Camera::cmdFarDistance, this, _1));
 }
 
 Camera::~Camera() {
-    RenderManager::ms_cameras.erase(this);
+    RenderManager::getRenderer().m_cameras.erase(this);
+}
+
+
+
+void Camera::cmdType(const std::string& arg) {
+    int type;
+    stringstream ss(arg);
+    ss >> type;
+    setType(static_cast<camera_t>(type));
+}
+
+void Camera::cmdPerspectiveFOV(const std::string& arg) {
+    float perspectiveFOV;
+    stringstream ss(arg);
+    ss >> perspectiveFOV;
+    setPerspectiveFOV(perspectiveFOV);
+}
+
+void Camera::cmdOrthoHeight(const std::string& arg) {
+    float orthoHeight;
+    stringstream ss(arg);
+    ss >> orthoHeight;
+    setOrthoHeight(orthoHeight);
+}
+
+void Camera::cmdNearDistance(const std::string& arg) {
+    float nearDistance;
+    stringstream ss(arg);
+    ss >> nearDistance;
+    setNearDistance(nearDistance);
+}
+
+void Camera::cmdFarDistance(const std::string& arg) {
+    float farDistance;
+    stringstream ss(arg);
+    ss >> farDistance;
+    setFarDistance(farDistance);
 }

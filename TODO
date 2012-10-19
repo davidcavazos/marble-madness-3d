@@ -1,3 +1,4 @@
++ In RigidBody, Camera and Light unregister commands if component is unregistered
 + Add texturing
 + Detect OpenGL version and capabilities (check for extensions)
 + Implement VBO_ARB and Core VBO

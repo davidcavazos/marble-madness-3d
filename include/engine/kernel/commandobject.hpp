@@ -34,6 +34,9 @@ class CommandObject {
 public:
     friend std::ostream& operator<<(std::ostream& out, const CommandObject& rhs);
 
+    typedef boost::function<void (const std::string&)> slot_t;
+    typedef std::map<size_t, slot_t> cmd_table_t;
+
     CommandObject(const std::string& objectName);
     virtual ~CommandObject();
     bool operator<(const CommandObject& rhs) const;
@@ -47,14 +50,12 @@ public:
 
     bool runObjectCommand(const size_t idCommand, const std::string& arguments);
 
+    size_t registerCommand(const std::string& cmd, const slot_t& slot);
+    size_t registerAttribute(const std::string& attrName, const slot_t& slot);
+
 protected:
     std::string m_objectName;
     size_t m_idObject;
-    typedef boost::function<void (const std::string&)> slot_t;
-    typedef std::map<size_t, slot_t> cmd_table_t;
-
-    size_t registerCommand(const std::string& cmd, const slot_t& slot);
-    size_t registerAttribute(const std::string& attrName, const slot_t& slot);
 
 private:
     cmd_table_t m_commands;
