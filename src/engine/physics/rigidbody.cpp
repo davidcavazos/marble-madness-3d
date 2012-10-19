@@ -21,16 +21,26 @@
 #include "engine/physics/rigidbody.hpp"
 
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <bullet/btBulletDynamicsCommon.h>
+#include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
 #include "engine/kernel/entity.hpp"
 #include "engine/physics/physicsmanager.hpp"
 #include "engine/physics/physicsworld.hpp"
+#include <engine/resources/meshdata.hpp>
+#include <engine/resources/resourcemanager.hpp>
+#include <engine/resources/resources.hpp>
 
 using namespace std;
 
 const string COLLISION_SHAPE_BOX = "box";
-const string COLLISION_SHAPE_SPHERE = "sph";
+const string COLLISION_SHAPE_SPHERE = "sphere";
+const string COLLISION_SHAPE_CYLINDER = "cylinder";
+const string COLLISION_SHAPE_CAPSULE = "capsule";
+const string COLLISION_SHAPE_CONE = "cone";
+const string COLLISION_SHAPE_CONVEX = "convex";
+const string COLLISION_SHAPE_CONCAVE = "concave";
 
 btDefaultMotionState* getMotionState(const Entity& entity);
 btVector3 v3(const Vector3& v);
@@ -195,6 +205,25 @@ void RigidBody::setGravity(const Vector3& gravity) {
     m_rigidBody->setGravity(v3(m_gravity));
 }
 
+void RigidBody::addSphere(const double radius) {
+    stringstream ss;
+    ss << COLLISION_SHAPE_BOX << "_" << radius;
+    string shapeId = ss.str();
+
+    PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
+    PhysicsWorld::collision_shapes_map_t::const_iterator it;
+
+    btCollisionShape* shape;
+    it = collisionShapes.find(shapeId);
+    if (it == collisionShapes.end()) {
+        shape = new btSphereShape(radius);
+        collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+    }
+    else
+        shape = it->second;
+    addRigidBody(shape);
+}
+
 void RigidBody::addBox(const double lengthX, const double lengthY, const double lengthZ) {
     stringstream ss;
     ss << COLLISION_SHAPE_BOX << "_" << lengthX << "_" << lengthY << "_" << lengthZ;
@@ -214,9 +243,9 @@ void RigidBody::addBox(const double lengthX, const double lengthY, const double 
     addRigidBody(shape);
 }
 
-void RigidBody::addSphere(const double radius) {
+void RigidBody::addCylinder(const double radius, const double height) {
     stringstream ss;
-    ss << COLLISION_SHAPE_BOX << "_" << radius;
+    ss << COLLISION_SHAPE_CYLINDER << "_" << radius << "_" << height;
     string shapeId = ss.str();
 
     PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
@@ -225,8 +254,119 @@ void RigidBody::addSphere(const double radius) {
     btCollisionShape* shape;
     it = collisionShapes.find(shapeId);
     if (it == collisionShapes.end()) {
-        shape = new btSphereShape(radius);
+        shape = new btCylinderShape(btVector3(radius, height, radius));
         collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+    }
+    else
+        shape = it->second;
+    addRigidBody(shape);
+}
+
+void RigidBody::addCapsule(const double radius, const double height) {
+    stringstream ss;
+    ss << COLLISION_SHAPE_CAPSULE << "_" << radius << "_" << height;
+    string shapeId = ss.str();
+
+    PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
+    PhysicsWorld::collision_shapes_map_t::const_iterator it;
+
+    btCollisionShape* shape;
+    it = collisionShapes.find(shapeId);
+    if (it == collisionShapes.end()) {
+        shape = new btCapsuleShape(radius, height);
+        collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+    }
+    else
+        shape = it->second;
+    addRigidBody(shape);
+}
+
+void RigidBody::addCone(const double radius, const double height) {
+    stringstream ss;
+    ss << COLLISION_SHAPE_CONE << "_" << radius << "_" << height;
+    string shapeId = ss.str();
+
+    PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
+    PhysicsWorld::collision_shapes_map_t::const_iterator it;
+
+    btCollisionShape* shape;
+    it = collisionShapes.find(shapeId);
+    if (it == collisionShapes.end()) {
+        shape = new btConeShape(radius, height);
+        collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+    }
+    else
+        shape = it->second;
+    addRigidBody(shape);
+}
+
+void RigidBody::addConvexHull(const string& fileName) {
+    stringstream ss;
+    ss << COLLISION_SHAPE_CONVEX << "_" << fileName;
+    string shapeId = ss.str();
+
+    PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
+    PhysicsWorld::collision_shapes_map_t::const_iterator it;
+
+    btCollisionShape* shape;
+    it = collisionShapes.find(shapeId);
+    if (it == collisionShapes.end()) {
+        // build original mesh from file
+        MeshData* mesh = ResourceManager::getResources().generateMeshFromFile(fileName);
+        vector<float> points;
+        for (size_t n = 0; n < mesh->getTotalSubmeshes(); ++n) {
+            points.reserve(points.size() + mesh->getVertices(n).size());
+            for (size_t i = 0; i < mesh->getVertices(n).size(); ++i)
+                points.push_back(mesh->getVertices(n)[i]);
+        }
+        btConvexShape* originalConvexShape = new btConvexHullShape(&points[0], points.size(), sizeof(float) * 3);
+        points.clear();
+
+        // convert to low polygon hull
+        btShapeHull* hull = new btShapeHull(originalConvexShape);
+        btScalar margin = originalConvexShape->getMargin();
+        hull->buildHull(margin);
+
+        shape = new btConvexHullShape(&hull->getVertexPointer()->getX(), hull->numVertices());
+        collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+
+        delete originalConvexShape;
+        delete hull;
+    }
+    else
+        shape = it->second;
+    addRigidBody(shape);
+}
+
+void RigidBody::addConcaveHull(const string& fileName) {
+    stringstream ss;
+    ss << COLLISION_SHAPE_CONCAVE << "_" << fileName;
+    string shapeId = ss.str();
+
+    PhysicsWorld::collision_shapes_map_t& collisionShapes = PhysicsManager::getPhysicsWorld().m_collisionShapes;
+    PhysicsWorld::collision_shapes_map_t::const_iterator it;
+
+    btCollisionShape* shape;
+    it = collisionShapes.find(shapeId);
+    if (it == collisionShapes.end()) {
+        // build mesh from file
+        MeshData* mesh = ResourceManager::getResources().generateMeshFromFile(fileName);
+        btTriangleIndexVertexArray* triangles = new btTriangleIndexVertexArray();
+        for (size_t n = 0; n < mesh->getTotalSubmeshes(); ++n) {
+            btIndexedMesh indexedMesh;
+            indexedMesh.m_numTriangles = mesh->getIndices(n).size() / 3;
+            indexedMesh.m_triangleIndexBase = (const unsigned char*)mesh->getIndicesPtr(n);
+            indexedMesh.m_triangleIndexStride = sizeof(unsigned int);
+            indexedMesh.m_numVertices = mesh->getVertices(n).size();
+            indexedMesh.m_vertexBase = (const unsigned char*)mesh->getVerticesPtr(n);
+            indexedMesh.m_vertexStride = sizeof(float);
+            triangles->addIndexedMesh(indexedMesh);
+        }
+
+        shape = new btBvhTriangleMeshShape(triangles, true, true);
+        collisionShapes.insert(std::pair<string, btCollisionShape*>(shapeId, shape));
+
+        delete triangles;
     }
     else
         shape = it->second;

@@ -29,6 +29,12 @@ class btCollisionShape;
 class btDefaultMotionState;
 class btVector3;
 
+typedef enum {
+    SHAPE_UP_X,
+    SHAPE_UP_Y,
+    SHAPE_UP_Z
+} shape_up_t;
+
 class RigidBody: public Component {
 public:
     RigidBody(Entity* const entity);
@@ -70,8 +76,13 @@ public:
     void setAngularVelocity(const Vector3& angularVelocity);
     void setGravity(const Vector3& gravity);
 
-    void addBox(const double lengthX, const double lengthY, const double lengthZ);
     void addSphere(const double radius);
+    void addBox(const double lengthX, const double lengthY, const double lengthZ);
+    void addCylinder(const double radius, const double height);
+    void addCapsule(const double radius, const double height);
+    void addCone(const double radius, const double height);
+    void addConvexHull(const std::string& fileName);
+    void addConcaveHull(const std::string& fileName);
 
 private:
     btRigidBody* m_rigidBody;
@@ -108,6 +119,7 @@ private:
     void cmdAngularVelocity(const std::string& arg);
     void cmdGravity(const std::string& arg);
 };
+
 
 
 inline const Vector3& RigidBody::getPosition() const {

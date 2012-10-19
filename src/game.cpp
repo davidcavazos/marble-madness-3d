@@ -60,6 +60,7 @@ Game::Game(const string& objectName, const string& rootNodeName):
     Device* device = DeviceManager::create();
     device->setTitle("Marble Madness 3D");
     device->setResolution(800, 500);
+//     device->setFullscreen();
 
     ResourceManager::create();
     RenderManager::create();
@@ -112,13 +113,13 @@ void Game::loadScene() {
     cubeBody->init(1.0);
     cubeBody->addBox(0.5, 0.5, 0.5);
 
-    Entity* sphere = root->addChild("sphere");
-    sphere->setPositionRel(1.5f, 5.0f, 0.0f);
-    RenderableMesh* sphereMesh = new RenderableMesh(sphere);
-    sphereMesh->loadFromFile("assets/meshes/icosphere3.dae");
-    RigidBody* sphereBody = new RigidBody(sphere);
-    sphereBody->init(1.0);
-    sphereBody->addSphere(1);
+    Entity* mesh = root->addChild("sphere");
+    mesh->setPositionRel(1.5f, 5.0f, 0.0f);
+    RenderableMesh* renderableMesh = new RenderableMesh(mesh);
+    renderableMesh->loadFromFile("assets/meshes/suzanne-lowpoly.dae");
+    RigidBody* meshBody = new RigidBody(mesh);
+    meshBody->init(10.0);
+    meshBody->addConvexHull("assets/meshes/suzanne-lowpoly.dae");
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 4.0f, 10.0f);
@@ -126,6 +127,8 @@ void Game::loadScene() {
 //     camera->lookAt(cube->getPositionAbs(), VECTOR3_UNIT_Y);
     Camera* camComponent = new Camera(camera, CAMERA_PROJECTION);
     camComponent->setPerspectiveFOV(45.0);
+//     RigidBody* cameraBody = new RigidBody(camera);
+//     cameraBody->addSphere(1);
 
     Entity* light1 = root->addChild("light1");
     light1->setPositionAbs(5, 5, 0);

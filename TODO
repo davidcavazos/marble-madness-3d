@@ -1,23 +1,28 @@
-+ In RigidBody, Camera and Light unregister commands if component is unregistered
 + Add texturing
 + Detect OpenGL version and capabilities (check for extensions)
 + Implement VBO_ARB and Core VBO
 + Implement OpenGL Core and shaders
-+ Lighting
++ Advanced lighting (spotlights and directional lights)
 + Debug camera
 + Viewport & Occlusion Culling (BulletPhysics DbvtCullingDemo)
++ In RigidBody, Camera and Light unregister commands if component is unregistered
 ~ Change SceneManager into static class
 ~ Move lists from managers to the actual object managed
 ~ Add more primitives (sphere, cilinder, cone, torus, etc)
 ~ Save input commands as a replay script
 ~ Read/write scene from XML
 ~ Use relative positions to the camera for physics and rendering
+~ Debug Bullet physics renderer
 ~ Add constraints support
 ~ Add soft body support
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
 - Possibility of multiple active cameras in different viewports
 - Animations
+
+BUGS:
+Concave hulls in RigidBody crash!
+A convex hull RigidBody randomly generates a 0 size low poly hull and crashes (original mesh read correctly)
 
 
 Try this on the Alienware 11x
