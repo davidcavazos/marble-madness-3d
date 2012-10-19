@@ -98,7 +98,7 @@ bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>
         submeshes[n].indices.reserve(mesh->mNumFaces * 3);
         for (size_t i = 0; i < mesh->mNumFaces; ++i) {
             if (mesh->mFaces[i].mNumIndices != 3) {
-                cerr << "Error: non-triangle face found in file: " << fileName << endl;
+                cerr << "Error: non-triangle face found, check model: " << fileName << endl;
                 continue;
             }
             submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[0]);

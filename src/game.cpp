@@ -116,10 +116,10 @@ void Game::loadScene() {
     Entity* mesh = root->addChild("sphere");
     mesh->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* renderableMesh = new RenderableMesh(mesh);
-    renderableMesh->loadFromFile("assets/meshes/suzanne-lowpoly.dae");
-    RigidBody* meshBody = new RigidBody(mesh);
-    meshBody->init(10.0);
-    meshBody->addConvexHull("assets/meshes/suzanne-lowpoly.dae");
+    renderableMesh->loadFromFile("assets/meshes/barrel.dae");
+//     RigidBody* meshBody = new RigidBody(mesh);
+//     meshBody->init(10.0);
+//     meshBody->addConvexHull("assets/meshes/suzanne-lowpoly.dae");
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 4.0f, 10.0f);
@@ -281,11 +281,12 @@ void Game::fireSphere(const std::string&) {
         sphere->setOrientationAbs(camera->getOrientationAbs());
 
         RenderableMesh* cubeMesh = new RenderableMesh(sphere);
-        cubeMesh->loadFromFile("assets/meshes/icosphere2.dae");
+        cubeMesh->loadFromFile("assets/meshes/icosphere1.dae");
 
         RigidBody* cubeBody = new RigidBody(sphere);
         cubeBody->init(1.0, 0.8);
         cubeBody->addSphere(1.0);
+//         cubeBody->addConvexHull("assets/meshes/icosphere1.dae");
         cubeBody->setLinearVelocity(orientationUnit * FIRE_SPEED);
     }
 }
