@@ -113,10 +113,10 @@ void Game::loadScene() {
     cubeBody->init(1.0);
     cubeBody->addBox(0.5, 0.5, 0.5);
 
-    Entity* mesh = root->addChild("sphere");
+    Entity* mesh = root->addChild("model");
     mesh->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* renderableMesh = new RenderableMesh(mesh);
-    renderableMesh->loadFromFile("assets/meshes/barrel.dae");
+    renderableMesh->loadFromFile("assets/meshes/cube.dae");
 //     RigidBody* meshBody = new RigidBody(mesh);
 //     meshBody->init(10.0);
 //     meshBody->addConvexHull("assets/meshes/suzanne-lowpoly.dae");

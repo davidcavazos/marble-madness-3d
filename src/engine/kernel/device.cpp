@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <cassert>
+#include <cstdlib>
 #include <ctime>
 #include <SDL.h>
 
@@ -144,8 +144,10 @@ Device::Device() :
 
 void Device::initialize() {
     cout << "Creating SDL-OpenGL device" << endl;
-    int init = SDL_Init(SDL_INIT_FLAGS);
-    assert(init == 0);
+    if (SDL_Init(SDL_INIT_FLAGS) != 0) // 0 success, -1 failure
+        exit(EXIT_FAILURE);
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, true);
 
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
     m_width = info->current_w;
@@ -155,7 +157,8 @@ void Device::initialize() {
     m_depth = info->vfmt->BitsPerPixel;
 
     ms_screen = SDL_SetVideoMode(m_width, m_height, m_depth, SDL_VIDEO_FLAGS);
-    assert(ms_screen != 0);
+    if (ms_screen == 0)
+        exit(EXIT_FAILURE);
 
     SDL_ShowCursor(SDL_FALSE);
 }

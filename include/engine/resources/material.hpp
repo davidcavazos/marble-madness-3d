@@ -18,16 +18,10 @@
 */
 
 
-#include "engine/resources/meshdata.hpp"
+#ifndef MATERIAL_HPP
+#define MATERIAL_HPP
 
-Submesh::Submesh():
-    vertices(),
-    normals(),
-    indices(),
-    uvCoords()
-{}
+class Material {
+};
 
-MeshData::MeshData(const std::string& identifier):
-    m_identifier(identifier),
-    m_submeshes()
-{}
+#endif // MATERIAL_HPP

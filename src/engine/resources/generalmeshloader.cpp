@@ -105,6 +105,15 @@ bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>
             submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[1]);
             submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[2]);
         }
+
+        submeshes[n].uvCoords.resize(mesh->GetNumUVChannels());
+        for (size_t uv = 0; uv < mesh->GetNumUVChannels(); ++uv) {
+            submeshes[n].uvCoords[uv].reserve(mesh->mNumVertices * 2);
+            for (size_t i = 0; i < mesh->mNumVertices; ++i) {
+                submeshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].x);
+                submeshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].y);
+            }
+        }
     }
     return true;
 }
@@ -151,6 +160,17 @@ bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Subm
             file.read(reinterpret_cast<char*>(&iVal), sizeof(unsigned int));
             submeshes[n].indices.push_back(iVal);
         }
+        // uv coords
+        file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+        submeshes[n].uvCoords.resize(size);
+        for (size_t uv = 0; uv < submeshes[n].uvCoords.size(); ++uv) {
+            file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+            submeshes[n].uvCoords[uv].reserve(size);
+            for (size_t i = 0; i < size; ++i) {
+                file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
+                submeshes[n].uvCoords[uv].push_back(fVal);
+            }
+        }
     }
     file.close();
     return true;
@@ -196,6 +216,17 @@ bool GeneralMeshLoader::writeBinary(const std::string& fileName, std::vector<Sub
         for (size_t i = 0; i < submeshes[n].indices.size(); ++i) {
             iVal = submeshes[n].indices[i];
             file.write(reinterpret_cast<char*>(&iVal), sizeof(unsigned int));
+        }
+        // uv coords
+        size = submeshes[n].uvCoords.size();
+        file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
+        for (size_t uv = 0; uv < submeshes[n].uvCoords.size(); ++uv) {
+            size = submeshes[n].uvCoords[uv].size();
+            file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
+            for (size_t i = 0; i < size; ++i) {
+                fVal = submeshes[n].uvCoords[uv][i];
+                file.write(reinterpret_cast<char*>(&fVal), sizeof(float));
+            }
         }
     }
     file.close();

@@ -29,6 +29,7 @@ public:
     std::vector<float> vertices;
     std::vector<float> normals;
     std::vector<unsigned int> indices;
+    std::vector<std::vector<float> > uvCoords;
 
     Submesh();
 };
@@ -47,6 +48,8 @@ public:
     const float* getNormalsPtr(const size_t submesh) const;
     const std::vector<unsigned int>& getIndices(const size_t submesh) const;
     const unsigned int* getIndicesPtr(const size_t submesh) const;
+    const std::vector<float>& getUvCoords(const size_t submesh, const size_t uvMap) const;
+    const float* getUvCoordsPtr(const size_t submesh, const size_t uvMap) const;
 
     void setIdentifier(const std::string& identifier);
     void setTotalSubmeshes(const size_t submeshes);
@@ -56,13 +59,12 @@ public:
     void setNormals(const size_t submesh, const float* normals, const size_t size);
     void setIndices(const size_t submesh, const std::vector<unsigned int>& indices);
     void setIndices(const size_t submesh, const unsigned int* indices, const size_t size);
+    void setUvCoords(const size_t submesh, const size_t uvMap, const std::vector<float>& uvCoords);
+    void setUvCoords(const size_t submesh, const size_t uvMap, const float* uvCoords, const size_t size);
 
 private:
     std::string m_identifier;
     std::vector<Submesh> m_submeshes;
-//     std::vector<float> m_vertices;
-//     std::vector<float> m_normals;
-//     std::vector<unsigned int> m_indices;
 };
 
 
@@ -107,6 +109,14 @@ inline const unsigned int* MeshData::getIndicesPtr(const size_t submesh) const {
     return &m_submeshes[submesh].indices[0];
 }
 
+inline const std::vector<float>& MeshData::getUvCoords(const size_t submesh, const size_t uvMap) const {
+    return m_submeshes[submesh].uvCoords[uvMap];
+}
+
+inline const float* MeshData::getUvCoordsPtr(const size_t submesh, const size_t uvMap) const {
+    return &m_submeshes[submesh].uvCoords[uvMap][0];
+}
+
 
 
 inline void MeshData::setIdentifier(const std::string& identifier) {
@@ -145,6 +155,16 @@ inline void MeshData::setIndices(const size_t submesh, const unsigned int* indic
     m_submeshes[submesh].indices.resize(size);
     for (size_t i = 0; i < m_submeshes[submesh].indices.size(); ++i)
         m_submeshes[submesh].indices[i] = indices[i];
+}
+
+inline void MeshData::setUvCoords(const size_t submesh, const size_t uvMap, const std::vector<float>& uvCoords) {
+    m_submeshes[submesh].uvCoords[uvMap] = uvCoords;
+}
+
+inline void MeshData::setUvCoords(const size_t submesh, const size_t uvMap, const float* uvCoords, const size_t size) {
+    m_submeshes[submesh].uvCoords[uvMap].resize(size);
+    for (size_t i = 0; i < m_submeshes[submesh].uvCoords[uvMap].size(); ++i)
+        m_submeshes[submesh].uvCoords[uvMap][i] = uvCoords[i];
 }
 
 #endif // MESHDATA_HPP
