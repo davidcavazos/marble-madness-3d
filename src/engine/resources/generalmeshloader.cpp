@@ -30,17 +30,17 @@ using namespace std;
 
 const string OPTIMIZED_BINARY_FILE_EXTENSION = ".bin";
 
-bool GeneralMeshLoader::load(const std::string& fileName, std::vector<Submesh>& submeshes) {
-    if (!loadBinary(fileName, submeshes)) {
-        if (!import(fileName, submeshes))
+bool GeneralMeshLoader::load(const std::string& fileName, std::vector<Mesh>& meshes) {
+    if (!loadBinary(fileName, meshes)) {
+        if (!import(fileName, meshes))
             return false;
-        writeBinary(fileName, submeshes);
+        writeBinary(fileName, meshes);
     }
     return true;
 }
 
-bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>& submeshes) {
-    submeshes.clear();
+bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Mesh>& meshes) {
+    meshes.clear();
     cout << "Importing mesh: " << fileName << endl;
 
     Assimp::Importer importer;
@@ -77,49 +77,49 @@ bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Submesh>
         return false;
     }
 
-    submeshes.resize(scene->mNumMeshes);
-    for (size_t n = 0; n < submeshes.size(); ++n) {
+    meshes.resize(scene->mNumMeshes);
+    for (size_t n = 0; n < meshes.size(); ++n) {
         const struct aiMesh* mesh = scene->mMeshes[n];
 
-        submeshes[n].vertices.reserve(mesh->mNumVertices * 3);
+        meshes[n].vertices.reserve(mesh->mNumVertices * 3);
         for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-            submeshes[n].vertices.push_back(mesh->mVertices[i].x);
-            submeshes[n].vertices.push_back(mesh->mVertices[i].y);
-            submeshes[n].vertices.push_back(mesh->mVertices[i].z);
+            meshes[n].vertices.push_back(mesh->mVertices[i].x);
+            meshes[n].vertices.push_back(mesh->mVertices[i].y);
+            meshes[n].vertices.push_back(mesh->mVertices[i].z);
         }
 
-        submeshes[n].normals.reserve(mesh->mNumVertices * 3);
+        meshes[n].normals.reserve(mesh->mNumVertices * 3);
         for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-            submeshes[n].normals.push_back(mesh->mNormals[i].x);
-            submeshes[n].normals.push_back(mesh->mNormals[i].y);
-            submeshes[n].normals.push_back(mesh->mNormals[i].z);
+            meshes[n].normals.push_back(mesh->mNormals[i].x);
+            meshes[n].normals.push_back(mesh->mNormals[i].y);
+            meshes[n].normals.push_back(mesh->mNormals[i].z);
         }
 
-        submeshes[n].indices.reserve(mesh->mNumFaces * 3);
+        meshes[n].indices.reserve(mesh->mNumFaces * 3);
         for (size_t i = 0; i < mesh->mNumFaces; ++i) {
             if (mesh->mFaces[i].mNumIndices != 3) {
                 cerr << "Error: non-triangle face found, check model: " << fileName << endl;
                 continue;
             }
-            submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[0]);
-            submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[1]);
-            submeshes[n].indices.push_back(mesh->mFaces[i].mIndices[2]);
+            meshes[n].indices.push_back(mesh->mFaces[i].mIndices[0]);
+            meshes[n].indices.push_back(mesh->mFaces[i].mIndices[1]);
+            meshes[n].indices.push_back(mesh->mFaces[i].mIndices[2]);
         }
 
-        submeshes[n].uvCoords.resize(mesh->GetNumUVChannels());
+        meshes[n].uvCoords.resize(mesh->GetNumUVChannels());
         for (size_t uv = 0; uv < mesh->GetNumUVChannels(); ++uv) {
-            submeshes[n].uvCoords[uv].reserve(mesh->mNumVertices * 2);
+            meshes[n].uvCoords[uv].reserve(mesh->mNumVertices * 2);
             for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-                submeshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].x);
-                submeshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].y);
+                meshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].x);
+                meshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].y);
             }
         }
     }
     return true;
 }
 
-bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Submesh>& submeshes) {
-    submeshes.clear();
+bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Mesh>& meshes) {
+    meshes.clear();
     string fileBin = fileName + OPTIMIZED_BINARY_FILE_EXTENSION;
     ifstream file(fileBin.c_str(), ios::in | ios::binary);
     if (!file.is_open() || !file.good()) {
@@ -135,40 +135,40 @@ bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Subm
     cout << "Loading mesh: " << fileBin << endl;
     // load header
     file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-    submeshes.resize(size);
+    meshes.resize(size);
 
     // load body
-    for (size_t n = 0; n < submeshes.size(); ++n) {
+    for (size_t n = 0; n < meshes.size(); ++n) {
         // vertices
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        submeshes[n].vertices.reserve(size);
+        meshes[n].vertices.reserve(size);
         for (size_t i = 0; i < size; ++i) {
             file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
-            submeshes[n].vertices.push_back(fVal);
+            meshes[n].vertices.push_back(fVal);
         }
         // normals
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        submeshes[n].normals.reserve(size);
+        meshes[n].normals.reserve(size);
         for (size_t i = 0; i < size; ++i) {
             file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
-            submeshes[n].normals.push_back(fVal);
+            meshes[n].normals.push_back(fVal);
         }
         // indices
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        submeshes[n].indices.reserve(size);
+        meshes[n].indices.reserve(size);
         for (size_t i = 0; i < size; ++i) {
             file.read(reinterpret_cast<char*>(&iVal), sizeof(unsigned int));
-            submeshes[n].indices.push_back(iVal);
+            meshes[n].indices.push_back(iVal);
         }
         // uv coords
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        submeshes[n].uvCoords.resize(size);
-        for (size_t uv = 0; uv < submeshes[n].uvCoords.size(); ++uv) {
+        meshes[n].uvCoords.resize(size);
+        for (size_t uv = 0; uv < meshes[n].uvCoords.size(); ++uv) {
             file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-            submeshes[n].uvCoords[uv].reserve(size);
+            meshes[n].uvCoords[uv].reserve(size);
             for (size_t i = 0; i < size; ++i) {
                 file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
-                submeshes[n].uvCoords[uv].push_back(fVal);
+                meshes[n].uvCoords[uv].push_back(fVal);
             }
         }
     }
@@ -176,7 +176,7 @@ bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Subm
     return true;
 }
 
-bool GeneralMeshLoader::writeBinary(const std::string& fileName, std::vector<Submesh>& submeshes) {
+bool GeneralMeshLoader::writeBinary(const std::string& fileName, std::vector<Mesh>& submeshes) {
     string fileBin = fileName + OPTIMIZED_BINARY_FILE_EXTENSION;
     cout << "Saving optimized binary mesh: " << fileBin << endl;
     ofstream file(fileBin.c_str(), ios::out | ios::binary | ios::trunc);

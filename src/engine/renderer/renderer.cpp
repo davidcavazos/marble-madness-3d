@@ -31,7 +31,7 @@
 #include "engine/renderer/camera.hpp"
 #include "engine/renderer/renderablemesh.hpp"
 #include "engine/renderer/light.hpp"
-#include "engine/resources/meshdata.hpp"
+#include "engine/resources/model.hpp"
 
 using namespace std;
 
@@ -101,16 +101,16 @@ void Renderer::draw() const {
     // set meshes
     set<RenderableMesh*>::const_iterator it;
     for (it = m_meshes.begin(); it != m_meshes.end(); ++it) {
-        const MeshData& mesh = (*it)->getMeshData();
+        const Model& model = (*it)->getMeshData();
         const Entity& entity = (*it)->getEntity();
 
         glPushMatrix();
         setOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
-        for (size_t submesh = 0; submesh < mesh.getTotalSubmeshes(); ++submesh) {
-            glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr(submesh));
-            glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr(submesh));
-            glDrawElements(GL_TRIANGLES, mesh.getIndices(submesh).size(), GL_UNSIGNED_INT, mesh.getIndicesPtr(submesh));
+        for (size_t submesh = 0; submesh < model.getTotalSubmeshes(); ++submesh) {
+            glVertexPointer(3, GL_FLOAT, 0, model.getVerticesPtr(submesh));
+            glNormalPointer(GL_FLOAT, 0, model.getNormalsPtr(submesh));
+            glDrawElements(GL_TRIANGLES, model.getIndices(submesh).size(), GL_UNSIGNED_INT, model.getIndicesPtr(submesh));
         }
         glPopMatrix();
     }

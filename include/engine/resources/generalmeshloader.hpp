@@ -21,16 +21,16 @@
 #ifndef GENERALMESHLOADER_HPP
 #define GENERALMESHLOADER_HPP
 
-#include "meshdata.hpp"
+#include "model.hpp"
 
 class GeneralMeshLoader {
 public:
-    static bool load(const std::string& fileName, std::vector<Submesh>& submeshes);
+    static bool load(const std::string& fileName, std::vector<Mesh>& meshes);
 
 private:
-    static bool import(const std::string& fileName, std::vector<Submesh>& submeshes);
-    static bool loadBinary(const std::string& fileName, std::vector<Submesh>& submeshes);
-    static bool writeBinary(const std::string& fileName, std::vector<Submesh>& submeshes);
+    static bool import(const std::string& fileName, std::vector<Mesh>& meshes);
+    static bool loadBinary(const std::string& fileName, std::vector<Mesh>& meshes);
+    static bool writeBinary(const std::string& fileName, std::vector<Mesh>& meshes);
 };
 
 #endif // GENERALMESHLOADER_HPP

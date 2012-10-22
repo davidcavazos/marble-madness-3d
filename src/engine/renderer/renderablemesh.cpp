@@ -53,5 +53,5 @@ void RenderableMesh::loadBox(const double lengthX, const double lengthY, const d
 
 void RenderableMesh::loadFromFile(const string& fileName) {
     m_description = fileName;
-    m_meshData = ResourceManager::getResources().generateMeshFromFile(fileName);
+    m_meshData = ResourceManager::getResources().generateModelFromFile(fileName);
 }

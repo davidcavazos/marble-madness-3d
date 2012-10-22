@@ -76,10 +76,10 @@ Entity::Entity(const Entity* parent, const string& objectName):
 
 Entity::~Entity() {
     set<Entity*>::iterator it;
-    for (it = m_children.begin(); it != m_children.end(); ++it)
-        delete *it;
     for (size_t i = 0; i < m_components.size(); ++i)
         delete m_components[i];
+    for (it = m_children.begin(); it != m_children.end(); ++it)
+        delete *it;
 }
 
 

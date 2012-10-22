@@ -117,8 +117,9 @@ void Game::loadScene() {
     mesh->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* renderableMesh = new RenderableMesh(mesh);
     renderableMesh->loadFromFile("assets/meshes/cube.dae");
-//     RigidBody* meshBody = new RigidBody(mesh);
-//     meshBody->init(10.0);
+    RigidBody* meshBody = new RigidBody(mesh);
+    meshBody->init(10.0);
+    meshBody->addBox(2, 2, 2);
 //     meshBody->addConvexHull("assets/meshes/suzanne-lowpoly.dae");
 
     Entity* camera = root->addChild("camera");
@@ -133,19 +134,19 @@ void Game::loadScene() {
     Entity* light1 = root->addChild("light1");
     light1->setPositionAbs(5, 5, 0);
     Light* light1Cmp = new Light(light1);
-    light1Cmp->setDiffuse(1.0, 0.0, 0.0);
+    light1Cmp->setDiffuse(1.0, 1.0, 1.0);
 
-    Entity* light2 = root->addChild("light2");
-    light2->setPositionAbs(0, 5, 5);
-    Light* light2Cmp = new Light(light2);
-    light2Cmp->setDiffuse(0.0, 1.0, 0.0);
+//     Entity* light2 = root->addChild("light2");
+//     light2->setPositionAbs(0, 5, 5);
+//     Light* light2Cmp = new Light(light2);
+//     light2Cmp->setDiffuse(0.0, 1.0, 0.0);
 
-    Entity* light3 = root->addChild("light3");
-    light3->setPositionAbs(0, 5, 0);
-    Light* light3Cmp = new Light(light3);
-    light3Cmp->setDiffuse(0.0, 0.0, 1.0);
+//     Entity* light3 = root->addChild("light3");
+//     light3->setPositionAbs(0, 5, 0);
+//     Light* light3Cmp = new Light(light3);
+//     light3Cmp->setDiffuse(0.0, 0.0, 1.0);
 
-//     cout << Terminal::listsToString() << endl;
+    cout << Terminal::listsToString() << endl;
 //     cout << m_sceneManager.sceneGraphToString() << endl;
     cout << RenderManager::getRenderer().listsToString() << endl;
 //     cout << ResourceManager::listsToString() << endl;

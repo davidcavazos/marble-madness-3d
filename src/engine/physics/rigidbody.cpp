@@ -28,7 +28,7 @@
 #include "engine/kernel/entity.hpp"
 #include "engine/physics/physicsmanager.hpp"
 #include "engine/physics/physicsworld.hpp"
-#include <engine/resources/meshdata.hpp>
+#include <engine/resources/model.hpp>
 #include <engine/resources/resourcemanager.hpp>
 #include <engine/resources/resources.hpp>
 
@@ -312,12 +312,12 @@ void RigidBody::addConvexHull(const string& fileName) {
     it = collisionShapes.find(shapeId);
     if (it == collisionShapes.end()) {
         // build original mesh from file
-        MeshData* mesh = ResourceManager::getResources().generateMeshFromFile(fileName);
+        Model* model = ResourceManager::getResources().generateModelFromFile(fileName);
         vector<float> points;
-        for (size_t n = 0; n < mesh->getTotalSubmeshes(); ++n) {
-            points.reserve(points.size() + mesh->getVertices(n).size());
-            for (size_t i = 0; i < mesh->getVertices(n).size(); ++i)
-                points.push_back(mesh->getVertices(n)[i]);
+        for (size_t n = 0; n < model->getTotalSubmeshes(); ++n) {
+            points.reserve(points.size() + model->getVertices(n).size());
+            for (size_t i = 0; i < model->getVertices(n).size(); ++i)
+                points.push_back(model->getVertices(n)[i]);
         }
         btConvexShape* originalConvexShape = new btConvexHullShape(&points[0], points.size(), sizeof(float) * 3);
         points.clear();
@@ -350,7 +350,7 @@ void RigidBody::addConcaveHull(const string& fileName) {
     it = collisionShapes.find(shapeId);
     if (it == collisionShapes.end()) {
         // build mesh from file
-        MeshData* mesh = ResourceManager::getResources().generateMeshFromFile(fileName);
+        Model* mesh = ResourceManager::getResources().generateModelFromFile(fileName);
         btTriangleIndexVertexArray* triangles = new btTriangleIndexVertexArray();
         for (size_t n = 0; n < mesh->getTotalSubmeshes(); ++n) {
             btIndexedMesh indexedMesh;

@@ -23,21 +23,21 @@
 
 #include "engine/kernel/component.hpp"
 
-class MeshData;
+class Model;
 
 class RenderableMesh: public Component {
 public:
     RenderableMesh(Entity* const entity);
     ~RenderableMesh();
 
-    const MeshData* getMeshDataPtr() const;
-    const MeshData& getMeshData() const;
+    const Model* getMeshDataPtr() const;
+    const Model& getMeshData() const;
 
     void loadBox(const double lengthX, const double lengthY, const double lengthZ);
     void loadFromFile(const std::string& fileName);
 
 private:
-    MeshData* m_meshData;
+    Model* m_meshData;
 
     // Should not be called
     RenderableMesh(const RenderableMesh& rhs);
@@ -46,11 +46,11 @@ private:
 
 
 
-inline const MeshData* RenderableMesh::getMeshDataPtr() const {
+inline const Model* RenderableMesh::getMeshDataPtr() const {
     return m_meshData;
 }
 
-inline const MeshData& RenderableMesh::getMeshData() const {
+inline const Model& RenderableMesh::getMeshData() const {
     return *getMeshDataPtr();
 }
 

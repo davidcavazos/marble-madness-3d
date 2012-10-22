@@ -18,34 +18,16 @@
 */
 
 
-#ifndef RESOURCES_HPP
-#define RESOURCES_HPP
+#include "engine/resources/model.hpp"
 
-#include <string>
-#include <boost/unordered_map.hpp>
+Mesh::Mesh():
+    vertices(),
+    normals(),
+    indices(),
+    uvCoords()
+{}
 
-class ResourceManager;
-class Model;
-
-class Resources {
-public:
-    friend class ResourceManager;
-
-    Model* generateBox(const std::string& identifier, const double lengthX, const double lengthY, const double lengthZ);
-    Model* generateModelFromFile(const std::string& fileName);
-    std::string listsToString();
-
-private:
-    typedef boost::unordered_map<std::string, Model*> mesh_data_map_t;
-    mesh_data_map_t m_meshDataMap;
-
-    Resources();
-
-    void initialize();
-    void deinitialize();
-
-    void registerMeshData(Model* meshData);
-    Model* findMeshData(const std::string& identifier);
-};
-
-#endif // RESOURCES_HPP
+Model::Model(const std::string& identifier):
+    m_identifier(identifier),
+    m_meshes()
+{}

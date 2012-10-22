@@ -29,7 +29,7 @@ set(RENDER_SRC_FILES
 set(RESOURCES_SRC_FILES
     resources/generalmeshloader.cpp
     resources/material.cpp
-    resources/meshdata.cpp
+    resources/model.cpp
     resources/resources.cpp
     resources/resourcemanager.cpp
 )

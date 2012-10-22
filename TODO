@@ -15,12 +15,15 @@
 ~ Debug Bullet physics renderer
 ~ Add constraints support
 ~ Add soft body support
+~ Move scene manager to a proper manager
+~ Check every constructor and destructor for memory leaks (static variables?)
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
 - Possibility of multiple active cameras in different viewports
 - Animations
 
 BUGS:
+Crashing at quit, while destroying Light
 Concave hulls in RigidBody crash!
 A convex hull RigidBody randomly generates a 0 size low poly hull and crashes (original mesh read correctly)
 

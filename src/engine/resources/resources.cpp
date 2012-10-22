@@ -26,8 +26,8 @@
 
 using namespace std;
 
-MeshData* Resources::generateBox(const string& identifier, const double lengthX, const double lengthY, const double lengthZ) {
-    MeshData* meshData;
+Model* Resources::generateBox(const string& identifier, const double lengthX, const double lengthY, const double lengthZ) {
+    Model* meshData;
     meshData = findMeshData(identifier);
     if (meshData != 0)
         return meshData;
@@ -60,7 +60,7 @@ MeshData* Resources::generateBox(const string& identifier, const double lengthX,
         20, 21, 22,  22, 23, 20   // back
     };
 
-    meshData = new MeshData(identifier);
+    meshData = new Model(identifier);
     meshData->setTotalSubmeshes(1);
     meshData->setVertices(0, vertices, 72);
     meshData->setNormals(0, normals, 72);
@@ -69,13 +69,13 @@ MeshData* Resources::generateBox(const string& identifier, const double lengthX,
     return meshData;
 }
 
-MeshData* Resources::generateMeshFromFile(const std::string& fileName) {
-    MeshData* meshData;
+Model* Resources::generateModelFromFile(const std::string& fileName) {
+    Model* meshData;
     meshData = findMeshData(fileName);
     if (meshData != 0)
         return meshData;
 
-    meshData = new MeshData(fileName);
+    meshData = new Model(fileName);
     GeneralMeshLoader::load(fileName, meshData->getSubmeshes());
     registerMeshData(meshData);
     return meshData;
@@ -105,11 +105,11 @@ string Resources::listsToString() {
 
 
 
-void Resources::registerMeshData(MeshData* meshData) {
-    ResourceManager::getResources().m_meshDataMap.insert(pair<string, MeshData*>(meshData->getIdentifier(), meshData));
+void Resources::registerMeshData(Model* meshData) {
+    ResourceManager::getResources().m_meshDataMap.insert(pair<string, Model*>(meshData->getIdentifier(), meshData));
 }
 
-MeshData* Resources::findMeshData(const std::string& identifier) {
+Model* Resources::findMeshData(const std::string& identifier) {
     mesh_data_map_t::const_iterator it;
     it = ResourceManager::getResources().m_meshDataMap.find(identifier);
     if (it != ResourceManager::getResources().m_meshDataMap.end())
