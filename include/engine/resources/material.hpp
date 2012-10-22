@@ -48,11 +48,11 @@ public:
     const std::vector<float>& getUvCoords() const;
     const float* getUvCoordsPtr() const;
     size_t getTotalUvCoords() const;
-    size_t getMapIndex(const material_map_t& mapType) const;
+    size_t getMapIndex(const material_map_t& materialMapType) const;
 
     void setUvCoords(const std::vector<float>& uvCoords);
     void setUvCoords(const float* uvCoords, const size_t size);
-    void setMapIndex(const material_map_t& mapType, const size_t index);
+    void setMapIndex(const material_map_t& materialMapType, const size_t index);
 
 private:
     std::vector<size_t> m_materialMapIndex;
@@ -72,8 +72,8 @@ inline size_t Material::getTotalUvCoords() const {
     return m_uvCoords.size();
 }
 
-inline size_t Material::getMapIndex(const material_map_t& mapType) const {
-    return m_materialMapIndex[mapType];
+inline size_t Material::getMapIndex(const material_map_t& materialMapType) const {
+    return m_materialMapIndex[materialMapType];
 }
 
 
@@ -88,8 +88,8 @@ inline void Material::setUvCoords(const float* uvCoords, const size_t size) {
         m_uvCoords[i] = uvCoords[i];
 }
 
-inline void Material::setMapIndex(const material_map_t& mapType, const size_t index) {
-    m_materialMapIndex[mapType] = index;
+inline void Material::setMapIndex(const material_map_t& materialMapType, const size_t index) {
+    m_materialMapIndex[materialMapType] = index;
 }
 
 #endif // MATERIAL_HPP

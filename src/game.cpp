@@ -116,7 +116,7 @@ void Game::loadScene() {
     Entity* mesh = root->addChild("model");
     mesh->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* renderableMesh = new RenderableMesh(mesh);
-    renderableMesh->loadFromFile("assets/meshes/cube.dae");
+    renderableMesh->loadFromFile("assets/meshes/materialtest.dae");
     RigidBody* meshBody = new RigidBody(mesh);
     meshBody->init(10.0);
     meshBody->addBox(2, 2, 2);
