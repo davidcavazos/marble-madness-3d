@@ -18,16 +18,11 @@
 */
 
 
-#include "engine/resources/meshdata.hpp"
+#include "engine/resources/mesh.hpp"
 
-Submesh::Submesh():
-    vertices(),
-    normals(),
-    indices(),
-    uvCoords()
-{}
-
-MeshData::MeshData(const std::string& identifier):
-    m_identifier(identifier),
-    m_submeshes()
+Mesh::Mesh():
+    m_vertices(),
+    m_normals(),
+    m_indices(),
+    m_materials()
 {}

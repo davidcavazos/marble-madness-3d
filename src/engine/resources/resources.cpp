@@ -22,15 +22,15 @@
 
 #include "engine/resources/resourcemanager.hpp"
 #include "engine/resources/meshdata.hpp"
-#include <engine/resources/generalmeshloader.hpp>
+#include <engine/resources/modelloader.hpp>
 
 using namespace std;
 
 Model* Resources::generateBox(const string& identifier, const double lengthX, const double lengthY, const double lengthZ) {
-    Model* meshData;
-    meshData = findMeshData(identifier);
-    if (meshData != 0)
-        return meshData;
+    Model* model;
+    model = findMeshData(identifier);
+    if (model != 0)
+        return model;
 
     float x = static_cast<float>(lengthX * 0.5);
     float y = static_cast<float>(lengthY * 0.5);
@@ -60,25 +60,25 @@ Model* Resources::generateBox(const string& identifier, const double lengthX, co
         20, 21, 22,  22, 23, 20   // back
     };
 
-    meshData = new Model(identifier);
-    meshData->setTotalSubmeshes(1);
-    meshData->setVertices(0, vertices, 72);
-    meshData->setNormals(0, normals, 72);
-    meshData->setIndices(0, indices, 36);
-    registerMeshData(meshData);
-    return meshData;
+    model = new Model(identifier);
+    model->m_meshes.resize(1);
+    model->mesh(0).setVertices(vertices, 72);
+    model->mesh(0).setNormals(normals, 72);
+    model->mesh(0).setIndices(indices, 36);
+    registerMeshData(model);
+    return model;
 }
 
 Model* Resources::generateModelFromFile(const std::string& fileName) {
-    Model* meshData;
-    meshData = findMeshData(fileName);
-    if (meshData != 0)
-        return meshData;
+    Model* model;
+    model = findMeshData(fileName);
+    if (model != 0)
+        return model;
 
-    meshData = new Model(fileName);
-    GeneralMeshLoader::load(fileName, meshData->getSubmeshes());
-    registerMeshData(meshData);
-    return meshData;
+    model = new Model(fileName);
+    ModelLoader::load(fileName, *model);
+    registerMeshData(model);
+    return model;
 }
 
 Resources::Resources():

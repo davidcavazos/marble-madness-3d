@@ -20,14 +20,7 @@
 
 #include "engine/resources/model.hpp"
 
-Mesh::Mesh():
-    vertices(),
-    normals(),
-    indices(),
-    uvCoords()
-{}
-
 Model::Model(const std::string& identifier):
-    m_identifier(identifier),
-    m_meshes()
+    m_meshes(),
+    m_identifier(identifier)
 {}

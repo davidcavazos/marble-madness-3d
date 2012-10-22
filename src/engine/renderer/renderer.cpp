@@ -107,10 +107,11 @@ void Renderer::draw() const {
         glPushMatrix();
         setOpenGLMatrix(m, entity.getPositionAbs(), entity.getOrientationAbs());
         glMultMatrixf(m);
-        for (size_t submesh = 0; submesh < model.getTotalSubmeshes(); ++submesh) {
-            glVertexPointer(3, GL_FLOAT, 0, model.getVerticesPtr(submesh));
-            glNormalPointer(GL_FLOAT, 0, model.getNormalsPtr(submesh));
-            glDrawElements(GL_TRIANGLES, model.getIndices(submesh).size(), GL_UNSIGNED_INT, model.getIndicesPtr(submesh));
+        for (size_t n = 0; n < model.getTotalMeshes(); ++n) {
+            const Mesh& mesh = model.getMesh(n);
+            glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr());
+            glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
+            glDrawElements(GL_TRIANGLES, mesh.getTotalIndices(), GL_UNSIGNED_INT, mesh.getIndicesPtr());
         }
         glPopMatrix();
     }

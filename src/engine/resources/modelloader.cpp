@@ -18,7 +18,7 @@
 */
 
 
-#include "engine/resources/generalmeshloader.hpp"
+#include "engine/resources/modelloader.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -30,17 +30,17 @@ using namespace std;
 
 const string OPTIMIZED_BINARY_FILE_EXTENSION = ".bin";
 
-bool GeneralMeshLoader::load(const std::string& fileName, std::vector<Mesh>& meshes) {
-    if (!loadBinary(fileName, meshes)) {
-        if (!import(fileName, meshes))
+bool ModelLoader::load(const std::string& fileName, Model& model) {
+    if (!loadBinary(fileName, model)) {
+        if (!import(fileName, model))
             return false;
-        writeBinary(fileName, meshes);
+        writeBinary(fileName, model);
     }
     return true;
 }
 
-bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Mesh>& meshes) {
-    meshes.clear();
+bool ModelLoader::import(const std::string& fileName, Model& model) {
+    model.m_meshes.clear();
     cout << "Importing mesh: " << fileName << endl;
 
     Assimp::Importer importer;
@@ -77,49 +77,54 @@ bool GeneralMeshLoader::import(const std::string& fileName, std::vector<Mesh>& m
         return false;
     }
 
-    meshes.resize(scene->mNumMeshes);
-    for (size_t n = 0; n < meshes.size(); ++n) {
+    model.m_meshes.resize(scene->mNumMeshes);
+    for (size_t n = 0; n < model.getTotalMeshes(); ++n) {
         const struct aiMesh* mesh = scene->mMeshes[n];
 
-        meshes[n].vertices.reserve(mesh->mNumVertices * 3);
+        // vertices
+        model.mesh(n).m_vertices.reserve(mesh->mNumVertices * 3);
         for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-            meshes[n].vertices.push_back(mesh->mVertices[i].x);
-            meshes[n].vertices.push_back(mesh->mVertices[i].y);
-            meshes[n].vertices.push_back(mesh->mVertices[i].z);
+            model.mesh(n).m_vertices.push_back(mesh->mVertices[i].x);
+            model.mesh(n).m_vertices.push_back(mesh->mVertices[i].y);
+            model.mesh(n).m_vertices.push_back(mesh->mVertices[i].z);
         }
 
-        meshes[n].normals.reserve(mesh->mNumVertices * 3);
+        // normals
+        model.mesh(n).m_normals.reserve(mesh->mNumVertices * 3);
         for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-            meshes[n].normals.push_back(mesh->mNormals[i].x);
-            meshes[n].normals.push_back(mesh->mNormals[i].y);
-            meshes[n].normals.push_back(mesh->mNormals[i].z);
+            model.mesh(n).m_normals.push_back(mesh->mNormals[i].x);
+            model.mesh(n).m_normals.push_back(mesh->mNormals[i].y);
+            model.mesh(n).m_normals.push_back(mesh->mNormals[i].z);
         }
 
-        meshes[n].indices.reserve(mesh->mNumFaces * 3);
+        // indices
+        model.mesh(n).m_indices.reserve(mesh->mNumFaces * 3);
         for (size_t i = 0; i < mesh->mNumFaces; ++i) {
             if (mesh->mFaces[i].mNumIndices != 3) {
                 cerr << "Error: non-triangle face found, check model: " << fileName << endl;
                 continue;
             }
-            meshes[n].indices.push_back(mesh->mFaces[i].mIndices[0]);
-            meshes[n].indices.push_back(mesh->mFaces[i].mIndices[1]);
-            meshes[n].indices.push_back(mesh->mFaces[i].mIndices[2]);
+            model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[0]);
+            model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[1]);
+            model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[2]);
         }
 
-        meshes[n].uvCoords.resize(mesh->GetNumUVChannels());
-        for (size_t uv = 0; uv < mesh->GetNumUVChannels(); ++uv) {
-            meshes[n].uvCoords[uv].reserve(mesh->mNumVertices * 2);
+        // materials
+        model.mesh(n).m_materials.resize(mesh->GetNumUVChannels());
+        for (size_t mat = 0; mat < mesh->GetNumUVChannels(); ++mat) {
+            // uv coords
+            model.mesh(n).material(mat).m_uvCoords.reserve(mesh->mNumVertices * 2);
             for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-                meshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].x);
-                meshes[n].uvCoords[uv].push_back(mesh->mTextureCoords[uv][i].y);
+                model.mesh(n).material(mat).m_uvCoords.push_back(mesh->mTextureCoords[mat][i].x);
+                model.mesh(n).material(mat).m_uvCoords.push_back(mesh->mTextureCoords[mat][i].y);
             }
         }
     }
     return true;
 }
 
-bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Mesh>& meshes) {
-    meshes.clear();
+bool ModelLoader::loadBinary(const std::string& fileName, Model& model) {
+    model.m_meshes.clear();
     string fileBin = fileName + OPTIMIZED_BINARY_FILE_EXTENSION;
     ifstream file(fileBin.c_str(), ios::in | ios::binary);
     if (!file.is_open() || !file.good()) {
@@ -135,40 +140,41 @@ bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Mesh
     cout << "Loading mesh: " << fileBin << endl;
     // load header
     file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-    meshes.resize(size);
+    model.m_meshes.resize(size);
 
     // load body
-    for (size_t n = 0; n < meshes.size(); ++n) {
+    for (size_t n = 0; n < model.m_meshes.size(); ++n) {
         // vertices
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        meshes[n].vertices.reserve(size);
+        model.mesh(n).m_vertices.reserve(size);
         for (size_t i = 0; i < size; ++i) {
             file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
-            meshes[n].vertices.push_back(fVal);
+            model.mesh(n).m_vertices.push_back(fVal);
         }
         // normals
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        meshes[n].normals.reserve(size);
+        model.mesh(n).m_normals.reserve(size);
         for (size_t i = 0; i < size; ++i) {
             file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
-            meshes[n].normals.push_back(fVal);
+            model.mesh(n).m_normals.push_back(fVal);
         }
         // indices
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        meshes[n].indices.reserve(size);
+        model.mesh(n).m_indices.reserve(size);
         for (size_t i = 0; i < size; ++i) {
             file.read(reinterpret_cast<char*>(&iVal), sizeof(unsigned int));
-            meshes[n].indices.push_back(iVal);
+            model.mesh(n).m_indices.push_back(iVal);
         }
-        // uv coords
+        // materials
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        meshes[n].uvCoords.resize(size);
-        for (size_t uv = 0; uv < meshes[n].uvCoords.size(); ++uv) {
+        model.mesh(n).m_materials.resize(size);
+        for (size_t mat = 0; mat < model.mesh(n).getTotalMaterials(); ++mat) {
+            // uv coords
             file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-            meshes[n].uvCoords[uv].reserve(size);
+            model.mesh(n).material(mat).m_uvCoords.reserve(size);
             for (size_t i = 0; i < size; ++i) {
                 file.read(reinterpret_cast<char*>(&fVal), sizeof(float));
-                meshes[n].uvCoords[uv].push_back(fVal);
+                model.mesh(n).material(mat).m_uvCoords.push_back(fVal);
             }
         }
     }
@@ -176,7 +182,7 @@ bool GeneralMeshLoader::loadBinary(const std::string& fileName, std::vector<Mesh
     return true;
 }
 
-bool GeneralMeshLoader::writeBinary(const std::string& fileName, std::vector<Mesh>& submeshes) {
+bool ModelLoader::writeBinary(const std::string& fileName, Model& model) {
     string fileBin = fileName + OPTIMIZED_BINARY_FILE_EXTENSION;
     cout << "Saving optimized binary mesh: " << fileBin << endl;
     ofstream file(fileBin.c_str(), ios::out | ios::binary | ios::trunc);
@@ -191,40 +197,41 @@ bool GeneralMeshLoader::writeBinary(const std::string& fileName, std::vector<Mes
     unsigned int iVal;
 
     // write header
-    size = submeshes.size();
+    size = model.getTotalMeshes();
     file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
 
     // write body
-    for (size_t n = 0; n < submeshes.size(); ++n) {
+    for (size_t n = 0; n < model.m_meshes.size(); ++n) {
         // vertices
-        size = submeshes[n].vertices.size();
+        size = model.mesh(n).getTotalVertices();
         file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (size_t i = 0; i < submeshes[n].vertices.size(); ++i) {
-            fVal = submeshes[n].vertices[i];
+        for (size_t i = 0; i < model.mesh(n).getTotalVertices(); ++i) {
+            fVal = model.mesh(n).m_vertices[i];
             file.write(reinterpret_cast<char*>(&fVal), sizeof(float));
         }
         // normals
-        size = submeshes[n].normals.size();
+        size = model.mesh(n).getTotalNormals();
         file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (size_t i = 0; i < submeshes[n].normals.size(); ++i) {
-            fVal = submeshes[n].normals[i];
+        for (size_t i = 0; i < model.mesh(n).getTotalNormals(); ++i) {
+            fVal = model.mesh(n).m_normals[i];
             file.write(reinterpret_cast<char*>(&fVal), sizeof(float));
         }
         // indices
-        size = submeshes[n].indices.size();
+        size = model.mesh(n).getTotalIndices();
         file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (size_t i = 0; i < submeshes[n].indices.size(); ++i) {
-            iVal = submeshes[n].indices[i];
+        for (size_t i = 0; i < model.mesh(n).getTotalIndices(); ++i) {
+            iVal = model.mesh(n).m_indices[i];
             file.write(reinterpret_cast<char*>(&iVal), sizeof(unsigned int));
         }
-        // uv coords
-        size = submeshes[n].uvCoords.size();
+        // materials
+        size = model.mesh(n).getTotalMaterials();
         file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (size_t uv = 0; uv < submeshes[n].uvCoords.size(); ++uv) {
-            size = submeshes[n].uvCoords[uv].size();
+        for (size_t mat = 0; mat < model.mesh(n).getTotalMaterials(); ++mat) {
+            // uv coords
+            size = model.mesh(n).material(mat).getTotalUvCoords();
             file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
             for (size_t i = 0; i < size; ++i) {
-                fVal = submeshes[n].uvCoords[uv][i];
+                fVal = model.mesh(n).material(mat).m_uvCoords[i];
                 file.write(reinterpret_cast<char*>(&fVal), sizeof(float));
             }
         }

@@ -18,9 +18,19 @@
 */
 
 
-#include "engine/resources/material.hpp"
+#ifndef MODELLOADER_HPP
+#define MODELLOADER_HPP
 
-Material::Material():
-    m_uvCoords(),
-    m_materialMapIndex(TOTAL_MATERIAL_MAPS, 0)
-{}
+#include "model.hpp"
+
+class ModelLoader {
+public:
+    static bool load(const std::string& fileName, Model& model);
+
+private:
+    static bool import(const std::string& fileName, Model& model);
+    static bool loadBinary(const std::string& fileName, Model& model);
+    static bool writeBinary(const std::string& fileName, Model& model);
+};
+
+#endif // MODELLOADER_HPP
