@@ -23,7 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include "engine/resources/resources.hpp"
-#include "engine/resources/meshdata.hpp"
+#include "engine/resources/model.hpp"
 
 using namespace std;
 

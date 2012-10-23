@@ -26,6 +26,7 @@
 
 class ResourceManager;
 class Model;
+class Texture;
 
 class Resources {
 public:
@@ -36,16 +37,20 @@ public:
     std::string listsToString();
 
 private:
-    typedef boost::unordered_map<std::string, Model*> mesh_data_map_t;
-    mesh_data_map_t m_meshDataMap;
+    typedef boost::unordered_map<std::string, Model*> models_map_t;
+    typedef boost::unordered_map<std::string, Texture*> textures_map_t;
+    models_map_t m_modelsMap;
+    textures_map_t m_texturesMap;
 
     Resources();
 
     void initialize();
     void deinitialize();
 
-    void registerMeshData(Model* meshData);
-    Model* findMeshData(const std::string& identifier);
+    void registerModel(Model* model);
+    void registerTexture(Texture* texture);
+    Model* findModel(const std::string& identifier);
+    Texture* findTexture(const std::string& identifier);
 };
 
 #endif // RESOURCES_HPP

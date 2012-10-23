@@ -21,14 +21,15 @@
 #include "engine/resources/resources.hpp"
 
 #include "engine/resources/resourcemanager.hpp"
-#include "engine/resources/meshdata.hpp"
-#include <engine/resources/modelloader.hpp>
+#include "engine/resources/texture.hpp"
+#include "engine/resources/model.hpp"
+#include "engine/resources/modelloader.hpp"
 
 using namespace std;
 
 Model* Resources::generateBox(const string& identifier, const double lengthX, const double lengthY, const double lengthZ) {
     Model* model;
-    model = findMeshData(identifier);
+    model = findModel(identifier);
     if (model != 0)
         return model;
 
@@ -65,54 +66,67 @@ Model* Resources::generateBox(const string& identifier, const double lengthX, co
     model->mesh(0).setVertices(vertices, 72);
     model->mesh(0).setNormals(normals, 72);
     model->mesh(0).setIndices(indices, 36);
-    registerMeshData(model);
+    registerModel(model);
     return model;
 }
 
 Model* Resources::generateModelFromFile(const std::string& fileName) {
     Model* model;
-    model = findMeshData(fileName);
+    model = findModel(fileName);
     if (model != 0)
         return model;
 
     model = new Model(fileName);
     ModelLoader::load(fileName, *model);
-    registerMeshData(model);
+    registerModel(model);
     return model;
 }
 
 Resources::Resources():
-    m_meshDataMap()
+    m_modelsMap(),
+    m_texturesMap()
 {}
 
 void Resources::initialize() {
 }
 
 void Resources::deinitialize() {
-    mesh_data_map_t::const_iterator itMesh;
-    for (itMesh = m_meshDataMap.begin(); itMesh != m_meshDataMap.end(); ++itMesh)
+    models_map_t::const_iterator itMesh;
+    for (itMesh = m_modelsMap.begin(); itMesh != m_modelsMap.end(); ++itMesh)
         delete itMesh->second;
 }
 
 string Resources::listsToString() {
     stringstream ss;
     ss << "Mesh Data List:" << endl;
-    mesh_data_map_t::const_iterator itMesh;
-    for (itMesh = m_meshDataMap.begin(); itMesh != m_meshDataMap.end(); ++itMesh)
+    models_map_t::const_iterator itMesh;
+    for (itMesh = m_modelsMap.begin(); itMesh != m_modelsMap.end(); ++itMesh)
         ss << "  " << itMesh->second->getIdentifier() << endl;
     return ss.str();
 }
 
 
 
-void Resources::registerMeshData(Model* meshData) {
-    ResourceManager::getResources().m_meshDataMap.insert(pair<string, Model*>(meshData->getIdentifier(), meshData));
+void Resources::registerModel(Model* model) {
+    ResourceManager::getResources().m_modelsMap.insert(pair<string, Model*>(model->getIdentifier(), model));
 }
 
-Model* Resources::findMeshData(const std::string& identifier) {
-    mesh_data_map_t::const_iterator it;
-    it = ResourceManager::getResources().m_meshDataMap.find(identifier);
-    if (it != ResourceManager::getResources().m_meshDataMap.end())
+void Resources::registerTexture(Texture* texture) {
+    ResourceManager::getResources().m_texturesMap.insert(pair<string, Texture*>(texture->getIdentifier(), texture));
+}
+
+Model* Resources::findModel(const std::string& identifier) {
+    models_map_t::const_iterator it;
+    it = ResourceManager::getResources().m_modelsMap.find(identifier);
+    if (it != ResourceManager::getResources().m_modelsMap.end())
+        return it->second;
+    return 0;
+}
+
+Texture* Resources::findTexture(const std::string& identifier) {
+    textures_map_t::const_iterator it;
+    it = ResourceManager::getResources().m_texturesMap.find(identifier);
+    if (it != ResourceManager::getResources().m_texturesMap.end())
         return it->second;
     return 0;
 }

@@ -204,6 +204,7 @@ void Renderer::initialize() {
     glCullFace(GL_BACK); // redundant
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
 //     glShadeModel(GL_SMOOTH); // using manually defined normals
 
     // enable arrays for Vertex Array (legacy)

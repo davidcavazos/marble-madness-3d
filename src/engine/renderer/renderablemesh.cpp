@@ -23,7 +23,7 @@
 #include <sstream>
 #include "engine/renderer/rendermanager.hpp"
 #include "engine/renderer/renderer.hpp"
-#include "engine/resources/meshdata.hpp"
+#include "engine/resources/model.hpp"
 #include "engine/resources/resourcemanager.hpp"
 #include "engine/resources/resources.hpp"
 

@@ -27,6 +27,7 @@ set(RENDER_SRC_FILES
 )
 
 set(RESOURCES_SRC_FILES
+    resources/texture.cpp
     resources/modelloader.cpp
     resources/uvmap.cpp
     resources/material.cpp
@@ -50,6 +51,7 @@ add_library(${PHYSICS_LIBRARY_NAME} SHARED ${PHYSICS_SRC_FILES})
 # Link libraries
 find_package(Boost REQUIRED)
 find_package(SDL REQUIRED)
+find_package(SDL_image REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Bullet REQUIRED)
 find_package(ASSIMP REQUIRED)
@@ -57,7 +59,7 @@ find_package(ASSIMP REQUIRED)
 include_directories(
     ${Boost_INCLUDE_DIRS}
     ${SDL_INCLUDE_DIR}
-    ${SDL_INCLUDE_DIR}/SDL
+    ${SDLIMAGE_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${BULLET_INCLUDE_DIRS}
     ${ASSIMP_INCLUDE_DIRS}
@@ -65,5 +67,5 @@ include_directories(
 
 target_link_libraries(${KERNEL_LIBRARY_NAME} ${SDL_LIBRARY})
 target_link_libraries(${RENDER_LIBRARY_NAME} ${OPENGL_LIBRARIES})
-target_link_libraries(${RESOURCES_LIBRARY_NAME} ${ASSIMP_LIBRARIES})
+target_link_libraries(${RESOURCES_LIBRARY_NAME} ${SDLIMAGE_LIBRARY} ${ASSIMP_LIBRARIES})
 target_link_libraries(${PHYSICS_LIBRARY_NAME} ${BULLET_LIBRARIES})

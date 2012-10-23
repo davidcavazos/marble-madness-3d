@@ -18,17 +18,14 @@
 */
 
 
-#include "engine/resources/material.hpp"
+#ifndef TEXTURE_HPP
+#define TEXTURE_HPP
 
-Material::Material():
-    m_colors(),
-    m_shininess(0.0f),
-    m_mapIndices()
-{
-    m_colors.resize(TOTAL_MATERIAL_COLORS);
-    setColor(MATERIAL_COLOR_DIFFUSE, 0.8f, 0.8f, 0.8f);
-    setColor(MATERIAL_COLOR_SPECULAR, 0.0f, 0.0f, 0.0f);
-    setColor(MATERIAL_COLOR_AMBIENT, 0.2f, 0.2f, 0.2f);
-    setColor(MATERIAL_COLOR_EMISSIVE, 0.0f, 0.0f, 0.0f);
-    m_mapIndices.resize(TOTAL_MATERIAL_MAPS);
-}
+#include <string>
+#include <SDL/SDL_image.h>
+
+class Texture {
+    void load(const std::string& fileName);
+};
+
+#endif // TEXTURE_HPP

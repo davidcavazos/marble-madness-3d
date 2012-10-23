@@ -17,6 +17,7 @@
 ~ Add soft body support
 ~ Move scene manager to a proper manager
 ~ Check every constructor and destructor for memory leaks (static variables?)
+- Change all pointers to references (where possible)
 - Make input manager into a vector, only one can be active at a time (XML)
 - Binding keys (or other inputs) with a command
 - Possibility of multiple active cameras in different viewports

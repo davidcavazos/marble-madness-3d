@@ -126,7 +126,25 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
 
         // material
         aiColor3D color;
-        aiMaterial material = scene->mMaterials[mesh->mMaterialIndex];
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        // diffuse color
+        material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+        cout << color.r << ", " << color.g << ", " << color.b << endl;
+        model.mesh(n).material().setColor(MATERIAL_COLOR_DIFFUSE, color.r, color.g, color.b);
+        // specular color
+        material->Get(AI_MATKEY_COLOR_SPECULAR, color);
+        model.mesh(n).material().setColor(MATERIAL_COLOR_SPECULAR, color.r, color.g, color.b);
+        // ambient color
+        material->Get(AI_MATKEY_COLOR_AMBIENT, color);
+        model.mesh(n).material().setColor(MATERIAL_COLOR_AMBIENT, color.r, color.g, color.b);
+        // emissive color
+        material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+        model.mesh(n).material().setColor(MATERIAL_COLOR_EMISSIVE, color.r, color.g, color.b);
+        // shininess
+        float shininess, strength;
+        material->Get(AI_MATKEY_SHININESS, shininess);
+        material->Get(AI_MATKEY_SHININESS_STRENGTH, strength);
+        model.mesh(n).material().setShininess(shininess * strength);
     }
     return true;
 }

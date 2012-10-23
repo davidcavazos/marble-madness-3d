@@ -176,7 +176,8 @@ void Game::runGameLoop() {
     Device* device = DeviceManager::getDevicePtr();
     Renderer* renderer = RenderManager::getRendererPtr();
     PhysicsWorld* world = PhysicsManager::getPhysicsWorldPtr();
-    renderer->initLights();
+    renderer->initLighting();
+    renderer->setAmbientLight(0.2f, 0.2f, 0.2f);
 
     cout << "Entering game loop" << endl;
     m_isRunning = true;
