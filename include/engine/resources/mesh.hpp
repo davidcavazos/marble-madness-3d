@@ -22,13 +22,13 @@
 #define MESH_HPP
 
 #include "material.hpp"
+#include "uvmap.hpp"
+
+class ModelLoader;
 
 class Mesh {
 public:
-    std::vector<float> m_vertices;
-    std::vector<float> m_normals;
-    std::vector<unsigned int> m_indices;
-    std::vector<Material> m_materials;
+    friend class ModelLoader;
 
     Mesh();
 
@@ -41,10 +41,12 @@ public:
     const std::vector<unsigned int>& getIndices() const;
     const unsigned int* getIndicesPtr() const;
     size_t getTotalIndices() const;
-    const Material& getMaterial(const size_t index) const;
-    size_t getTotalMaterials() const;
+    const UvMap& getUvMap(const size_t index) const;
+    size_t getTotalUvMaps() const;
+    const Material& getMaterial() const;
 
-    Material& material(const size_t index);
+    UvMap& uvMap(const size_t index);
+    Material& material();
 
     void setVertices(const std::vector<float>& vertices);
     void setVertices(const float* vertices, const size_t size);
@@ -52,6 +54,14 @@ public:
     void setNormals(const float* normals, const size_t size);
     void setIndices(const std::vector<unsigned int>& indices);
     void setIndices(const unsigned int* indices, const size_t size);
+    void setMaterial(const Material& material);
+
+private:
+    std::vector<float> m_vertices;
+    std::vector<float> m_normals;
+    std::vector<unsigned int> m_indices;
+    std::vector<UvMap> m_uvMaps;
+    Material m_material;
 };
 
 
@@ -92,16 +102,26 @@ inline size_t Mesh::getTotalIndices() const {
     return m_indices.size();
 }
 
-inline const Material& Mesh::getMaterial(const size_t index) const {
-    return m_materials[index];
+inline const UvMap& Mesh::getUvMap(const size_t index) const {
+    return m_uvMaps[index];
 }
 
-inline size_t Mesh::getTotalMaterials() const {
-    return m_materials.size();
+inline size_t Mesh::getTotalUvMaps() const {
+    return m_uvMaps.size();
 }
 
-inline Material& Mesh::material(const size_t index) {
-    return m_materials[index];
+inline const Material& Mesh::getMaterial() const {
+    return m_material;
+}
+
+
+
+inline UvMap& Mesh::uvMap(const size_t index) {
+    return m_uvMaps[index];
+}
+
+inline Material& Mesh::material() {
+    return m_material;
 }
 
 
@@ -134,6 +154,10 @@ inline void Mesh::setIndices(const unsigned int* indices, const size_t size) {
     m_indices.resize(size);
     for (size_t i = 0; i < size; ++i)
         m_indices[i] = indices[i];
+}
+
+inline void Mesh::setMaterial(const Material& material) {
+    m_material = material;
 }
 
 #endif // MESH_HPP

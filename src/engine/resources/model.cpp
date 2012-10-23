@@ -21,6 +21,6 @@
 #include "engine/resources/model.hpp"
 
 Model::Model(const std::string& identifier):
-    m_meshes(),
-    m_identifier(identifier)
+    m_identifier(identifier),
+    m_meshes()
 {}

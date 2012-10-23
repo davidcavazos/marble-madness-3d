@@ -26,6 +26,15 @@
 #include <cstddef>
 
 typedef enum {
+    MATERIAL_COLOR_DIFFUSE,
+    MATERIAL_COLOR_SPECULAR,
+    MATERIAL_COLOR_AMBIENT,
+    MATERIAL_COLOR_EMISSIVE,
+    MATERIAL_COLOR_TRANSPARENT,
+    TOTAL_MATERIAL_COLORS
+} material_color_t;
+
+typedef enum {
     MATERIAL_DIFFUSE_MAP,
     MATERIAL_AMBIENT_MAP,
     MATERIAL_EMISSIVE_MAP,
@@ -39,57 +48,51 @@ typedef enum {
     TOTAL_MATERIAL_MAPS
 } material_map_t;
 
+typedef struct {
+    float rgba[4];
+} color_t;
+
 class Material {
 public:
-    std::vector<float> m_uvCoords;
-
     Material();
 
-    const std::vector<float>& getUvCoords() const;
-    const float* getUvCoordsPtr() const;
-    size_t getTotalUvCoords() const;
+    const color_t& getColor(const material_color_t& materialColorType) const;
     size_t getMapIndex(const material_map_t& materialMapType) const;
 
-    void setUvCoords(const std::vector<float>& uvCoords);
-    void setUvCoords(const float* uvCoords, const size_t size);
+    void setColor(const material_color_t& materialColorType, const color_t& rgba);
+    void setColor(const material_color_t& materialColorType, const float r, const float g, const float b, const float a);
     void setMapIndex(const material_map_t& materialMapType, const size_t index);
 
 private:
-    std::vector<size_t> m_materialMapIndex;
+    std::vector<color_t> m_colors;
+    std::vector<size_t> m_mapIndices;
 };
 
 
 
-inline const std::vector< float >& Material::getUvCoords() const {
-    return m_uvCoords;
-}
-
-inline const float* Material::getUvCoordsPtr() const {
-    return &m_uvCoords[0];
-}
-
-inline size_t Material::getTotalUvCoords() const {
-    return m_uvCoords.size();
+inline const color_t& Material::getColor(const material_color_t& materialColorType) const {
+    return m_colors[materialColorType];
 }
 
 inline size_t Material::getMapIndex(const material_map_t& materialMapType) const {
-    return m_materialMapIndex[materialMapType];
+    return m_mapIndices[materialMapType];
 }
 
 
 
-inline void Material::setUvCoords(const std::vector< float >& uvCoords) {
-    m_uvCoords = uvCoords;
+inline void Material::setColor(const material_color_t& materialColorType, const color_t& rgba) {
+    m_colors[materialColorType] = rgba;
 }
 
-inline void Material::setUvCoords(const float* uvCoords, const size_t size) {
-    m_uvCoords.resize(size);
-    for (size_t i = 0; i < size; ++i)
-        m_uvCoords[i] = uvCoords[i];
+inline void Material::setColor(const material_color_t& materialColorType, const float r, const float g, const float b, const float a) {
+    m_colors[materialColorType].rgba[0] = r;
+    m_colors[materialColorType].rgba[1] = g;
+    m_colors[materialColorType].rgba[2] = b;
+    m_colors[materialColorType].rgba[3] = a;
 }
 
 inline void Material::setMapIndex(const material_map_t& materialMapType, const size_t index) {
-    m_materialMapIndex[materialMapType] = index;
+    m_mapIndices[materialMapType] = index;
 }
 
 #endif // MATERIAL_HPP

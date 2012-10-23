@@ -24,9 +24,11 @@
 #include <string>
 #include "mesh.hpp"
 
+class ModelLoader;
+
 class Model {
 public:
-    std::vector<Mesh> m_meshes;
+    friend class ModelLoader;
 
     Model(const std::string& identifier);
 
@@ -37,9 +39,11 @@ public:
     Mesh& mesh(const size_t index);
 
     void setIdentifier(const std::string& identifier);
+    void setTotalMeshes(const size_t totalMeshes);
 
 private:
     std::string m_identifier;
+    std::vector<Mesh> m_meshes;
 };
 
 
@@ -64,6 +68,10 @@ inline Mesh& Model::mesh(const size_t index) {
 
 inline void Model::setIdentifier(const std::string& identifier) {
     m_identifier = identifier;
+}
+
+inline void Model::setTotalMeshes(const size_t totalMeshes) {
+    m_meshes.resize(totalMeshes);;
 }
 
 #endif // MODEL_HPP

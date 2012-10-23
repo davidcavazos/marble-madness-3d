@@ -24,5 +24,6 @@ Mesh::Mesh():
     m_vertices(),
     m_normals(),
     m_indices(),
-    m_materials()
+    m_uvMaps(),
+    m_material()
 {}

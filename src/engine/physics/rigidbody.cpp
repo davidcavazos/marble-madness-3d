@@ -317,7 +317,7 @@ void RigidBody::addConvexHull(const string& fileName) {
         for (size_t n = 0; n < model->getTotalMeshes(); ++n) {
             points.reserve(points.size() + model->mesh(n).getTotalVertices());
             for (size_t i = 0; i < model->mesh(n).getTotalVertices(); ++i)
-                points.push_back(model->mesh(n).m_vertices[i]);
+                points.push_back(model->mesh(n).getVertices()[i]);
         }
         btConvexShape* originalConvexShape = new btConvexHullShape(&points[0], points.size(), sizeof(float) * 3);
         points.clear();

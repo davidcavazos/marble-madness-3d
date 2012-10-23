@@ -146,9 +146,9 @@ void Game::loadScene() {
 //     Light* light3Cmp = new Light(light3);
 //     light3Cmp->setDiffuse(0.0, 0.0, 1.0);
 
-    cout << Terminal::listsToString() << endl;
+//     cout << Terminal::listsToString() << endl;
 //     cout << m_sceneManager.sceneGraphToString() << endl;
-    cout << RenderManager::getRenderer().listsToString() << endl;
+//     cout << RenderManager::getRenderer().listsToString() << endl;
 //     cout << ResourceManager::listsToString() << endl;
 }
 

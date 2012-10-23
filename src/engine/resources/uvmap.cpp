@@ -18,12 +18,8 @@
 */
 
 
-#include "engine/resources/material.hpp"
+#include "engine/resources/uvmap.hpp"
 
-Material::Material():
-    m_colors(),
-    m_mapIndices()
-{
-    m_colors.resize(TOTAL_MATERIAL_COLORS);
-    m_mapIndices.resize(TOTAL_MATERIAL_MAPS);
-}
+UvMap::UvMap():
+    m_uvCoords()
+{}
