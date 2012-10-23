@@ -24,6 +24,8 @@
 #include <string>
 #include <set>
 
+class Vector3;
+class Quaternion;
 class RenderManager;
 class Camera;
 class Light;
@@ -50,6 +52,7 @@ private:
     void deinitialize();
     void initCamera() const;
     void displayLegacyLights() const;
+    void setOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot) const;
 
     Camera* m_activeCamera;
     std::set<Camera*> m_cameras;

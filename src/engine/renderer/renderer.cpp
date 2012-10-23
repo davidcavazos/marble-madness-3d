@@ -22,7 +22,6 @@
 
 #include <iostream>
 #include <GL/glew.h>
-#include "engine/kernel/common.hpp"
 #include "engine/kernel/device.hpp"
 #include "engine/kernel/devicemanager.hpp"
 #include "engine/kernel/entity.hpp"
@@ -35,11 +34,14 @@
 
 using namespace std;
 
-void Renderer::initLights() const {
+void Renderer::setAmbientLight(const float r, const float g, const float b, const float a) {
+    GLfloat global_ambient[] = {r, g, b, a};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+}
+
+void Renderer::initLighting() const {
     // enable lighting for legacy lights
     glEnable(GL_LIGHTING);
-    GLfloat global_ambient[] = {0.5f, 0.5f, 1.0f, 1.0f};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 
     set<Light*>::const_iterator it = m_lights.begin();
     for (size_t i = 0; i < m_lights.size(); ++i) {
@@ -109,6 +111,18 @@ void Renderer::draw() const {
         glMultMatrixf(m);
         for (size_t n = 0; n < model.getTotalMeshes(); ++n) {
             const Mesh& mesh = model.getMesh(n);
+
+            // set material
+            const Material& mtl = mesh.getMaterial();
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, mtl.getColor(MATERIAL_COLOR_DIFFUSE).rgb);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, mtl.getColor(MATERIAL_COLOR_SPECULAR).rgb);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, mtl.getColor(MATERIAL_COLOR_AMBIENT).rgb);
+            glMaterialfv(GL_FRONT, GL_EMISSION, mtl.getColor(MATERIAL_COLOR_EMISSIVE).rgb);
+            glMaterialf(GL_FRONT, GL_SHININESS, mtl.getShininess());
+
+            // set textures
+
+            // draw mesh
             glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr());
             glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
             glDrawElements(GL_TRIANGLES, mesh.getTotalIndices(), GL_UNSIGNED_INT, mesh.getIndicesPtr());
@@ -273,4 +287,24 @@ void Renderer::displayLegacyLights() const {
         glLightfv(lightEnum, GL_POSITION, lightPosition);
         ++itLight;
     }
+}
+
+void Renderer::setOpenGLMatrix(float*const m, const Vector3& pos, const Quaternion& rot) const {
+    Matrix3x3 temp(rot);
+    m[0]  = static_cast<float>(temp.getRow(0).getX());
+    m[1]  = static_cast<float>(temp.getRow(1).getX());
+    m[2]  = static_cast<float>(temp.getRow(2).getX());
+    m[3]  = 0.0f;
+    m[4]  = static_cast<float>(temp.getRow(0).getY());
+    m[5]  = static_cast<float>(temp.getRow(1).getY());
+    m[6]  = static_cast<float>(temp.getRow(2).getY());
+    m[7]  = 0.0f;
+    m[8]  = static_cast<float>(temp.getRow(0).getZ());
+    m[9]  = static_cast<float>(temp.getRow(1).getZ());
+    m[10] = static_cast<float>(temp.getRow(2).getZ());
+    m[11] = 0.0f;
+    m[12] = static_cast<float>(pos.getX());
+    m[13] = static_cast<float>(pos.getY());
+    m[14] = static_cast<float>(pos.getZ());
+    m[15] = 1.0f;
 }

@@ -34,9 +34,8 @@ class Quaternion;
 
 double degToRad(const double deg);
 double radToDeg(const double rad);
-void setOpenGLMatrix(float* const m, const Vector3& pos, const Quaternion& rot);
 
-#include "matrix3x3.hpp"
+
 
 inline double degToRad(const double deg) {
     return deg * DEG_TO_RAD_MULT;
@@ -44,26 +43,6 @@ inline double degToRad(const double deg) {
 
 inline double radToDeg(const double rad) {
     return rad * RAD_TO_DEG_MULT;
-}
-
-inline void setOpenGLMatrix(float*const m, const Vector3& pos, const Quaternion& rot) {
-    Matrix3x3 temp(rot);
-    m[0]  = static_cast<float>(temp.getRow(0).getX());
-    m[1]  = static_cast<float>(temp.getRow(1).getX());
-    m[2]  = static_cast<float>(temp.getRow(2).getX());
-    m[3]  = 0.0f;
-    m[4]  = static_cast<float>(temp.getRow(0).getY());
-    m[5]  = static_cast<float>(temp.getRow(1).getY());
-    m[6]  = static_cast<float>(temp.getRow(2).getY());
-    m[7]  = 0.0f;
-    m[8]  = static_cast<float>(temp.getRow(0).getZ());
-    m[9]  = static_cast<float>(temp.getRow(1).getZ());
-    m[10] = static_cast<float>(temp.getRow(2).getZ());
-    m[11] = 0.0f;
-    m[12] = static_cast<float>(pos.getX());
-    m[13] = static_cast<float>(pos.getY());
-    m[14] = static_cast<float>(pos.getZ());
-    m[15] = 1.0f;
 }
 
 #endif // COMMON_HPP
