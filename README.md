@@ -38,7 +38,7 @@ Run the executable under src/
 From YaST check the following: gcc-g++ make cmake-gui git
 
 2. Install dependencies
-From YaST check the following: boost-devel sdl-devel Mesa-devel glew-devel
+From YaST check the following: boost-devel libSDL-devel libSDL_image-devel Mesa-devel glew-devel
 
 2.1 Install Bullet Physics
 Navigate to the folder where the build will be compiled (preferably outside the source)

@@ -36,7 +36,8 @@ public:
     friend class Light;
     friend class RenderableMesh;
 
-    void initLights() const;
+    void setAmbientLight(const float r, const float g, const float b, const float a = 1.0f);
+    void initLighting() const;
     void draw() const;
     std::string listsToString() const;
 

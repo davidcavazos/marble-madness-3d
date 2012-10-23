@@ -30,7 +30,6 @@ typedef enum {
     MATERIAL_COLOR_SPECULAR,
     MATERIAL_COLOR_AMBIENT,
     MATERIAL_COLOR_EMISSIVE,
-    MATERIAL_COLOR_TRANSPARENT,
     TOTAL_MATERIAL_COLORS
 } material_color_t;
 
@@ -49,7 +48,7 @@ typedef enum {
 } material_map_t;
 
 typedef struct {
-    float rgba[4];
+    float rgb[3];
 } color_t;
 
 class Material {
@@ -57,14 +56,17 @@ public:
     Material();
 
     const color_t& getColor(const material_color_t& materialColorType) const;
+    float getShininess() const;
     size_t getMapIndex(const material_map_t& materialMapType) const;
 
-    void setColor(const material_color_t& materialColorType, const color_t& rgba);
-    void setColor(const material_color_t& materialColorType, const float r, const float g, const float b, const float a);
+    void setColor(const material_color_t& materialColorType, const color_t& rgb);
+    void setColor(const material_color_t& materialColorType, const float r, const float g, const float b);
+    void setShininess(const float shininess);
     void setMapIndex(const material_map_t& materialMapType, const size_t index);
 
 private:
     std::vector<color_t> m_colors;
+    float m_shininess;
     std::vector<size_t> m_mapIndices;
 };
 
@@ -72,6 +74,10 @@ private:
 
 inline const color_t& Material::getColor(const material_color_t& materialColorType) const {
     return m_colors[materialColorType];
+}
+
+inline float Material::getShininess() const {
+    return m_shininess;
 }
 
 inline size_t Material::getMapIndex(const material_map_t& materialMapType) const {
@@ -84,15 +90,18 @@ inline void Material::setColor(const material_color_t& materialColorType, const 
     m_colors[materialColorType] = rgba;
 }
 
-inline void Material::setColor(const material_color_t& materialColorType, const float r, const float g, const float b, const float a) {
-    m_colors[materialColorType].rgba[0] = r;
-    m_colors[materialColorType].rgba[1] = g;
-    m_colors[materialColorType].rgba[2] = b;
-    m_colors[materialColorType].rgba[3] = a;
+inline void Material::setColor(const material_color_t& materialColorType, const float r, const float g, const float b) {
+    m_colors[materialColorType].rgb[0] = r;
+    m_colors[materialColorType].rgb[1] = g;
+    m_colors[materialColorType].rgb[2] = b;
 }
 
 inline void Material::setMapIndex(const material_map_t& materialMapType, const size_t index) {
     m_mapIndices[materialMapType] = index;
+}
+
+inline void Material::setShininess(const float shininess) {
+    m_shininess = shininess;
 }
 
 #endif // MATERIAL_HPP
