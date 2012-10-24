@@ -28,7 +28,7 @@
 
 using namespace std;
 
-const string OPTIMIZED_BINARY_FILE_EXTENSION = ".bin";
+const string OPTIMIZED_BINARY_FILE_EXTENSION = ".model";
 
 bool ModelLoader::load(const std::string& fileName, Model& model) {
     cout << "TEMPORAL: always importing model for testing purposes" << endl;
@@ -129,7 +129,6 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         // diffuse color
         material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-        cout << color.r << ", " << color.g << ", " << color.b << endl;
         model.mesh(n).material().setColor(MATERIAL_COLOR_DIFFUSE, color.r, color.g, color.b);
         // specular color
         material->Get(AI_MATKEY_COLOR_SPECULAR, color);
@@ -141,9 +140,11 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
         material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
         model.mesh(n).material().setColor(MATERIAL_COLOR_EMISSIVE, color.r, color.g, color.b);
         // shininess
-        float shininess, strength;
+        float shininess = 0.0f;
+        float strength = 1.0f;
         material->Get(AI_MATKEY_SHININESS, shininess);
         material->Get(AI_MATKEY_SHININESS_STRENGTH, strength);
+        cout << shininess << ", " << strength << endl;
         model.mesh(n).material().setShininess(shininess * strength);
     }
     return true;
@@ -192,6 +193,25 @@ bool ModelLoader::loadBinary(const std::string& fileName, Model& model) {
             model.mesh(n).uvMap(uv).m_uvCoords.resize(size);
             file.read(reinterpret_cast<char*>(&model.mesh(n).uvMap(uv).m_uvCoords[0]), size * sizeof(float));
         }
+
+        // material
+        color_t color;
+        // diffuse color
+        file.read(reinterpret_cast<char*>(&color), sizeof(color_t));
+        model.mesh(n).material().setColor(MATERIAL_COLOR_DIFFUSE, color);
+        // specular color
+        file.read(reinterpret_cast<char*>(&color), sizeof(color_t));
+        model.mesh(n).material().setColor(MATERIAL_COLOR_SPECULAR, color);
+        // ambient color
+        file.read(reinterpret_cast<char*>(&color), sizeof(color_t));
+        model.mesh(n).material().setColor(MATERIAL_COLOR_AMBIENT, color);
+        // emissive color
+        file.read(reinterpret_cast<char*>(&color), sizeof(color_t));
+        model.mesh(n).material().setColor(MATERIAL_COLOR_EMISSIVE, color);
+        // shininess
+        float shininess;
+        file.read(reinterpret_cast<char*>(&shininess), sizeof(float));
+        model.mesh(n).material().setShininess(shininess);
     }
     file.close();
     return true;
@@ -239,6 +259,24 @@ bool ModelLoader::writeBinary(const std::string& fileName, Model& model) {
             file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
             file.write(reinterpret_cast<char*>(&model.mesh(n).uvMap(uv).m_uvCoords[0]), size * sizeof(float));
         }
+
+        // material
+        color_t color;
+        // diffuse color
+        color = model.mesh(n).material().getColor(MATERIAL_COLOR_DIFFUSE);
+        file.write(reinterpret_cast<char*>(&color), sizeof(color_t));
+        // specular color
+        color = model.mesh(n).material().getColor(MATERIAL_COLOR_SPECULAR);
+        file.write(reinterpret_cast<char*>(&color), sizeof(color_t));
+        // ambient color
+        color = model.mesh(n).material().getColor(MATERIAL_COLOR_AMBIENT);
+        file.write(reinterpret_cast<char*>(&color), sizeof(color_t));
+        // emissive color
+        color = model.mesh(n).material().getColor(MATERIAL_COLOR_EMISSIVE);
+        file.write(reinterpret_cast<char*>(&color), sizeof(color_t));
+        // shininess
+        float shininess = model.mesh(n).material().getShininess();
+        file.write(reinterpret_cast<char*>(&shininess), sizeof(float));
     }
     file.close();
     return true;
