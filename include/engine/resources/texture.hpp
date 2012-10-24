@@ -22,10 +22,32 @@
 #define TEXTURE_HPP
 
 #include <string>
-#include <SDL/SDL_image.h>
+#include <vector>
 
 class Texture {
-    void load(const std::string& fileName);
+public:
+    Texture(const std::string& identifier);
+
+    const std::string& getIdentifier() const;
+
+    void setIdentifier(const std::string& identifier);
+
+    void load();
+
+private:
+    std::string m_identifier;
+    size_t m_width;
+    size_t m_height;
 };
+
+
+
+inline const std::string& Texture::getIdentifier() const {
+    return m_identifier;
+}
+
+inline void Texture::setIdentifier(const std::string& identifier) {
+    m_identifier = identifier;
+}
 
 #endif // TEXTURE_HPP

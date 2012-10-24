@@ -144,7 +144,6 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
         float strength = 1.0f;
         material->Get(AI_MATKEY_SHININESS, shininess);
         material->Get(AI_MATKEY_SHININESS_STRENGTH, strength);
-        cout << shininess << ", " << strength << endl;
         model.mesh(n).material().setShininess(shininess * strength);
     }
     return true;
