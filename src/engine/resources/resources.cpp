@@ -20,7 +20,6 @@
 
 #include "engine/resources/resources.hpp"
 
-#include "engine/resources/resourcemanager.hpp"
 #include "engine/resources/texture.hpp"
 #include "engine/resources/model.hpp"
 #include "engine/resources/modelloader.hpp"
@@ -82,6 +81,18 @@ Model* Resources::generateModelFromFile(const std::string& fileName) {
     return model;
 }
 
+Texture* Resources::loadTextureFromFile(const std::string& fileName) {
+    Texture* texture;
+    texture = findTexture(fileName);
+    if (texture != 0)
+        return texture;
+
+    texture = new Texture(fileName);
+    texture->load();
+    registerTexture(texture);
+    return texture;
+}
+
 Resources::Resources():
     m_modelsMap(),
     m_texturesMap()
@@ -108,25 +119,25 @@ string Resources::listsToString() {
 
 
 void Resources::registerModel(Model* model) {
-    ResourceManager::getResources().m_modelsMap.insert(pair<string, Model*>(model->getIdentifier(), model));
+    m_modelsMap.insert(pair<string, Model*>(model->getIdentifier(), model));
 }
 
 void Resources::registerTexture(Texture* texture) {
-    ResourceManager::getResources().m_texturesMap.insert(pair<string, Texture*>(texture->getIdentifier(), texture));
+    m_texturesMap.insert(pair<string, Texture*>(texture->getFileName(), texture));
 }
 
 Model* Resources::findModel(const std::string& identifier) {
     models_map_t::const_iterator it;
-    it = ResourceManager::getResources().m_modelsMap.find(identifier);
-    if (it != ResourceManager::getResources().m_modelsMap.end())
+    it = m_modelsMap.find(identifier);
+    if (it != m_modelsMap.end())
         return it->second;
     return 0;
 }
 
-Texture* Resources::findTexture(const std::string& identifier) {
+Texture* Resources::findTexture(const std::string& fileName) {
     textures_map_t::const_iterator it;
-    it = ResourceManager::getResources().m_texturesMap.find(identifier);
-    if (it != ResourceManager::getResources().m_texturesMap.end())
+    it = m_texturesMap.find(fileName);
+    if (it != m_texturesMap.end())
         return it->second;
     return 0;
 }

@@ -25,52 +25,79 @@
 
 using namespace std;
 
-Texture::Texture(const std::string& identifier):
-    m_identifier(identifier),
+Texture::Texture(const string& fileName):
+    m_fileName(fileName),
+    m_image(0),
+    m_textureFormat(TEXTURE_FORMAT_RGBA),
+    m_bytesPerPixel(0),
     m_width(0),
-    m_height(0)
+    m_height(0),
+    m_pixels(0)
 {}
 
-void Texture::load() {
+Texture::~Texture() {
+    if (m_image != 0)
+        SDL_FreeSurface(m_image);
+}
+
+void Texture::load(const string& fileName) {
     // http://content.gpwiki.org/index.php/SDL:Tutorials:Using_SDL_with_OpenGL
-    SDL_Surface* img = IMG_Load(m_identifier.c_str());
-    if (img == 0) {
-        cerr << "Error opening image file: " << m_identifier << endl;
+    m_image = IMG_Load(fileName.c_str());
+    if (m_image == 0) {
+        cerr << "Error opening image file: " << fileName << endl;
         return;
     }
 
+    // set attributes
+    m_bytesPerPixel = m_image->format->BytesPerPixel;
+    m_width = m_image->w;
+    m_height = m_image->h;
+    m_pixels = m_image->pixels;
+
     // check width and height
-    if ((img->w & (img->w - 1)) != 0)
-        cerr << "Warning: image's width is not a power of 2: " << m_identifier << endl;
-    if ((img->h & (img->h - 1)) != 0)
-        cerr << "Warning: image's height is not a power of 2: " << m_identifier << endl;
-    m_width = img->w;
-    m_height = img->h;
+    if ((m_width & (m_width - 1)) != 0)
+        cerr << "Warning: image's width is not a power of 2: " << fileName << endl;
+    if ((m_height & (m_height - 1)) != 0)
+        cerr << "Warning: image's height is not a power of 2: " << fileName << endl;
 
     // check for number of channels in each pixel
-    switch (img->format->BytesPerPixel) {
+    switch (m_bytesPerPixel) {
     case 4: // has alpha channel
-        if (img->format->Rmask == 0x000000ff) {
-            // RGBA
-        }
-        else {
-            // BGRA
-        }
+        if (m_image->format->Rmask == 0x000000ff)
+            m_textureFormat = TEXTURE_FORMAT_RGBA;
+        else
+            m_textureFormat = TEXTURE_FORMAT_BGRA;
         break;
     case 3: // no alpha channel
-        if (img->format->Rmask == 0x000000ff) {
-            // RGB
-        }
-        else {
-            // BGR
-        }
+        if (m_image->format->Rmask == 0x000000ff)
+            m_textureFormat = TEXTURE_FORMAT_RGB;
+        else
+            m_textureFormat = TEXTURE_FORMAT_BGR;
         break;
     default:
-        cerr << "Warning: image is not truecolor: " << m_identifier << endl;
+        cerr << "Warning: image is not truecolor: " << fileName << endl;
     }
+}
 
-    // copy data from SDL_Surface to Texture data (always RGB or RGBA)
+Texture::Texture(const Texture& rhs):
+    m_fileName(rhs.m_fileName),
+    m_image(rhs.m_image),
+    m_textureFormat(rhs.m_textureFormat),
+    m_bytesPerPixel(rhs.m_bytesPerPixel),
+    m_width(rhs.m_width),
+    m_height(rhs.m_height),
+    m_pixels(rhs.m_pixels)
+{}
 
-    // free memory
-    SDL_FreeSurface(img);
+Texture& Texture::operator=(const Texture& rhs) {
+    if (this == &rhs)
+        return *this;
+    m_fileName = rhs.m_fileName;
+    m_image = rhs.m_image;
+    m_textureFormat = rhs.m_textureFormat;
+    m_bytesPerPixel = rhs.m_bytesPerPixel;
+    m_width = rhs.m_width;
+    m_height = rhs.m_height;
+    m_pixels = rhs.m_pixels;
+    return *this;
 }

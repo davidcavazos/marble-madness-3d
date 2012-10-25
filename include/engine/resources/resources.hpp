@@ -34,6 +34,7 @@ public:
 
     Model* generateBox(const std::string& identifier, const double lengthX, const double lengthY, const double lengthZ);
     Model* generateModelFromFile(const std::string& fileName);
+    Texture* loadTextureFromFile(const std::string& fileName);
     std::string listsToString();
 
 private:
@@ -50,7 +51,7 @@ private:
     void registerModel(Model* model);
     void registerTexture(Texture* texture);
     Model* findModel(const std::string& identifier);
-    Texture* findTexture(const std::string& identifier);
+    Texture* findTexture(const std::string& fileName);
 };
 
 #endif // RESOURCES_HPP

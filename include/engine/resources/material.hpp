@@ -23,7 +23,7 @@
 
 #include <iostream>
 #include <vector>
-#include <cstddef>
+#include "texture.hpp"
 
 typedef enum {
     MATERIAL_COLOR_DIFFUSE,
@@ -57,17 +57,17 @@ public:
 
     const color_t& getColor(const material_color_t& materialColorType) const;
     float getShininess() const;
-    size_t getMapIndex(const material_map_t& materialMapType) const;
+    const Texture* getTextureMap(const material_map_t& materialMapType) const;
 
     void setColor(const material_color_t& materialColorType, const color_t& rgb);
     void setColor(const material_color_t& materialColorType, const float r, const float g, const float b);
     void setShininess(const float shininess);
-    void setMapIndex(const material_map_t& materialMapType, const size_t index);
+    void setTextureMap(const material_map_t& materialMapType, const Texture* texture);
 
 private:
     std::vector<color_t> m_colors;
     float m_shininess;
-    std::vector<size_t> m_mapIndices;
+    std::vector<const Texture*> m_textureMaps;
 };
 
 
@@ -80,8 +80,8 @@ inline float Material::getShininess() const {
     return m_shininess;
 }
 
-inline size_t Material::getMapIndex(const material_map_t& materialMapType) const {
-    return m_mapIndices[materialMapType];
+inline const Texture* Material::getTextureMap(const material_map_t& materialMapType) const {
+    return m_textureMaps[materialMapType];
 }
 
 
@@ -96,8 +96,8 @@ inline void Material::setColor(const material_color_t& materialColorType, const 
     m_colors[materialColorType].rgb[2] = b;
 }
 
-inline void Material::setMapIndex(const material_map_t& materialMapType, const size_t index) {
-    m_mapIndices[materialMapType] = index;
+inline void Material::setTextureMap(const material_map_t& materialMapType, const Texture* texture) {
+    m_textureMaps[materialMapType] = texture;
 }
 
 inline void Material::setShininess(const float shininess) {

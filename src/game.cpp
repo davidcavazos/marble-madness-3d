@@ -120,7 +120,7 @@ void Game::loadScene() {
     RigidBody* meshBody = new RigidBody(mesh);
     meshBody->init(10.0);
     meshBody->addBox(2, 2, 2);
-//     meshBody->addConvexHull("assets/meshes/suzanne-lowpoly.dae");
+//     meshBody->addConvexHull("assets/meshes/materialtest.dae");
 
     Entity* camera = root->addChild("camera");
     camera->setPositionAbs(0.0f, 4.0f, 10.0f);
@@ -283,7 +283,7 @@ void Game::fireSphere(const std::string&) {
         sphere->setOrientationAbs(camera->getOrientationAbs());
 
         RenderableMesh* cubeMesh = new RenderableMesh(sphere);
-        cubeMesh->loadFromFile("assets/meshes/icosphere1.dae");
+        cubeMesh->loadFromFile("assets/meshes/icosphere3.dae");
 
         RigidBody* cubeBody = new RigidBody(sphere);
         cubeBody->init(1.0, 0.8);

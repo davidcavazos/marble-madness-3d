@@ -25,6 +25,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "engine/resources/resourcemanager.hpp"
+#include <engine/resources/resources.hpp>
 
 using namespace std;
 
@@ -145,6 +147,17 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
         material->Get(AI_MATKEY_SHININESS, shininess);
         material->Get(AI_MATKEY_SHININESS_STRENGTH, strength);
         model.mesh(n).material().setShininess(shininess * strength);
+
+        // texture maps
+        if (scene->HasTextures()) {
+            cerr << "Support for meshes with embedded textures is not implemented" << endl;
+            return true;
+        }
+        Texture* texture;
+        aiString path;
+        material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+        texture = ResourceManager::getResources().loadTextureFromFile(path.C_Str());
+        model.mesh(n).material().setTextureMap(MATERIAL_DIFFUSE_MAP, texture);
     }
     return true;
 }

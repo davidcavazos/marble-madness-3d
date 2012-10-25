@@ -24,30 +24,73 @@
 #include <string>
 #include <vector>
 
+class SDL_Surface;
+
+typedef enum {
+    TEXTURE_FORMAT_RGBA,
+    TEXTURE_FORMAT_BGRA,
+    TEXTURE_FORMAT_RGB,
+    TEXTURE_FORMAT_BGR
+} texture_format_t;
+
 class Texture {
 public:
-    Texture(const std::string& identifier);
+    Texture(const std::string& fileName);
+    ~Texture();
 
-    const std::string& getIdentifier() const;
-
-    void setIdentifier(const std::string& identifier);
+    const std::string& getFileName() const;
+    texture_format_t getTextureFormat() const;
+    size_t getBytesPerPixel() const;
+    size_t getWidth() const;
+    size_t getHeight() const;
+    void* getPixels() const;
 
     void load();
+    void load(const std::string& fileName);
 
 private:
-    std::string m_identifier;
+    std::string m_fileName;
+    SDL_Surface* m_image;
+    texture_format_t m_textureFormat;
+    size_t m_bytesPerPixel;
     size_t m_width;
     size_t m_height;
+    void* m_pixels;
+
+    Texture(const Texture& rhs);
+    Texture& operator=(const Texture& rhs);
 };
 
 
 
-inline const std::string& Texture::getIdentifier() const {
-    return m_identifier;
+inline const std::string& Texture::getFileName() const {
+    return m_fileName;
 }
 
-inline void Texture::setIdentifier(const std::string& identifier) {
-    m_identifier = identifier;
+inline texture_format_t Texture::getTextureFormat() const {
+    return m_textureFormat;
+}
+
+inline size_t Texture::getBytesPerPixel() const {
+    return m_bytesPerPixel;
+}
+
+inline size_t Texture::getWidth() const {
+    return m_width;
+}
+
+inline size_t Texture::getHeight() const {
+    return m_height;
+}
+
+inline void* Texture::getPixels() const {
+    return m_pixels;
+}
+
+
+
+inline void Texture::load() {
+    load(m_fileName);
 }
 
 #endif // TEXTURE_HPP
