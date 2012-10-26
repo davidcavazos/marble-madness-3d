@@ -41,11 +41,11 @@ public:
     const std::vector<unsigned int>& getIndices() const;
     const unsigned int* getIndicesPtr() const;
     size_t getTotalIndices() const;
-    const UvMap& getUvMap(const size_t index) const;
-    size_t getTotalUvMaps() const;
+    const std::vector<float>& getUvCoords() const;
+    const float* getUvCoordsPtr() const;
+    size_t getTotalUvCoords() const;
     const Material& getMaterial() const;
 
-    UvMap& uvMap(const size_t index);
     Material& material();
 
     void setVertices(const std::vector<float>& vertices);
@@ -54,13 +54,15 @@ public:
     void setNormals(const float* normals, const size_t size);
     void setIndices(const std::vector<unsigned int>& indices);
     void setIndices(const unsigned int* indices, const size_t size);
+    void setUvCoords(const std::vector<float>& uvCoords);
+    void setUvCoords(const float* uvCoords, const size_t size);
     void setMaterial(const Material& material);
 
 private:
     std::vector<float> m_vertices;
     std::vector<float> m_normals;
     std::vector<unsigned int> m_indices;
-    std::vector<UvMap> m_uvMaps;
+    std::vector<float> m_uvCoords;
     Material m_material;
 };
 
@@ -102,12 +104,16 @@ inline size_t Mesh::getTotalIndices() const {
     return m_indices.size();
 }
 
-inline const UvMap& Mesh::getUvMap(const size_t index) const {
-    return m_uvMaps[index];
+inline const std::vector< float >& Mesh::getUvCoords() const {
+    return m_uvCoords;
 }
 
-inline size_t Mesh::getTotalUvMaps() const {
-    return m_uvMaps.size();
+inline const float* Mesh::getUvCoordsPtr() const {
+    return &m_uvCoords[0];
+}
+
+inline size_t Mesh::getTotalUvCoords() const {
+    return m_uvCoords.size();
 }
 
 inline const Material& Mesh::getMaterial() const {
@@ -115,10 +121,6 @@ inline const Material& Mesh::getMaterial() const {
 }
 
 
-
-inline UvMap& Mesh::uvMap(const size_t index) {
-    return m_uvMaps[index];
-}
 
 inline Material& Mesh::material() {
     return m_material;
@@ -154,6 +156,16 @@ inline void Mesh::setIndices(const unsigned int* indices, const size_t size) {
     m_indices.resize(size);
     for (size_t i = 0; i < size; ++i)
         m_indices[i] = indices[i];
+}
+
+inline void Mesh::setUvCoords(const std::vector< float >& uvCoords) {
+    m_uvCoords = uvCoords;
+}
+
+inline void Mesh::setUvCoords(const float* uvCoords, const size_t size) {
+    m_uvCoords.resize(size);
+    for (size_t i = 0; i < size; ++i)
+        m_uvCoords[i] = uvCoords[i];
 }
 
 inline void Mesh::setMaterial(const Material& material) {

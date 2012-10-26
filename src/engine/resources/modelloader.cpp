@@ -26,7 +26,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "engine/resources/resourcemanager.hpp"
-#include <engine/resources/resources.hpp>
+#include "engine/resources/resources.hpp"
 
 using namespace std;
 
@@ -83,6 +83,8 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
         return false;
     }
 
+    string modelDir = fileName.substr(0, fileName.find_last_of("/\\") + 1);
+
     model.m_meshes.resize(scene->mNumMeshes);
     for (size_t n = 0; n < model.getTotalMeshes(); ++n) {
         const struct aiMesh* mesh = scene->mMeshes[n];
@@ -115,14 +117,12 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
             model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[2]);
         }
 
-        // uv maps
-        model.mesh(n).m_uvMaps.resize(mesh->GetNumUVChannels());
-        for (size_t uv = 0; uv < mesh->GetNumUVChannels(); ++uv) {
-            // uv coordinates
-            model.mesh(n).uvMap(uv).m_uvCoords.reserve(mesh->mNumVertices * 2);
+        // uv coordinates
+        if (mesh->GetNumUVChannels() > 0) {
+            model.mesh(n).m_uvCoords.resize(mesh->mNumVertices * 2);
             for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-                model.mesh(n).uvMap(uv).m_uvCoords.push_back(mesh->mTextureCoords[uv][i].x);
-                model.mesh(n).uvMap(uv).m_uvCoords.push_back(mesh->mTextureCoords[uv][i].y);
+                model.mesh(n).m_uvCoords.push_back(mesh->mTextureCoords[0][i].x);
+                model.mesh(n).m_uvCoords.push_back(mesh->mTextureCoords[0][i].y);
             }
         }
 
@@ -154,10 +154,12 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
             return true;
         }
         Texture* texture;
-        aiString path;
-        material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-        texture = ResourceManager::getResources().loadTextureFromFile(path.C_Str());
-        model.mesh(n).material().setTextureMap(MATERIAL_DIFFUSE_MAP, texture);
+        aiString file;
+        if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+            material->GetTexture(aiTextureType_DIFFUSE, 0, &file);
+            texture = ResourceManager::getResources().loadTextureFromFile(modelDir + file.C_Str());
+            model.mesh(n).material().setTextureMap(MATERIAL_DIFFUSE_MAP, texture);
+        }
     }
     return true;
 }
@@ -196,15 +198,10 @@ bool ModelLoader::loadBinary(const std::string& fileName, Model& model) {
         model.mesh(n).m_indices.resize(size);
         file.read(reinterpret_cast<char*>(&model.mesh(n).m_indices[0]), size * sizeof(unsigned int));
 
-        // uv maps
+        // uv coordinates
         file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        model.mesh(n).m_uvMaps.resize(size);
-        for (size_t uv = 0; uv < model.mesh(n).getTotalUvMaps(); ++uv) {
-            // uv coordinates
-            file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-            model.mesh(n).uvMap(uv).m_uvCoords.resize(size);
-            file.read(reinterpret_cast<char*>(&model.mesh(n).uvMap(uv).m_uvCoords[0]), size * sizeof(float));
-        }
+        model.mesh(n).m_uvCoords.resize(size);
+        file.read(reinterpret_cast<char*>(&model.mesh(n).m_uvCoords[0]), size * sizeof(float));
 
         // material
         color_t color;
@@ -263,14 +260,9 @@ bool ModelLoader::writeBinary(const std::string& fileName, Model& model) {
         file.write(reinterpret_cast<char*>(&model.mesh(n).m_indices[0]), size * sizeof(unsigned int));
 
         // uv maps
-        size = model.mesh(n).getTotalUvMaps();
+        size = model.mesh(n).getTotalUvCoords();
         file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (size_t uv = 0; uv < model.mesh(n).getTotalUvMaps(); ++uv) {
-            // uv coordinates
-            size = model.mesh(n).uvMap(uv).getTotalUvCoords();
-            file.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-            file.write(reinterpret_cast<char*>(&model.mesh(n).uvMap(uv).m_uvCoords[0]), size * sizeof(float));
-        }
+        file.write(reinterpret_cast<char*>(&model.mesh(n).m_uvCoords[0]), size * sizeof(float));
 
         // material
         color_t color;

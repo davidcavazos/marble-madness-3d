@@ -45,28 +45,8 @@ private:
 
 
 
-inline const std::vector< float >& UvMap::getUvCoords() const {
-    return m_uvCoords;
-}
-
-inline const float* UvMap::getUvCoordsPtr() const {
-    return &m_uvCoords[0];
-}
-
-inline size_t UvMap::getTotalUvCoords() const {
-    return m_uvCoords.size();
-}
 
 
 
-inline void UvMap::setUvCoords(const std::vector< float >& uvCoords) {
-    m_uvCoords = uvCoords;
-}
-
-inline void UvMap::setUvCoords(const float* uvCoords, const size_t size) {
-    m_uvCoords.resize(size);
-    for (size_t i = 0; i < size; ++i)
-        m_uvCoords[i] = uvCoords[i];
-}
 
 #endif // UVMAP_HPP

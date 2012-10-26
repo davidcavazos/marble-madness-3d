@@ -24,7 +24,6 @@
 - Animations
 
 BUGS:
-Crashing at quit, while destroying Light
 Concave hulls in RigidBody crash!
 A convex hull RigidBody randomly generates a 0 size low poly hull and crashes (original mesh read correctly)
 

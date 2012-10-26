@@ -39,10 +39,11 @@ public:
     ~Texture();
 
     const std::string& getFileName() const;
-    texture_format_t getTextureFormat() const;
+    size_t getId() const;
     size_t getBytesPerPixel() const;
     size_t getWidth() const;
     size_t getHeight() const;
+    texture_format_t getTextureFormat() const;
     void* getPixels() const;
 
     void load();
@@ -50,11 +51,12 @@ public:
 
 private:
     std::string m_fileName;
+    size_t m_textureId;
     SDL_Surface* m_image;
-    texture_format_t m_textureFormat;
     size_t m_bytesPerPixel;
     size_t m_width;
     size_t m_height;
+    texture_format_t m_textureFormat;
     void* m_pixels;
 
     Texture(const Texture& rhs);
@@ -67,8 +69,8 @@ inline const std::string& Texture::getFileName() const {
     return m_fileName;
 }
 
-inline texture_format_t Texture::getTextureFormat() const {
-    return m_textureFormat;
+inline size_t Texture::getId() const {
+    return m_textureId;
 }
 
 inline size_t Texture::getBytesPerPixel() const {
@@ -81,6 +83,10 @@ inline size_t Texture::getWidth() const {
 
 inline size_t Texture::getHeight() const {
     return m_height;
+}
+
+inline texture_format_t Texture::getTextureFormat() const {
+    return m_textureFormat;
 }
 
 inline void* Texture::getPixels() const {

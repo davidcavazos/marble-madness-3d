@@ -39,6 +39,45 @@ void Renderer::setAmbientLight(const float r, const float g, const float b, cons
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 }
 
+void Renderer::loadTexture(size_t& textureId,
+                           const size_t bytesPerPixel,
+                           const size_t width,
+                           const size_t height,
+                           const texture_format_t& textureFormat,
+                           void* pixels) {
+    GLuint id;
+    GLenum textureFormatGL;
+
+    glGenTextures(1, &id);
+    textureId = id;
+    glBindTexture(GL_TEXTURE_2D, textureId);
+//     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    switch (textureFormat) {
+    case TEXTURE_FORMAT_RGBA:
+        textureFormatGL = GL_RGBA;
+        break;
+    case TEXTURE_FORMAT_RGB:
+        textureFormatGL = GL_RGB;
+        break;
+    case TEXTURE_FORMAT_BGRA:
+        textureFormatGL = GL_BGRA;
+        break;
+    case TEXTURE_FORMAT_BGR:
+        textureFormatGL = GL_BGR;
+        break;
+    default:
+        cerr << "Error: invalid texture_format_t: " << textureFormat << endl;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, bytesPerPixel, width, height, 0, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
+}
+
+void Renderer::deleteTexture(const size_t textureId) {
+    GLuint id = textureId;
+    glDeleteTextures(1, &id);
+}
+
 void Renderer::initLighting() const {
     // enable lighting for legacy lights
     glEnable(GL_LIGHTING);
@@ -121,10 +160,12 @@ void Renderer::draw() const {
             glMaterialf(GL_FRONT, GL_SHININESS, mtl.getShininess());
 
             // set textures
+            glBindTexture(GL_TEXTURE_2D, mesh.getMaterial().getTextureMap(MATERIAL_DIFFUSE_MAP)->getId());
 
             // draw mesh
             glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr());
             glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
+            glTexCoordPointer(2, GL_FLOAT, 0, mesh.getUvCoordsPtr());
             glDrawElements(GL_TRIANGLES, mesh.getTotalIndices(), GL_UNSIGNED_INT, mesh.getIndicesPtr());
         }
         glPopMatrix();
@@ -210,12 +251,17 @@ void Renderer::initialize() {
     // enable arrays for Vertex Array (legacy)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void Renderer::deinitialize() {
     set<Camera*>::const_iterator itCam;
     for (itCam = m_cameras.begin(); itCam != m_cameras.end(); ++itCam)
         delete *itCam;
+
+    set<Light*>::const_iterator itLight;
+    for (itLight = m_lights.begin(); itLight != m_lights.end(); ++itLight)
+        delete *itLight;
 
     set<RenderableMesh*>::const_iterator itMesh;
     for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)

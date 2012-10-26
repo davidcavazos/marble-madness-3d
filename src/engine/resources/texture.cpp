@@ -22,22 +22,26 @@
 
 #include <iostream>
 #include <SDL/SDL_image.h>
+#include "engine/renderer/rendermanager.hpp"
+#include "engine/renderer/renderer.hpp"
 
 using namespace std;
 
 Texture::Texture(const string& fileName):
     m_fileName(fileName),
+    m_textureId(0),
     m_image(0),
-    m_textureFormat(TEXTURE_FORMAT_RGBA),
     m_bytesPerPixel(0),
     m_width(0),
     m_height(0),
+    m_textureFormat(TEXTURE_FORMAT_RGBA),
     m_pixels(0)
 {}
 
 Texture::~Texture() {
     if (m_image != 0)
         SDL_FreeSurface(m_image);
+    RenderManager::getRenderer().deleteTexture(m_textureId);
 }
 
 void Texture::load(const string& fileName) {
@@ -77,15 +81,19 @@ void Texture::load(const string& fileName) {
     default:
         cerr << "Warning: image is not truecolor: " << fileName << endl;
     }
+
+    RenderManager::getRenderer().loadTexture(m_textureId, m_bytesPerPixel, m_width,
+                                             m_height, m_textureFormat, m_pixels);
 }
 
 Texture::Texture(const Texture& rhs):
     m_fileName(rhs.m_fileName),
+    m_textureId(rhs.m_textureId),
     m_image(rhs.m_image),
-    m_textureFormat(rhs.m_textureFormat),
     m_bytesPerPixel(rhs.m_bytesPerPixel),
     m_width(rhs.m_width),
     m_height(rhs.m_height),
+    m_textureFormat(rhs.m_textureFormat),
     m_pixels(rhs.m_pixels)
 {}
 
@@ -93,11 +101,12 @@ Texture& Texture::operator=(const Texture& rhs) {
     if (this == &rhs)
         return *this;
     m_fileName = rhs.m_fileName;
+    m_textureId = rhs.m_textureId;
     m_image = rhs.m_image;
-    m_textureFormat = rhs.m_textureFormat;
     m_bytesPerPixel = rhs.m_bytesPerPixel;
     m_width = rhs.m_width;
     m_height = rhs.m_height;
+    m_textureFormat = rhs.m_textureFormat;
     m_pixels = rhs.m_pixels;
     return *this;
 }

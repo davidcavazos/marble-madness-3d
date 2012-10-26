@@ -79,19 +79,19 @@ void Game::loadScene() {
 
     Entity* root = m_sceneManager.getRootPtr();
 
-    Entity* floor = root->addChild("floor");
-    floor->setPositionAbs(0.0f, -1.0f, 0.0f);
-    RenderableMesh* floorMesh = new RenderableMesh(floor);
-    floorMesh->loadBox(100, 0.1, 100);
-    RigidBody* floorBody = new RigidBody(floor);
-    floorBody->addBox(100, 0.1, 100);
-
-    Entity* b1 = root->addChild("b1");
-    b1->setPositionAbs(5.0f, 0.0f, -10.0f);
-    RenderableMesh* b1Mesh = new RenderableMesh(b1);
-    b1Mesh->loadBox(3.0f, 13.0f, 3.0f);
-    RigidBody* b1Body = new RigidBody(b1);
-    b1Body->addBox(3, 13, 3);
+//     Entity* floor = root->addChild("floor");
+//     floor->setPositionAbs(0.0f, -1.0f, 0.0f);
+//     RenderableMesh* floorMesh = new RenderableMesh(floor);
+//     floorMesh->loadBox(100, 0.1, 100);
+//     RigidBody* floorBody = new RigidBody(floor);
+//     floorBody->addBox(100, 0.1, 100);
+//
+//     Entity* b1 = root->addChild("b1");
+//     b1->setPositionAbs(5.0f, 0.0f, -10.0f);
+//     RenderableMesh* b1Mesh = new RenderableMesh(b1);
+//     b1Mesh->loadBox(3.0f, 13.0f, 3.0f);
+//     RigidBody* b1Body = new RigidBody(b1);
+//     b1Body->addBox(3, 13, 3);
 
     // model            faces (triangles)
     // icosphere1              20
@@ -104,22 +104,22 @@ void Game::loadScene() {
     // icosphere8         327,680
     // icosphere9       1,310,720
     // icosphere10      5,242,880
-    Entity* cube = root->addChild("cube");
-    cube->setPositionAbs(-1.0, 8.0, 0.0);
-    cube->setOrientationAbs(0.5, 0.3, 0.2);
-    RenderableMesh* cubeMesh = new RenderableMesh(cube);
-    cubeMesh->loadBox(0.5, 0.5, 0.5);
-    RigidBody* cubeBody = new RigidBody(cube);
-    cubeBody->init(1.0);
-    cubeBody->addBox(0.5, 0.5, 0.5);
+//     Entity* cube = root->addChild("cube");
+//     cube->setPositionAbs(-1.0, 8.0, 0.0);
+//     cube->setOrientationAbs(0.5, 0.3, 0.2);
+//     RenderableMesh* cubeMesh = new RenderableMesh(cube);
+//     cubeMesh->loadBox(0.5, 0.5, 0.5);
+//     RigidBody* cubeBody = new RigidBody(cube);
+//     cubeBody->init(1.0);
+//     cubeBody->addBox(0.5, 0.5, 0.5);
 
     Entity* mesh = root->addChild("model");
     mesh->setPositionRel(1.5f, 5.0f, 0.0f);
     RenderableMesh* renderableMesh = new RenderableMesh(mesh);
     renderableMesh->loadFromFile("assets/meshes/materialtest.dae");
-    RigidBody* meshBody = new RigidBody(mesh);
-    meshBody->init(10.0);
-    meshBody->addBox(2, 2, 2);
+//     RigidBody* meshBody = new RigidBody(mesh);
+//     meshBody->init(10.0);
+//     meshBody->addBox(2, 2, 2);
 //     meshBody->addConvexHull("assets/meshes/materialtest.dae");
 
     Entity* camera = root->addChild("camera");
