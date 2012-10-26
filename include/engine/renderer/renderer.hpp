@@ -40,7 +40,7 @@ public:
     friend class RenderableMesh;
 
     void setAmbientLight(const float r, const float g, const float b, const float a = 1.0f);
-    void loadTexture(size_t& textureId,
+    void loadTexture(unsigned int& textureId,
                      const size_t bytesPerPixel,
                      const size_t width,
                      const size_t height,

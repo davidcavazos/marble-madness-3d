@@ -108,10 +108,8 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
         // indices
         model.mesh(n).m_indices.reserve(mesh->mNumFaces * 3);
         for (size_t i = 0; i < mesh->mNumFaces; ++i) {
-            if (mesh->mFaces[i].mNumIndices != 3) {
+            if (mesh->mFaces[i].mNumIndices != 3)
                 cerr << "Error: non-triangle face found, check model: " << fileName << endl;
-                continue;
-            }
             model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[0]);
             model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[1]);
             model.mesh(n).m_indices.push_back(mesh->mFaces[i].mIndices[2]);

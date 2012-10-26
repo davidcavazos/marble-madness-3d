@@ -24,8 +24,6 @@
 #include <string>
 #include <vector>
 
-class SDL_Surface;
-
 typedef enum {
     TEXTURE_FORMAT_RGBA,
     TEXTURE_FORMAT_BGRA,
@@ -39,7 +37,7 @@ public:
     ~Texture();
 
     const std::string& getFileName() const;
-    size_t getId() const;
+    unsigned int getId() const;
     size_t getBytesPerPixel() const;
     size_t getWidth() const;
     size_t getHeight() const;
@@ -51,8 +49,7 @@ public:
 
 private:
     std::string m_fileName;
-    size_t m_textureId;
-    SDL_Surface* m_image;
+    unsigned int m_textureId;
     size_t m_bytesPerPixel;
     size_t m_width;
     size_t m_height;
@@ -69,7 +66,7 @@ inline const std::string& Texture::getFileName() const {
     return m_fileName;
 }
 
-inline size_t Texture::getId() const {
+inline unsigned int Texture::getId() const {
     return m_textureId;
 }
 

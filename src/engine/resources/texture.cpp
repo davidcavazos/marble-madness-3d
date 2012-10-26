@@ -30,7 +30,6 @@ using namespace std;
 Texture::Texture(const string& fileName):
     m_fileName(fileName),
     m_textureId(0),
-    m_image(0),
     m_bytesPerPixel(0),
     m_width(0),
     m_height(0),
@@ -39,24 +38,21 @@ Texture::Texture(const string& fileName):
 {}
 
 Texture::~Texture() {
-    if (m_image != 0)
-        SDL_FreeSurface(m_image);
     RenderManager::getRenderer().deleteTexture(m_textureId);
 }
 
 void Texture::load(const string& fileName) {
-    // http://content.gpwiki.org/index.php/SDL:Tutorials:Using_SDL_with_OpenGL
-    m_image = IMG_Load(fileName.c_str());
-    if (m_image == 0) {
+    SDL_Surface* img = IMG_Load(fileName.c_str());
+    if (img == 0) {
         cerr << "Error opening image file: " << fileName << endl;
         return;
     }
 
     // set attributes
-    m_bytesPerPixel = m_image->format->BytesPerPixel;
-    m_width = m_image->w;
-    m_height = m_image->h;
-    m_pixels = m_image->pixels;
+    m_bytesPerPixel = img->format->BytesPerPixel;
+    m_width = img->w;
+    m_height = img->h;
+    m_pixels = img->pixels;
 
     // check width and height
     if ((m_width & (m_width - 1)) != 0)
@@ -67,13 +63,13 @@ void Texture::load(const string& fileName) {
     // check for number of channels in each pixel
     switch (m_bytesPerPixel) {
     case 4: // has alpha channel
-        if (m_image->format->Rmask == 0x000000ff)
+        if (img->format->Rmask == 0x000000ff)
             m_textureFormat = TEXTURE_FORMAT_RGBA;
         else
             m_textureFormat = TEXTURE_FORMAT_BGRA;
         break;
     case 3: // no alpha channel
-        if (m_image->format->Rmask == 0x000000ff)
+        if (img->format->Rmask == 0x000000ff)
             m_textureFormat = TEXTURE_FORMAT_RGB;
         else
             m_textureFormat = TEXTURE_FORMAT_BGR;
@@ -84,12 +80,12 @@ void Texture::load(const string& fileName) {
 
     RenderManager::getRenderer().loadTexture(m_textureId, m_bytesPerPixel, m_width,
                                              m_height, m_textureFormat, m_pixels);
+    SDL_FreeSurface(img);
 }
 
 Texture::Texture(const Texture& rhs):
     m_fileName(rhs.m_fileName),
     m_textureId(rhs.m_textureId),
-    m_image(rhs.m_image),
     m_bytesPerPixel(rhs.m_bytesPerPixel),
     m_width(rhs.m_width),
     m_height(rhs.m_height),
@@ -102,7 +98,6 @@ Texture& Texture::operator=(const Texture& rhs) {
         return *this;
     m_fileName = rhs.m_fileName;
     m_textureId = rhs.m_textureId;
-    m_image = rhs.m_image;
     m_bytesPerPixel = rhs.m_bytesPerPixel;
     m_width = rhs.m_width;
     m_height = rhs.m_height;

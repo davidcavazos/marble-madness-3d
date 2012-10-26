@@ -39,21 +39,25 @@ void Renderer::setAmbientLight(const float r, const float g, const float b, cons
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 }
 
-void Renderer::loadTexture(size_t& textureId,
+void Renderer::loadTexture(unsigned int& textureId,
                            const size_t bytesPerPixel,
                            const size_t width,
                            const size_t height,
                            const texture_format_t& textureFormat,
                            void* pixels) {
-    GLuint id;
     GLenum textureFormatGL;
 
-    glGenTextures(1, &id);
-    textureId = id;
+    glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
-//     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     switch (textureFormat) {
     case TEXTURE_FORMAT_RGBA:
         textureFormatGL = GL_RGBA;
@@ -69,8 +73,11 @@ void Renderer::loadTexture(size_t& textureId,
         break;
     default:
         cerr << "Error: invalid texture_format_t: " << textureFormat << endl;
+        textureFormatGL = GL_RGBA;
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, bytesPerPixel, width, height, 0, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, bytesPerPixel, width, height, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
+    glTexImage2D(GL_TEXTURE_2D, 4, bytesPerPixel, width, height, 0, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
 }
 
 void Renderer::deleteTexture(const size_t textureId) {
@@ -81,6 +88,7 @@ void Renderer::deleteTexture(const size_t textureId) {
 void Renderer::initLighting() const {
     // enable lighting for legacy lights
     glEnable(GL_LIGHTING);
+//     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 
     set<Light*>::const_iterator it = m_lights.begin();
     for (size_t i = 0; i < m_lights.size(); ++i) {
@@ -160,12 +168,12 @@ void Renderer::draw() const {
             glMaterialf(GL_FRONT, GL_SHININESS, mtl.getShininess());
 
             // set textures
-            glBindTexture(GL_TEXTURE_2D, mesh.getMaterial().getTextureMap(MATERIAL_DIFFUSE_MAP)->getId());
+            glBindTexture(GL_TEXTURE_2D, mtl.getTextureMap(MATERIAL_DIFFUSE_MAP)->getId());
+            glTexCoordPointer(2, GL_FLOAT, 0, mesh.getUvCoordsPtr());
 
             // draw mesh
             glVertexPointer(3, GL_FLOAT, 0, mesh.getVerticesPtr());
             glNormalPointer(GL_FLOAT, 0, mesh.getNormalsPtr());
-            glTexCoordPointer(2, GL_FLOAT, 0, mesh.getUvCoordsPtr());
             glDrawElements(GL_TRIANGLES, mesh.getTotalIndices(), GL_UNSIGNED_INT, mesh.getIndicesPtr());
         }
         glPopMatrix();
