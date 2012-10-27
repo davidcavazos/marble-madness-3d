@@ -168,7 +168,10 @@ void Renderer::draw() const {
             glMaterialf(GL_FRONT, GL_SHININESS, mtl.getShininess());
 
             // set textures
-            glBindTexture(GL_TEXTURE_2D, mtl.getTextureMap(MATERIAL_DIFFUSE_MAP)->getId());
+            if (mtl.getTextureMap(MATERIAL_DIFFUSE_MAP) != 0)
+                glBindTexture(GL_TEXTURE_2D, mtl.getTextureMap(MATERIAL_DIFFUSE_MAP)->getId());
+            else
+                glBindTexture(GL_TEXTURE_2D, 0);
             glTexCoordPointer(2, GL_FLOAT, 0, mesh.getUvCoordsPtr());
 
             // draw mesh
