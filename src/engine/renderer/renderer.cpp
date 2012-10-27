@@ -39,55 +39,8 @@ void Renderer::setAmbientLight(const float r, const float g, const float b, cons
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 }
 
-void Renderer::loadTexture(unsigned int& textureId,
-                           const size_t bytesPerPixel,
-                           const size_t width,
-                           const size_t height,
-                           const texture_format_t& textureFormat,
-                           void* pixels) {
-    GLenum textureFormatGL;
-
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    switch (textureFormat) {
-    case TEXTURE_FORMAT_RGBA:
-        textureFormatGL = GL_RGBA;
-        break;
-    case TEXTURE_FORMAT_RGB:
-        textureFormatGL = GL_RGB;
-        break;
-    case TEXTURE_FORMAT_BGRA:
-        textureFormatGL = GL_BGRA;
-        break;
-    case TEXTURE_FORMAT_BGR:
-        textureFormatGL = GL_BGR;
-        break;
-    default:
-        cerr << "Error: invalid texture_format_t: " << textureFormat << endl;
-        textureFormatGL = GL_RGBA;
-    }
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    gluBuild2DMipmaps(GL_TEXTURE_2D, bytesPerPixel, width, height, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
-    glTexImage2D(GL_TEXTURE_2D, 4, bytesPerPixel, width, height, 0, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
-}
-
-void Renderer::deleteTexture(const size_t textureId) {
-    GLuint id = textureId;
-    glDeleteTextures(1, &id);
-}
-
 void Renderer::initLighting() const {
     // enable lighting for legacy lights
-    glEnable(GL_LIGHTING);
 //     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 
     set<Light*>::const_iterator it = m_lights.begin();
@@ -127,6 +80,48 @@ void Renderer::initLighting() const {
     }
 }
 
+void Renderer::loadTexture(unsigned int& textureId,
+                           const size_t bytesPerPixel,
+                           const size_t width,
+                           const size_t height,
+                           const texture_format_t& textureFormat,
+                           void* pixels) {
+    GLenum textureFormatGL;
+
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    switch (textureFormat) {
+    case TEXTURE_FORMAT_RGBA:
+        textureFormatGL = GL_RGBA;
+        break;
+    case TEXTURE_FORMAT_RGB:
+        textureFormatGL = GL_RGB;
+        break;
+    case TEXTURE_FORMAT_BGRA:
+        textureFormatGL = GL_BGRA;
+        break;
+    case TEXTURE_FORMAT_BGR:
+        textureFormatGL = GL_BGR;
+        break;
+    default:
+        cerr << "Error: invalid texture_format_t: " << textureFormat << endl;
+        textureFormatGL = GL_RGBA;
+    }
+    gluBuild2DMipmaps(GL_TEXTURE_2D, bytesPerPixel, width, height, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
+//     glTexImage2D(GL_TEXTURE_2D, 0, bytesPerPixel, width, height, 0, textureFormatGL, GL_UNSIGNED_BYTE, pixels);
+}
+
+void Renderer::deleteTexture(const size_t textureId) {
+    GLuint id = textureId;
+    glDeleteTextures(1, &id);
+}
+
 void Renderer::draw() const {
     if (m_activeCamera->hasChanged()) {
         initCamera();
@@ -158,9 +153,9 @@ void Renderer::draw() const {
         glMultMatrixf(m);
         for (size_t n = 0; n < model.getTotalMeshes(); ++n) {
             const Mesh& mesh = model.getMesh(n);
+            const Material& mtl = mesh.getMaterial();
 
             // set material
-            const Material& mtl = mesh.getMaterial();
             glMaterialfv(GL_FRONT, GL_DIFFUSE, mtl.getColor(MATERIAL_COLOR_DIFFUSE).rgb);
             glMaterialfv(GL_FRONT, GL_SPECULAR, mtl.getColor(MATERIAL_COLOR_SPECULAR).rgb);
             glMaterialfv(GL_FRONT, GL_AMBIENT, mtl.getColor(MATERIAL_COLOR_AMBIENT).rgb);
@@ -256,8 +251,9 @@ void Renderer::initialize() {
     glCullFace(GL_BACK); // redundant
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
-//     glShadeModel(GL_SMOOTH); // using manually defined normals
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
     // enable arrays for Vertex Array (legacy)
     glEnableClientState(GL_VERTEX_ARRAY);

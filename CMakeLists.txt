@@ -7,5 +7,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 #     set(CMAKE_EXE_LINKER_FLAGS "-lSDL")
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
+
 include_directories(include)
 add_subdirectory(src)

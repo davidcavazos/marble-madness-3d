@@ -40,6 +40,7 @@ public:
     friend class RenderableMesh;
 
     void setAmbientLight(const float r, const float g, const float b, const float a = 1.0f);
+    void initLighting() const;
     void loadTexture(unsigned int& textureId,
                      const size_t bytesPerPixel,
                      const size_t width,
@@ -47,7 +48,6 @@ public:
                      const texture_format_t& textureFormat,
                      void* pixels);
     void deleteTexture(const size_t textureId);
-    void initLighting() const;
     void draw() const;
     std::string listsToString() const;
 
