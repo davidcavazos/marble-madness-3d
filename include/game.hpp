@@ -31,7 +31,7 @@ public:
     ~Game();
 
     void loadScene();
-    void bindControls();
+    void bindInputs();
     void runGameLoop();
 
 private:

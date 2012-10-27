@@ -91,11 +91,12 @@ void Renderer::loadTexture(unsigned int& textureId,
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, bytesPerPixel);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     switch (textureFormat) {
     case TEXTURE_FORMAT_RGBA:
         textureFormatGL = GL_RGBA;
@@ -118,8 +119,7 @@ void Renderer::loadTexture(unsigned int& textureId,
 }
 
 void Renderer::deleteTexture(const size_t textureId) {
-    GLuint id = textureId;
-    glDeleteTextures(1, &id);
+    glDeleteTextures(1, &textureId);
 }
 
 void Renderer::draw() const {
@@ -144,8 +144,8 @@ void Renderer::draw() const {
 
     // set meshes
     set<RenderableMesh*>::const_iterator it;
-    for (it = m_meshes.begin(); it != m_meshes.end(); ++it) {
-        const Model& model = (*it)->getMeshData();
+    for (it = m_model.begin(); it != m_model.end(); ++it) {
+        const Model& model = (*it)->getModel();
         const Entity& entity = (*it)->getEntity();
 
         glPushMatrix();
@@ -191,7 +191,7 @@ string Renderer::listsToString() const {
 
     ss << "Renderer Meshes List:" << endl;
     set<RenderableMesh*>::const_iterator itMesh;
-    for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
+    for (itMesh = m_model.begin(); itMesh != m_model.end(); ++itMesh)
         ss << "  " << (*itMesh)->getDescription() << endl;
 
     ss << "Lights List:" << endl;
@@ -206,19 +206,20 @@ Renderer::Renderer():
     m_activeCamera(0),
     m_cameras(),
     m_lights(),
-    m_meshes()
+    m_model()
 {
+    GLint integer;
+
     cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
     cout << "Shader language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
     cout << "Vendor: " << glGetString(GL_VENDOR) << endl;
     cout << "Renderer: " << glGetString(GL_RENDERER) << endl;
     cout << "Using OpenGL Legacy" << endl;
-
-    GLint numExtensions;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
-    cout << numExtensions << " extensions" << endl;
-
-//     GLint maxElements = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &integer);
+    cout << integer << " extensions" << endl;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &integer);
+    cout << "Max texture size: " << integer << endl;
+    //     GLint maxElements = 0;
 //     glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElements);
 //     cout << "Vertex limit: " << maxElements << endl;
 //     glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElements);
@@ -229,7 +230,7 @@ Renderer::Renderer(const Renderer& rhs):
     m_activeCamera(rhs.m_activeCamera),
     m_cameras(rhs.m_cameras),
     m_lights(rhs.m_lights),
-    m_meshes(rhs.m_meshes)
+    m_model(rhs.m_model)
 {
     cerr << "Renderer copy constructor should not be called" << endl;
 }
@@ -241,7 +242,7 @@ Renderer& Renderer::operator=(const Renderer& rhs) {
     m_activeCamera = rhs.m_activeCamera;
     m_cameras = rhs.m_cameras;
     m_lights = rhs.m_lights;
-    m_meshes = rhs.m_meshes;
+    m_model = rhs.m_model;
     return *this;
 }
 
@@ -253,7 +254,7 @@ void Renderer::initialize() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     // enable arrays for Vertex Array (legacy)
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -271,7 +272,7 @@ void Renderer::deinitialize() {
         delete *itLight;
 
     set<RenderableMesh*>::const_iterator itMesh;
-    for (itMesh = m_meshes.begin(); itMesh != m_meshes.end(); ++itMesh)
+    for (itMesh = m_model.begin(); itMesh != m_model.end(); ++itMesh)
         delete *itMesh;
 }
 

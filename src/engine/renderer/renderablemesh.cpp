@@ -35,11 +35,11 @@ RenderableMesh::RenderableMesh(Entity* const entity):
     Component(COMPONENT_RENDERABLE_MESH, entity),
     m_meshData(0)
 {
-    RenderManager::getRenderer().m_meshes.insert(this);
+    RenderManager::getRenderer().m_model.insert(this);
 }
 
 RenderableMesh::~RenderableMesh() {
-    RenderManager::getRenderer().m_meshes.erase(this);
+    RenderManager::getRenderer().m_model.erase(this);
 }
 
 

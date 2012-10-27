@@ -82,16 +82,16 @@ void Game::loadScene() {
     Entity* floor = root->addChild("floor");
     floor->setPositionAbs(0.0f, -1.0f, 0.0f);
     RenderableMesh* floorMesh = new RenderableMesh(floor);
-    floorMesh->loadBox(100, 0.1, 100);
+    floorMesh->loadBox(100, 1, 100);
     RigidBody* floorBody = new RigidBody(floor);
-    floorBody->addBox(100, 0.1, 100);
+    floorBody->addBox(100, 1, 100);
 
     Entity* b1 = root->addChild("b1");
-    b1->setPositionAbs(5.0f, 0.0f, -10.0f);
+    b1->setPositionAbs(5.0f, 4.0f, -10.0f);
     RenderableMesh* b1Mesh = new RenderableMesh(b1);
-    b1Mesh->loadBox(3.0f, 13.0f, 3.0f);
+    b1Mesh->loadBox(3.0f, 9.0f, 3.0f);
     RigidBody* b1Body = new RigidBody(b1);
-    b1Body->addBox(3, 13, 3);
+    b1Body->addBox(3, 9, 3);
 
     // model            faces (triangles)
     // icosphere1              20
@@ -152,7 +152,7 @@ void Game::loadScene() {
 //     cout << ResourceManager::listsToString() << endl;
 }
 
-void Game::bindControls() {
+void Game::bindInputs() {
     cout << "Binding inputs..." << endl;
     InputManager& inputs = DeviceManager::getDevice().getInputManager();
     inputs.bindInput(INPUT_KEY_RELEASE, "game quit", SDLK_ESCAPE);

@@ -65,7 +65,7 @@ private:
     Camera* m_activeCamera;
     std::set<Camera*> m_cameras;
     std::set<Light*> m_lights;
-    std::set<RenderableMesh*> m_meshes;
+    std::set<RenderableMesh*> m_model;
 };
 
 #endif // RENDERER_HPP

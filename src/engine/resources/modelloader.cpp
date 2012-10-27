@@ -69,6 +69,7 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
                               aiProcess_RemoveRedundantMaterials |
                               aiProcess_SplitLargeMeshes |
                               aiProcess_Triangulate |
+                              aiProcess_FlipUVs |
                               aiProcess_GenUVCoords |
                               aiProcess_SortByPType |
                               aiProcess_FindDegenerates |
@@ -117,7 +118,7 @@ bool ModelLoader::import(const std::string& fileName, Model& model) {
 
         // uv coordinates
         if (mesh->GetNumUVChannels() > 0) {
-            model.mesh(n).m_uvCoords.resize(mesh->mNumVertices * 2);
+            model.mesh(n).m_uvCoords.reserve(mesh->mNumVertices * 2);
             for (size_t i = 0; i < mesh->mNumVertices; ++i) {
                 model.mesh(n).m_uvCoords.push_back(mesh->mTextureCoords[0][i].x);
                 model.mesh(n).m_uvCoords.push_back(mesh->mTextureCoords[0][i].y);
